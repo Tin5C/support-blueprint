@@ -3,7 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { customers, cases } from "@/data/mockData";
 import { useSearchParams } from "react-router-dom";
-import { Activity, Server, Shield, Clock, ChevronRight, Zap, Video, Phone, Search, MoreHorizontal, Hash, Bell, ExternalLink } from "lucide-react";
+import { Activity, Server, Shield, Clock, ChevronRight, Hash, ExternalLink } from "lucide-react";
+import TeamsShell from "@/components/TeamsShell";
 
 const riskColor: Record<string, string> = {
   low: "bg-success/10 text-success border-success/20",
@@ -12,9 +13,6 @@ const riskColor: Record<string, string> = {
   critical: "bg-destructive text-destructive-foreground",
 };
 
-const teamsBg = "hsl(264 60% 22%)";
-const teamsAccent = "hsl(264 60% 50%)";
-
 export default function TeamsCustomerSpaces() {
   const [params] = useSearchParams();
   const [selectedId, setSelectedId] = useState(params.get("id") || "cust-1");
@@ -22,27 +20,15 @@ export default function TeamsCustomerSpaces() {
   const customerCases = cases.filter(c => c.customerId === selectedId);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Teams chrome bar */}
-      <div className="h-10 shrink-0 flex items-center justify-between px-4" style={{ background: teamsBg }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="h-5 w-5 rounded flex items-center justify-center" style={{ background: teamsAccent }}>
-              <Zap className="h-3 w-3 text-white" />
-            </div>
-            <span className="text-[13px] font-semibold text-white/90">Support Studio</span>
-          </div>
-          <span className="text-white/30">|</span>
-          <span className="text-[12px] text-white/60">Customer Spaces</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Video className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Phone className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Search className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><MoreHorizontal className="h-3.5 w-3.5" /></button>
-        </div>
-      </div>
-
+    <TeamsShell
+      section="Customer Spaces"
+      tabs={[
+        { label: "Overview", active: true },
+        { label: "Deployments" },
+        { label: "Telemetry" },
+        { label: "History" },
+      ]}
+    >
       <div className="flex flex-1 overflow-hidden">
         {/* Channel list */}
         <div className="w-60 shrink-0 border-r bg-card overflow-y-auto">
@@ -96,7 +82,6 @@ export default function TeamsCustomerSpaces() {
             </div>
           </div>
 
-          {/* KPIs */}
           <div className="grid grid-cols-4 gap-4">
             <Card className="border">
               <CardContent className="p-4">
@@ -124,17 +109,16 @@ export default function TeamsCustomerSpaces() {
             </Card>
           </div>
 
-          {/* Case list */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-foreground">Cases ({customerCases.length})</h2>
-              <Badge variant="outline" className="text-[10px] gap-1"><ExternalLink className="h-2.5 w-2.5" /> Open in Teams</Badge>
+              <h2 className="text-sm font-semibold text-foreground">Support Cases ({customerCases.length})</h2>
+              <Badge variant="outline" className="text-[10px] gap-1"><ExternalLink className="h-2.5 w-2.5" /> Open in Teams Chat</Badge>
             </div>
             {customerCases.length === 0 ? (
               <Card className="border">
                 <CardContent className="py-8 text-center">
-                  <p className="text-sm text-muted-foreground">No cases for this customer</p>
-                  <p className="text-xs text-muted-foreground mt-1">All systems operating normally</p>
+                  <p className="text-sm text-muted-foreground">No active cases</p>
+                  <p className="text-xs text-muted-foreground mt-1">All product deployments operating normally</p>
                 </CardContent>
               </Card>
             ) : (
@@ -145,7 +129,7 @@ export default function TeamsCustomerSpaces() {
                     <div className={`h-2 w-2 rounded-full shrink-0 ${c.status === "resolved" ? "bg-success" : c.status === "in-progress" ? "bg-primary" : c.status === "waiting" ? "bg-warning" : "bg-muted-foreground"}`} />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-foreground truncate">{c.title}</p>
-                      <p className="text-[11px] text-muted-foreground">{c.category} · {c.trigger === "telemetry" ? "Telemetry" : "Customer"} triggered</p>
+                      <p className="text-[11px] text-muted-foreground">{c.category} · {c.trigger === "telemetry" ? "Product telemetry" : "Customer"} triggered</p>
                     </div>
                     <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[c.priority]}`}>{c.priority}</Badge>
                     <span className="text-[11px] text-muted-foreground w-16 text-right">{c.confidence}%</span>
@@ -157,6 +141,6 @@ export default function TeamsCustomerSpaces() {
           </div>
         </div>
       </div>
-    </div>
+    </TeamsShell>
   );
 }

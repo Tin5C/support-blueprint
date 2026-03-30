@@ -1,9 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Brain, Activity, BookOpen, User, Zap, Video, Phone, Search, MoreHorizontal, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
-
-const teamsBg = "hsl(264 60% 22%)";
-const teamsAccent = "hsl(264 60% 50%)";
+import { Brain, Activity, BookOpen, User, Zap, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import TeamsShell from "@/components/TeamsShell";
 
 const agents = [
   {
@@ -19,8 +17,8 @@ const agents = [
     name: "Telemetry Agent", icon: Activity, status: "active" as const,
     activeCases: 5, resolved24h: 11, avgConfidence: 88,
     recentActions: [
-      { action: "Pulled metrics for Sterling replication lag", time: "5 min ago", result: "Lag at 12s, threshold 5s" },
-      { action: "Detected memory pressure on Meridian workers", time: "1 hr ago", result: "94% memory, triggered alert" },
+      { action: "Pulled product telemetry for Sterling replication lag", time: "5 min ago", result: "Lag at 12s, threshold 5s" },
+      { action: "Detected memory pressure on Meridian deployment", time: "1 hr ago", result: "94% memory, triggered alert" },
       { action: "Baseline comparison for NovaTech job timing", time: "2 hr ago", result: "45 min over SLA window" },
     ],
   },
@@ -37,9 +35,9 @@ const agents = [
     name: "Customer Context Agent", icon: User, status: "idle" as const,
     activeCases: 2, resolved24h: 7, avgConfidence: 93,
     recentActions: [
-      { action: "Loaded Sterling deployment config", time: "6 min ago", result: "32 nodes, multi-region, PCI-DSS" },
+      { action: "Loaded Sterling deployment configuration", time: "6 min ago", result: "32 nodes, multi-region, PCI-DSS" },
       { action: "Checked Meridian SLA terms", time: "30 min ago", result: "Enterprise tier, 1hr response" },
-      { action: "Verified NovaTech feature flags", time: "2 hr ago", result: "Workflow automation enabled" },
+      { action: "Verified NovaTech enabled features", time: "2 hr ago", result: "Workflow automation active" },
     ],
   },
   {
@@ -55,32 +53,19 @@ const agents = [
 
 export default function TeamsAgentActivity() {
   return (
-    <div className="flex flex-col h-full">
-      {/* Teams chrome */}
-      <div className="h-10 shrink-0 flex items-center justify-between px-4" style={{ background: teamsBg }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="h-5 w-5 rounded flex items-center justify-center" style={{ background: teamsAccent }}>
-              <Zap className="h-3 w-3 text-white" />
-            </div>
-            <span className="text-[13px] font-semibold text-white/90">Support Studio</span>
-          </div>
-          <span className="text-white/30">|</span>
-          <span className="text-[12px] text-white/60">Agent Activity</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Video className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Phone className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Search className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><MoreHorizontal className="h-3.5 w-3.5" /></button>
-        </div>
-      </div>
-
+    <TeamsShell
+      section="Agent Activity"
+      tabs={[
+        { label: "All Agents", active: true },
+        { label: "Audit Log" },
+        { label: "Performance" },
+      ]}
+    >
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-[1100px] mx-auto space-y-6">
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Agent Activity</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Real-time status and recent actions from all AI support agents</p>
+            <h1 className="text-xl font-semibold text-foreground">Support Agent Activity</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Real-time status and actions from AI support agents across all customer deployments</p>
           </div>
 
           {/* Agent summary */}
@@ -113,7 +98,7 @@ export default function TeamsAgentActivity() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3">
                         <h3 className="text-sm font-semibold text-foreground">{agent.name}</h3>
-                        <div className={`flex items-center gap-1`}>
+                        <div className="flex items-center gap-1">
                           <div className={`h-2 w-2 rounded-full ${agent.status === "active" ? "bg-success animate-pulse-subtle" : agent.status === "waiting" ? "bg-warning" : "bg-muted-foreground"}`} />
                           <span className="text-[11px] text-muted-foreground capitalize">{agent.status}</span>
                         </div>
@@ -143,6 +128,6 @@ export default function TeamsAgentActivity() {
           </div>
         </div>
       </div>
-    </div>
+    </TeamsShell>
   );
 }

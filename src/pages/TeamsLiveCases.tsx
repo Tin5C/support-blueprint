@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { customers, cases, caseThread, sampleOrchestration } from "@/data/mockData";
 import {
-  Bot, CheckCircle2, AlertTriangle, RotateCcw, ArrowUpRight, Shield,
-  Brain, Activity, BookOpen, Zap, User, Video, MoreHorizontal,
-  Phone, Search, Pin, Smile, Paperclip, Send, AtSign,
+  Bot, CheckCircle2, RotateCcw, ArrowUpRight, Shield,
+  Brain, Activity, BookOpen, Zap, User,
+  Pin, Smile, Paperclip, Send, AtSign,
 } from "lucide-react";
+import TeamsShell from "@/components/TeamsShell";
 
 const riskColor: Record<string, string> = {
   low: "bg-success/10 text-success border-success/20",
@@ -24,10 +25,6 @@ const agentIcon: Record<string, React.ReactNode> = {
   "Resolution Agent": <Zap className="h-4 w-4" />,
 };
 
-// Teams purple
-const teamsBg = "hsl(264 60% 22%)";
-const teamsAccent = "hsl(264 60% 50%)";
-
 export default function TeamsLiveCases() {
   const [selectedCustomer, setSelectedCustomer] = useState("cust-1");
   const [selectedCase, setSelectedCase] = useState("CS-1001");
@@ -36,29 +33,16 @@ export default function TeamsLiveCases() {
   const activeCase = cases.find(c => c.id === selectedCase)!;
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Teams chrome bar */}
-      <div className="h-10 shrink-0 flex items-center justify-between px-4" style={{ background: teamsBg }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="h-5 w-5 rounded flex items-center justify-center" style={{ background: teamsAccent }}>
-              <Zap className="h-3 w-3 text-white" />
-            </div>
-            <span className="text-[13px] font-semibold text-white/90">Support Studio</span>
-          </div>
-          <span className="text-white/30">|</span>
-          <span className="text-[12px] text-white/60">Live Cases</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Video className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Phone className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Search className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><MoreHorizontal className="h-3.5 w-3.5" /></button>
-        </div>
-      </div>
-
+    <TeamsShell
+      section="Live Cases"
+      tabs={[
+        { label: "Cases", active: true },
+        { label: "Resolved" },
+        { label: "Analytics" },
+      ]}
+    >
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: channel list (Teams-style) */}
+        {/* Left: channel list */}
         <div className="w-60 shrink-0 border-r bg-card flex flex-col overflow-hidden">
           <div className="p-3 border-b">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Customer Channels</p>
@@ -98,9 +82,8 @@ export default function TeamsLiveCases() {
           </div>
         </div>
 
-        {/* Center: Teams-style thread */}
+        {/* Center: thread */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Channel header */}
           <div className="h-12 px-4 border-b bg-card flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <span className="text-muted-foreground font-medium text-sm">#</span>
@@ -113,7 +96,6 @@ export default function TeamsLiveCases() {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-1">
             {caseThread.map(msg => (
               <div key={msg.id} className={`group flex gap-3 py-2 px-2 -mx-2 rounded-md hover:bg-accent/50 transition-colors ${msg.type === "summary" ? "bg-primary/5 border border-primary/10 mx-0 px-4 py-3 my-2" : ""}`}>
@@ -143,7 +125,7 @@ export default function TeamsLiveCases() {
             ))}
           </div>
 
-          {/* Teams-style compose */}
+          {/* Compose */}
           <div className="px-4 pb-4">
             <div className="border rounded-lg bg-card">
               <div className="flex items-center gap-1 px-3 py-2 border-b">
@@ -156,7 +138,7 @@ export default function TeamsLiveCases() {
                 <button className="h-7 w-7 rounded flex items-center justify-center text-muted-foreground hover:bg-accent"><Smile className="h-3.5 w-3.5" /></button>
               </div>
               <div className="p-3">
-                <p className="text-sm text-muted-foreground/50">Type a message, @mention an agent, or add a note...</p>
+                <p className="text-sm text-muted-foreground/50">Type a message, @mention a support agent, or add a note...</p>
               </div>
               <div className="flex items-center justify-between px-3 pb-2">
                 <div />
@@ -166,19 +148,17 @@ export default function TeamsLiveCases() {
           </div>
         </div>
 
-        {/* Right: AI orchestration panel */}
+        {/* Right: orchestration panel */}
         <div className="w-72 shrink-0 bg-card border-l overflow-y-auto">
           <div className="p-4 border-b">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">AI Orchestration</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">Agent collaboration timeline</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Support agent collaboration timeline</p>
           </div>
 
           <div className="p-4 space-y-3">
             {sampleOrchestration.map((step, i) => (
               <div key={i} className="relative">
-                {i < sampleOrchestration.length - 1 && (
-                  <div className="absolute left-[13px] top-8 bottom-0 w-px bg-border" />
-                )}
+                {i < sampleOrchestration.length - 1 && <div className="absolute left-[13px] top-8 bottom-0 w-px bg-border" />}
                 <div className="flex gap-3">
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 z-10 ${step.agent === "Orchestrator" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                     {agentIcon[step.agent] || <Bot className="h-3.5 w-3.5" />}
@@ -213,7 +193,7 @@ export default function TeamsLiveCases() {
           </div>
 
           <div className="p-4 border-t">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Evidence</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Product Telemetry</p>
             <div className="space-y-2">
               {[
                 { label: "Memory", value: "94%", color: "text-destructive" },
@@ -239,6 +219,6 @@ export default function TeamsLiveCases() {
           </div>
         </div>
       </div>
-    </div>
+    </TeamsShell>
   );
 }

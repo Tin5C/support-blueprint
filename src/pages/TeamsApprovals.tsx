@@ -1,11 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { cases, customers } from "@/data/mockData";
-import { CheckCircle2, X, ArrowUpRight, Clock, Shield, Zap, Video, Phone, Search, MoreHorizontal, Bot } from "lucide-react";
-
-const teamsBg = "hsl(264 60% 22%)";
-const teamsAccent = "hsl(264 60% 50%)";
+import { CheckCircle2, X, ArrowUpRight, Clock, Shield, Bot } from "lucide-react";
+import TeamsShell from "@/components/TeamsShell";
 
 const riskColor: Record<string, string> = {
   low: "bg-success/10 text-success border-success/20",
@@ -23,27 +20,14 @@ const pendingApprovals = [
 
 export default function TeamsApprovals() {
   return (
-    <div className="flex flex-col h-full">
-      {/* Teams chrome */}
-      <div className="h-10 shrink-0 flex items-center justify-between px-4" style={{ background: teamsBg }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <div className="h-5 w-5 rounded flex items-center justify-center" style={{ background: teamsAccent }}>
-              <Zap className="h-3 w-3 text-white" />
-            </div>
-            <span className="text-[13px] font-semibold text-white/90">Support Studio</span>
-          </div>
-          <span className="text-white/30">|</span>
-          <span className="text-[12px] text-white/60">Approvals</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Video className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Phone className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><Search className="h-3.5 w-3.5" /></button>
-          <button className="h-7 w-7 rounded flex items-center justify-center text-white/50 hover:bg-white/10"><MoreHorizontal className="h-3.5 w-3.5" /></button>
-        </div>
-      </div>
-
+    <TeamsShell
+      section="Approvals"
+      tabs={[
+        { label: "Pending", active: true },
+        { label: "Approved" },
+        { label: "Rejected" },
+      ]}
+    >
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-[900px] mx-auto space-y-6">
           <div>
@@ -51,7 +35,7 @@ export default function TeamsApprovals() {
               <h1 className="text-xl font-semibold text-foreground">Pending Approvals</h1>
               <Badge className="bg-warning/10 text-warning border border-warning/20 text-xs">{pendingApprovals.length} pending</Badge>
             </div>
-            <p className="text-sm text-muted-foreground">AI agent actions requiring human approval before execution</p>
+            <p className="text-sm text-muted-foreground">AI-recommended actions awaiting human approval before execution</p>
           </div>
 
           <div className="space-y-3">
@@ -88,7 +72,6 @@ export default function TeamsApprovals() {
             ))}
           </div>
 
-          {/* Recently approved */}
           <div>
             <h2 className="text-sm font-semibold text-foreground mb-3">Recently Approved</h2>
             <div className="space-y-2">
@@ -109,6 +92,6 @@ export default function TeamsApprovals() {
           </div>
         </div>
       </div>
-    </div>
+    </TeamsShell>
   );
 }
