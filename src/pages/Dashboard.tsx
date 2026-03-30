@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { kpis, customers, cases, issueThemes, trendData } from "@/data/mockData";
-import { ArrowUpRight, ArrowDownRight, AlertTriangle, CheckCircle2, Clock, Users, TrendingUp, Minus } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, AlertTriangle, CheckCircle2, Clock, Users, TrendingUp, Minus, ExternalLink, Bot, Zap, Shield, MessageSquare } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
 
@@ -15,12 +16,26 @@ const riskColor: Record<string, string> = {
 export default function Dashboard() {
   const navigate = useNavigate();
   const openCases = cases.filter(c => c.status !== "resolved");
+  const pendingApprovals = 4;
+  const activeEscalations = 4;
 
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">Overview</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Support operations at a glance</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">Command Center</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Support operations control plane — design, deploy, and monitor AI support systems</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-xs px-2.5 py-1 gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-success animate-pulse-subtle" />
+            Teams Connected
+          </Badge>
+          <Badge variant="outline" className="text-xs px-2.5 py-1 gap-1.5">
+            <Bot className="h-3 w-3" />
+            5 Agents Active
+          </Badge>
+        </div>
       </div>
 
       {/* KPIs */}
@@ -67,6 +82,47 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* Teams execution status */}
+      <Card className="border">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-primary" />
+              Teams Execution Status
+            </CardTitle>
+            <Badge variant="outline" className="text-[10px] gap-1"><ExternalLink className="h-2.5 w-2.5" /> Open in Teams</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-3 gap-4">
+            <button onClick={() => navigate("/teams/approvals")} className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left">
+              <div className="flex items-center justify-between mb-2">
+                <Shield className="h-5 w-5 text-warning" />
+                <Badge className="bg-warning/10 text-warning border border-warning/20 text-xs">{pendingApprovals}</Badge>
+              </div>
+              <p className="text-sm font-semibold text-foreground">Pending Approvals</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Actions awaiting human review</p>
+            </button>
+            <button onClick={() => navigate("/teams/escalations")} className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left">
+              <div className="flex items-center justify-between mb-2">
+                <ArrowUpRight className="h-5 w-5 text-destructive" />
+                <Badge className="bg-destructive/10 text-destructive border border-destructive/20 text-xs">{activeEscalations}</Badge>
+              </div>
+              <p className="text-sm font-semibold text-foreground">Active Escalations</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Cases beyond AI resolution</p>
+            </button>
+            <button onClick={() => navigate("/teams/agents")} className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left">
+              <div className="flex items-center justify-between mb-2">
+                <Bot className="h-5 w-5 text-primary" />
+                <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/20">All healthy</Badge>
+              </div>
+              <p className="text-sm font-semibold text-foreground">Agent Activity</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">5 agents processing 8 cases</p>
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-3 gap-4">
         {/* Trend chart */}
         <Card className="col-span-2 border">
@@ -74,7 +130,7 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">Case Volume — Last 7 Days</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="h-[220px]">
+            <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={trendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -110,60 +166,58 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Customer spaces quick links */}
-      <Card className="border">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Customer Spaces</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="grid grid-cols-5 gap-3">
-            {customers.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => navigate(`/customers?id=${c.id}`)}
-                className="p-3 rounded-lg border bg-card hover:bg-accent transition-colors text-left"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-foreground truncate">{c.name}</p>
-                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[c.risk]}`}>
-                    {c.risk}
-                  </Badge>
+      {/* Blueprints + Customer overview */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Active blueprints */}
+        <Card className="border">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium">Active Blueprints</CardTitle>
+              <button onClick={() => navigate("/blueprints")} className="text-xs text-primary font-medium hover:underline">View all →</button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-2">
+            {[
+              { name: "Helio CRM Agent", coverage: 84, deployments: 5, status: "active" },
+              { name: "DataSync Pro", coverage: 82, deployments: 3, status: "active" },
+              { name: "CloudGuard AI", coverage: 78, deployments: 2, status: "draft" },
+            ].map((bp, i) => (
+              <button key={i} onClick={() => navigate("/blueprints")} className="w-full flex items-center gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Zap className="h-4 w-4 text-primary" />
                 </div>
-                <p className="text-[11px] text-muted-foreground">{c.openCases} open cases</p>
-                <p className="text-[11px] text-muted-foreground">{c.lastActivity}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-foreground">{bp.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{bp.deployments} deployments · {bp.coverage}% coverage</p>
+                </div>
+                <Badge variant="outline" className={`text-[10px] ${bp.status === "active" ? "bg-success/10 text-success border-success/20" : "bg-muted text-muted-foreground"}`}>{bp.status}</Badge>
               </button>
             ))}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Recent cases */}
-      <Card className="border">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-medium">Recent Cases</CardTitle>
-            <button onClick={() => navigate("/cases")} className="text-xs text-primary font-medium hover:underline">View all →</button>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="space-y-2">
-            {openCases.slice(0, 5).map((c) => {
-              const cust = customers.find(cu => cu.id === c.customerId);
-              return (
-                <div key={c.id} className="flex items-center gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer" onClick={() => navigate("/cases")}>
-                  <span className="text-xs font-mono text-muted-foreground w-16 shrink-0">{c.id}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground truncate">{c.title}</p>
-                    <p className="text-[11px] text-muted-foreground">{cust?.name} · {c.category}</p>
-                  </div>
-                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[c.priority]}`}>{c.priority}</Badge>
-                  <span className="text-[11px] text-muted-foreground w-20 text-right shrink-0">{c.confidence}% conf.</span>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+        {/* Customer health */}
+        <Card className="border">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium">Customer Health</CardTitle>
+              <button onClick={() => navigate("/teams/customers")} className="text-xs text-primary font-medium hover:underline flex items-center gap-1">Open in Teams <ExternalLink className="h-2.5 w-2.5" /></button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-2">
+            {customers.map((c) => (
+              <div key={c.id} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
+                <span className="text-xs font-semibold text-foreground w-32 truncate">{c.name}</span>
+                <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[c.risk]}`}>{c.risk}</Badge>
+                <div className="flex-1" />
+                <span className="text-[11px] text-muted-foreground">{c.openCases} open</span>
+                <span className="text-[11px] text-muted-foreground">{c.automationRate}% auto</span>
+                <span className="text-[11px] text-muted-foreground">{c.lastActivity}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
