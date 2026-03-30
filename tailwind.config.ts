@@ -60,6 +60,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        teams: {
+          DEFAULT: "hsl(var(--teams-bg))",
+          accent: "hsl(var(--teams-accent))",
+          dark: "hsl(var(--teams-dark))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-bg))",
           foreground: "hsl(var(--sidebar-fg))",

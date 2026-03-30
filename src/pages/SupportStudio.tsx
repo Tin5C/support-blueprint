@@ -182,12 +182,12 @@ export default function SupportStudio() {
   };
 
   return (
-    <div className="p-6 space-y-5 max-w-[1100px] mx-auto pb-16">
+    <div className="p-6 space-y-5 max-w-[1100px] mx-auto pb-16 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Support Studio</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Design your AI-powered support system — upload knowledge, define context, let AI co-create your blueprint</p>
+          <h1 className="text-lg font-semibold text-foreground tracking-tight">Support Studio</h1>
+          <p className="text-[12px] text-muted-foreground mt-0.5">Upload knowledge, define context, let AI co-create your support blueprint</p>
         </div>
         {phase === "output" && (
           <Button variant="outline" size="sm" onClick={() => setPhase("input")} className="gap-2">
