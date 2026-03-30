@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Upload, Link, FileText, Sparkles, BookOpen, AlertTriangle, Activity,
-  Shield, Users, ArrowRight, Github, Globe, Code2, Building2, Server,
-  ToggleLeft, Plug, Clock, Lock, Plus, X, ChevronDown, ChevronRight,
-  Zap, Brain, CheckCircle2, Eye, Layers, Target, Bot,
+  Shield, ArrowRight, Github, Globe, Code2, Building2, Server,
+  Clock, Lock, Plus, X, ChevronDown, ChevronRight,
+  Zap, Brain, CheckCircle2, Eye, Layers, Target, Bot, Unlock,
 } from "lucide-react";
 
 // --- Generated output data ---
@@ -50,35 +50,33 @@ const runbooks = [
 ];
 
 const agentRoles = [
-  { name: "Orchestrator Agent", role: "Triage, routing, coordination, and final decision assembly", scope: "All incoming signals and cases", icon: Brain },
-  { name: "Telemetry Agent", role: "Real-time metrics collection, anomaly detection, threshold monitoring", scope: "Infrastructure & application metrics", icon: Activity },
-  { name: "Knowledge Agent", role: "Runbook matching, documentation retrieval, precedent search", scope: "Product docs, runbooks, historical cases", icon: BookOpen },
-  { name: "Customer Context Agent", role: "Deployment-aware reasoning, SLA checking, environment understanding", scope: "Customer config, deployment notes, SLA terms", icon: Building2 },
-  { name: "Resolution Agent", role: "Action planning, execution sequencing, confidence scoring", scope: "Approved runbooks and automated actions", icon: Zap },
+  { name: "Orchestrator", role: "Triage, routing, coordination, and decision assembly", icon: Brain },
+  { name: "Telemetry Agent", role: "Metrics collection, anomaly detection, threshold monitoring", icon: Activity },
+  { name: "Knowledge Agent", role: "Runbook matching, documentation retrieval, precedent search", icon: BookOpen },
+  { name: "Customer Context", role: "Deployment-aware reasoning, SLA checking, constraint validation", icon: Building2 },
+  { name: "Resolution Agent", role: "Action planning, execution sequencing, confidence scoring", icon: Zap },
 ];
 
 const escalationRules = [
   { condition: "Confidence < 50%", action: "Route to human support engineer", level: "L1", auto: true },
   { condition: "Confidence 50–80%", action: "Present recommendation, require approval", level: "L1", auto: false },
-  { condition: "Data loss detected", action: "Immediate escalation to senior engineer + notify manager", level: "L3", auto: true },
-  { condition: "Compliance / audit category", action: "Auto-route to compliance-certified engineer", level: "L2", auto: true },
-  { condition: "Resolution time > 4 hours", action: "Escalate to engineering lead, notify customer success", level: "L2", auto: true },
-  { condition: "Customer-triggered + critical priority", action: "Priority queue, 15-min SLA for first response", level: "L1", auto: true },
+  { condition: "Data loss detected", action: "Immediate escalation to senior engineer", level: "L3", auto: true },
+  { condition: "Compliance / audit", action: "Route to compliance-certified engineer", level: "L2", auto: true },
+  { condition: "Resolution time > 4 hours", action: "Escalate to engineering lead", level: "L2", auto: true },
+  { condition: "Customer requests human", action: "Priority queue, 15-min SLA", level: "L1", auto: true },
 ];
 
 const approvalBoundaries = [
   { action: "Scale compute resources (up to 2x)", approval: "Auto-approved", risk: "low" },
   { action: "Restart stalled pipeline or service", approval: "Auto-approved", risk: "low" },
-  { action: "Adjust batch sizes or concurrency", approval: "Auto-approved", risk: "low" },
   { action: "Rotate authentication tokens", approval: "Auto-approved", risk: "medium" },
   { action: "Regional failover initiation", approval: "Human required", risk: "high" },
   { action: "Schema rollback to previous version", approval: "Human required", risk: "high" },
-  { action: "Purge and rebuild replication state", approval: "Human required", risk: "high" },
   { action: "Override customer SLA configuration", approval: "Manager required", risk: "critical" },
   { action: "Delete or modify audit logs", approval: "Blocked — never automated", risk: "critical" },
 ];
 
-// --- Uploaded file pills ---
+// --- Helpers ---
 function FilePill({ name, onRemove }: { name: string; onRemove: () => void }) {
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary/8 border border-primary/15 text-xs font-medium text-foreground">
@@ -89,7 +87,6 @@ function FilePill({ name, onRemove }: { name: string; onRemove: () => void }) {
   );
 }
 
-// --- Collapsible section ---
 function Section({ title, icon: Icon, children, badge, defaultOpen = true }: { title: string; icon: any; children: React.ReactNode; badge?: string; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -99,9 +96,7 @@ function Section({ title, icon: Icon, children, badge, defaultOpen = true }: { t
           <div className="h-8 w-8 rounded-lg bg-primary/8 flex items-center justify-center">
             <Icon className="h-4 w-4 text-primary" />
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-          </div>
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
         </div>
         <div className="flex items-center gap-2">
           {badge && <Badge variant="secondary" className="text-[10px]">{badge}</Badge>}
@@ -113,7 +108,6 @@ function Section({ title, icon: Icon, children, badge, defaultOpen = true }: { t
   );
 }
 
-// --- Input field ---
 function InputRow({ icon: Icon, placeholder, defaultValue, label }: { icon: any; placeholder: string; defaultValue?: string; label?: string }) {
   return (
     <div>
@@ -126,7 +120,6 @@ function InputRow({ icon: Icon, placeholder, defaultValue, label }: { icon: any;
   );
 }
 
-// --- Tag input ---
 function TagInput({ label, tags: initial }: { label: string; tags: string[] }) {
   const [tags, setTags] = useState(initial);
   const [input, setInput] = useState("");
@@ -153,7 +146,6 @@ function TagInput({ label, tags: initial }: { label: string; tags: string[] }) {
   );
 }
 
-// --- Risk badge ---
 const riskBg: Record<string, string> = {
   low: "bg-success/10 text-success border-success/20",
   medium: "bg-warning/10 text-warning border-warning/20",
@@ -162,12 +154,9 @@ const riskBg: Record<string, string> = {
 };
 
 // ================================================================
-// MAIN COMPONENT
-// ================================================================
 export default function SupportStudio() {
   const [phase, setPhase] = useState<"input" | "generating" | "output">("input");
   const [progress, setProgress] = useState(0);
-
   const [uploadedDocs, setUploadedDocs] = useState(["datasync-pro-v4.2-guide.pdf", "architecture-overview.md"]);
   const [uploadedRunbooks, setUploadedRunbooks] = useState(["incident-response-playbook.yaml"]);
 
@@ -183,11 +172,10 @@ export default function SupportStudio() {
 
   return (
     <div className="p-6 space-y-5 max-w-[1100px] mx-auto pb-16 animate-fade-in">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-foreground tracking-tight">Support Studio</h1>
-          <p className="text-[12px] text-muted-foreground mt-0.5">Upload knowledge, define context, let AI co-create your support blueprint</p>
+          <h1 className="text-lg font-semibold text-foreground tracking-tight">Blueprint Studio</h1>
+          <p className="text-[12px] text-muted-foreground mt-0.5">Define your product knowledge, customer constraints, and governance boundaries — then generate a governed support blueprint</p>
         </div>
         {phase === "output" && (
           <Button variant="outline" size="sm" onClick={() => setPhase("input")} className="gap-2">
@@ -196,13 +184,11 @@ export default function SupportStudio() {
         )}
       </div>
 
-      {/* ==================== INPUT PHASE ==================== */}
+      {/* INPUT PHASE */}
       {(phase === "input" || phase === "generating") && (
         <>
-          {/* PRODUCT KNOWLEDGE */}
           <Section title="Product Knowledge" icon={BookOpen} badge="Core input">
             <div className="space-y-5">
-              {/* Docs upload */}
               <div>
                 <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Product Documentation</label>
                 <div className="border-2 border-dashed rounded-lg p-5 flex flex-col items-center gap-2 hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
@@ -217,7 +203,6 @@ export default function SupportStudio() {
                 )}
               </div>
 
-              {/* Runbooks upload */}
               <div>
                 <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Runbooks & Playbooks</label>
                 <div className="border-2 border-dashed rounded-lg p-4 flex items-center gap-3 hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
@@ -234,7 +219,6 @@ export default function SupportStudio() {
                 )}
               </div>
 
-              {/* Links */}
               <div className="grid grid-cols-2 gap-4">
                 <InputRow icon={Github} label="GitHub Repository" placeholder="https://github.com/org/repo" defaultValue="https://github.com/acme/datasync-pro" />
                 <InputRow icon={Globe} label="Documentation Site" placeholder="https://docs.yourproduct.io" defaultValue="https://docs.datasyncpro.io/v4.2" />
@@ -244,7 +228,6 @@ export default function SupportStudio() {
             </div>
           </Section>
 
-          {/* CUSTOMER CONTEXT */}
           <Section title="Customer Context" icon={Building2} badge="Deployment-specific">
             <div className="space-y-5">
               <div className="grid grid-cols-3 gap-4">
@@ -291,27 +274,24 @@ export default function SupportStudio() {
                 <textarea
                   className="w-full p-3 rounded-lg border bg-card text-sm outline-none placeholder:text-muted-foreground/60 resize-none"
                   rows={3}
-                  placeholder="Any special constraints, compliance requirements, or operational notes..."
+                  placeholder="Compliance requirements, operational constraints, customer-specific policies..."
                   defaultValue="PCI-DSS compliant environment. No data may leave US regions. Nightly batch window: 2–6 AM UTC. Customer has custom Oracle connector with vendor-specific patches."
                 />
               </div>
             </div>
           </Section>
 
-          {/* MANUAL DEFINITION */}
-          <Section title="Manual Definition" icon={Layers} badge="Optional" defaultOpen={false}>
-            <p className="text-xs text-muted-foreground mb-4">Override or supplement AI-generated definitions with your own expertise. These will be merged with generated output.</p>
+          <Section title="Governance Boundaries" icon={Shield} badge="Critical" defaultOpen={true}>
+            <p className="text-xs text-muted-foreground mb-4">Define what AI can do automatically, what requires human approval, and what must never be automated.</p>
             <div className="space-y-5">
-              <TagInput label="Support Categories" tags={["Performance", "Authentication", "Data Integrity", "Connectivity"]} />
-              <TagInput label="Common Issue Types" tags={["Memory pressure", "Token refresh failure", "Replication lag", "Plugin conflict"]} />
               <TagInput label="Allowed Automated Actions" tags={["Scale compute (up to 2x)", "Restart pipeline", "Rotate tokens", "Adjust batch size"]} />
-
+              <TagInput label="Approval-Required Actions" tags={["Bulk merge (>100 records)", "Force reindex", "Roll back migration", "Override rate limits"]} />
+              <TagInput label="Never Automate" tags={["Delete customer data", "Modify billing", "Regional failover", "Modify audit logs"]} />
               <div>
-                <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Escalation Boundaries</label>
+                <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Escalation Policy</label>
                 <textarea
                   className="w-full p-3 rounded-lg border bg-card text-sm outline-none placeholder:text-muted-foreground/60 resize-none"
                   rows={3}
-                  placeholder="Define when AI should stop and escalate to humans..."
                   defaultValue="Never auto-execute regional failover. Always escalate data loss scenarios. Compliance/audit issues must go to certified engineers. Any action affecting > 50% of nodes requires human approval."
                 />
               </div>
@@ -325,15 +305,15 @@ export default function SupportStudio() {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-primary animate-pulse-subtle" />
+                      <Sparkles className="h-5 w-5 text-primary animate-pulse" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-foreground">Generating Support Blueprint...</p>
+                      <p className="text-sm font-semibold text-foreground">Generating Governed Support Blueprint...</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {progress < 30 ? "Analyzing product documentation and runbooks..." :
                          progress < 60 ? "Mapping failure modes and telemetry signals..." :
-                         progress < 90 ? "Defining agent roles and escalation logic..." :
-                         "Finalizing blueprint and confidence scores..."}
+                         progress < 90 ? "Defining approval boundaries and escalation logic..." :
+                         "Finalizing governance rules and confidence scores..."}
                       </p>
                     </div>
                     <span className="text-sm font-bold text-primary">{progress}%</span>
@@ -344,19 +324,18 @@ export default function SupportStudio() {
             ) : (
               <div className="flex items-center gap-4">
                 <Button size="lg" onClick={handleGenerate} className="gap-2.5 px-6">
-                  <Sparkles className="h-4 w-4" /> Generate Support Blueprint
+                  <Sparkles className="h-4 w-4" /> Generate Governed Blueprint
                 </Button>
-                <p className="text-xs text-muted-foreground">AI will analyze your inputs and co-create a complete support system design</p>
+                <p className="text-xs text-muted-foreground">AI will analyze your inputs and create a governed support system with approval boundaries and escalation logic</p>
               </div>
             )}
           </div>
         </>
       )}
 
-      {/* ==================== OUTPUT PHASE ==================== */}
+      {/* OUTPUT PHASE */}
       {phase === "output" && (
         <>
-          {/* Summary bar */}
           <Card className="border border-primary/20 bg-primary/[0.03]">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
@@ -365,13 +344,13 @@ export default function SupportStudio() {
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Blueprint Generated — DataSync Pro × Meridian Financial</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">6 categories · 8 signals · 6 runbooks · 5 agents · 9 approval rules</p>
+                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — DataSync Pro × Meridian Financial</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">6 categories · 8 signals · 6 runbooks · 7 approval rules · 6 escalation rules</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview Blueprint</Button>
-                  <Button size="sm" className="gap-2" onClick={() => window.location.href = '/blueprint'}>
+                  <Button variant="outline" size="sm" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview</Button>
+                  <Button size="sm" className="gap-2" onClick={() => window.location.href = '/blueprints'}>
                     Deploy Blueprint <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -379,13 +358,51 @@ export default function SupportStudio() {
             </CardContent>
           </Card>
 
-          {/* SUPPORT CATEGORIES */}
+          {/* Governance summary — hero section */}
+          <Card className="border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                <CardTitle className="text-sm font-semibold">Governance Summary</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="p-4 rounded-lg border bg-success/5 border-success/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Unlock className="h-4 w-4 text-success" />
+                    <p className="text-xs font-semibold text-foreground">Auto-Approved</p>
+                  </div>
+                  <p className="text-2xl font-bold text-success mb-1">{approvalBoundaries.filter(a => a.approval === "Auto-approved").length}</p>
+                  <p className="text-[10px] text-muted-foreground">Low-risk actions AI can execute automatically</p>
+                </div>
+                <div className="p-4 rounded-lg border bg-warning/5 border-warning/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Lock className="h-4 w-4 text-warning" />
+                    <p className="text-xs font-semibold text-foreground">Approval Required</p>
+                  </div>
+                  <p className="text-2xl font-bold text-warning mb-1">{approvalBoundaries.filter(a => a.approval === "Human required" || a.approval === "Manager required").length}</p>
+                  <p className="text-[10px] text-muted-foreground">Higher-risk actions needing human review</p>
+                </div>
+                <div className="p-4 rounded-lg border bg-destructive/5 border-destructive/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="h-4 w-4 text-destructive" />
+                    <p className="text-xs font-semibold text-foreground">Never Automated</p>
+                  </div>
+                  <p className="text-2xl font-bold text-destructive mb-1">{approvalBoundaries.filter(a => a.approval.includes("never")).length}</p>
+                  <p className="text-[10px] text-muted-foreground">Blocked from automation by policy</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Support Categories */}
           <Card className="border">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
                 <CardTitle className="text-sm font-semibold">Support Categories</CardTitle>
-                <Badge variant="secondary" className="text-[10px] ml-auto">{generatedCategories.length} categories</Badge>
+                <Badge variant="secondary" className="text-[10px] ml-auto">{generatedCategories.length}</Badge>
               </div>
             </CardHeader>
             <CardContent className="pt-0 grid grid-cols-2 gap-3">
@@ -393,7 +410,7 @@ export default function SupportStudio() {
                 <div key={i} className="p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold text-foreground">{cat.name}</span>
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">{cat.confidence}% conf</Badge>
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">{cat.confidence}%</Badge>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {cat.issues.map((issue, j) => (
@@ -405,120 +422,30 @@ export default function SupportStudio() {
             </CardContent>
           </Card>
 
-          {/* FAILURE MODES */}
+          {/* Approval Boundaries — hero position */}
           <Card className="border">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-warning" />
-                <CardTitle className="text-sm font-semibold">Likely Failure Modes</CardTitle>
-                <Badge variant="secondary" className="text-[10px] ml-auto">{failureModes.length} modes</Badge>
+                <Shield className="h-4 w-4 text-warning" />
+                <CardTitle className="text-sm font-semibold">Approval Boundaries</CardTitle>
+                <Badge variant="secondary" className="text-[10px] ml-auto">{approvalBoundaries.length} rules</Badge>
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
-              {failureModes.map((fm, i) => (
+              {approvalBoundaries.map((ab, i) => (
                 <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
+                  <div className={`h-2 w-2 rounded-full shrink-0 ${ab.risk === "low" ? "bg-success" : ab.risk === "medium" ? "bg-warning" : ab.risk === "high" ? "bg-destructive" : "bg-destructive"}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground">{fm.mode}</p>
+                    <p className="text-xs font-medium text-foreground">{ab.action}</p>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-center">
-                      <p className="text-[10px] text-muted-foreground">Probability</p>
-                      <Badge variant="outline" className={`text-[10px] mt-0.5 ${fm.probability === "High" ? "bg-destructive/10 text-destructive border-destructive/20" : fm.probability === "Medium" ? "bg-warning/10 text-warning border-warning/20" : "bg-muted text-muted-foreground"}`}>{fm.probability}</Badge>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] text-muted-foreground">Impact</p>
-                      <Badge variant="outline" className={`text-[10px] mt-0.5 ${fm.impact === "Critical" ? "bg-destructive/10 text-destructive border-destructive/20" : fm.impact === "High" ? "bg-warning/10 text-warning border-warning/20" : "bg-muted text-muted-foreground"}`}>{fm.impact}</Badge>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] text-muted-foreground">Detection</p>
-                      <Badge variant="secondary" className="text-[10px] mt-0.5">{fm.detection}</Badge>
-                    </div>
-                  </div>
+                  <Badge variant="outline" className={`text-[10px] px-2 shrink-0 ${riskBg[ab.risk]}`}>{ab.risk}</Badge>
+                  <span className="text-[11px] text-muted-foreground w-32 text-right shrink-0">{ab.approval}</span>
                 </div>
               ))}
             </CardContent>
           </Card>
 
-          {/* TELEMETRY */}
-          <Card className="border">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Activity className="h-4 w-4 text-info" />
-                <CardTitle className="text-sm font-semibold">Telemetry to Monitor</CardTitle>
-                <Badge variant="secondary" className="text-[10px] ml-auto">{telemetrySignals.length} signals</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="grid grid-cols-2 gap-2">
-                {telemetrySignals.map((ts, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-card">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`h-2 w-2 rounded-full shrink-0 ${ts.priority === "P1" ? "bg-destructive" : ts.priority === "P2" ? "bg-warning" : "bg-muted-foreground"}`} />
-                      <div>
-                        <p className="text-xs font-medium text-foreground">{ts.signal}</p>
-                        <p className="text-[10px] text-muted-foreground">Every {ts.interval}</p>
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="text-[10px] font-mono shrink-0">{ts.threshold}</Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* RUNBOOKS */}
-          <Card className="border">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-success" />
-                <CardTitle className="text-sm font-semibold">Generated Runbooks</CardTitle>
-                <Badge variant="secondary" className="text-[10px] ml-auto">{runbooks.length} runbooks</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0 grid grid-cols-2 gap-3">
-              {runbooks.map((rb, i) => (
-                <div key={i} className="p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-mono text-muted-foreground">{rb.id}</span>
-                    {rb.auto ? (
-                      <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20">Auto</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/20">Manual</Badge>
-                    )}
-                  </div>
-                  <p className="text-xs font-semibold text-foreground">{rb.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-1">{rb.steps} steps · Trigger: {rb.trigger}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* AGENT ROLES */}
-          <Card className="border">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Bot className="h-4 w-4 text-primary" />
-                <CardTitle className="text-sm font-semibold">Agent Roles</CardTitle>
-                <Badge variant="secondary" className="text-[10px] ml-auto">{agentRoles.length} agents</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-2">
-              {agentRoles.map((agent, i) => (
-                <div key={i} className="flex items-start gap-3.5 p-3.5 rounded-lg border bg-card">
-                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${i === 0 ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                    <agent.icon className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">{agent.name}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{agent.role}</p>
-                    <p className="text-[10px] text-muted-foreground/70 mt-0.5">Scope: {agent.scope}</p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* ESCALATION LOGIC */}
+          {/* Escalation Logic */}
           <Card className="border">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
@@ -545,35 +472,110 @@ export default function SupportStudio() {
             </CardContent>
           </Card>
 
-          {/* APPROVAL BOUNDARIES */}
+          {/* Failure Modes */}
           <Card className="border">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-destructive" />
-                <CardTitle className="text-sm font-semibold">Approval Boundaries</CardTitle>
-                <Badge variant="secondary" className="text-[10px] ml-auto">{approvalBoundaries.length} rules</Badge>
+                <AlertTriangle className="h-4 w-4 text-warning" />
+                <CardTitle className="text-sm font-semibold">Likely Failure Modes</CardTitle>
+                <Badge variant="secondary" className="text-[10px] ml-auto">{failureModes.length}</Badge>
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
-              {approvalBoundaries.map((ab, i) => (
+              {failureModes.map((fm, i) => (
                 <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
-                  <div className={`h-2 w-2 rounded-full shrink-0 ${ab.risk === "low" ? "bg-success" : ab.risk === "medium" ? "bg-warning" : ab.risk === "high" ? "bg-destructive" : "bg-destructive animate-pulse-subtle"}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground">{ab.action}</p>
+                    <p className="text-xs font-medium text-foreground">{fm.mode}</p>
                   </div>
-                  <Badge variant="outline" className={`text-[10px] px-2 shrink-0 ${riskBg[ab.risk]}`}>{ab.risk}</Badge>
-                  <span className="text-[11px] text-muted-foreground w-28 text-right shrink-0">{ab.approval}</span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
+                    <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
+                    <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
+                  </div>
                 </div>
               ))}
             </CardContent>
           </Card>
 
+          {/* Telemetry */}
+          <Card className="border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Activity className="h-4 w-4 text-info" />
+                <CardTitle className="text-sm font-semibold">Telemetry Signals</CardTitle>
+                <Badge variant="secondary" className="text-[10px] ml-auto">{telemetrySignals.length}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0 grid grid-cols-2 gap-2">
+              {telemetrySignals.map((ts, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-card">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`h-2 w-2 rounded-full shrink-0 ${ts.priority === "P1" ? "bg-destructive" : ts.priority === "P2" ? "bg-warning" : "bg-muted-foreground"}`} />
+                    <p className="text-xs font-medium text-foreground">{ts.signal}</p>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] font-mono shrink-0">{ts.threshold}</Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Runbooks */}
+          <Card className="border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-success" />
+                <CardTitle className="text-sm font-semibold">Generated Runbooks</CardTitle>
+                <Badge variant="secondary" className="text-[10px] ml-auto">{runbooks.length}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0 grid grid-cols-2 gap-3">
+              {runbooks.map((rb, i) => (
+                <div key={i} className="p-3.5 rounded-lg border bg-card">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] font-mono text-muted-foreground">{rb.id}</span>
+                    {rb.auto ? (
+                      <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20">Auto</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/20">Requires Approval</Badge>
+                    )}
+                  </div>
+                  <p className="text-xs font-semibold text-foreground">{rb.title}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">{rb.steps} steps · Trigger: {rb.trigger}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Agent Roles — de-emphasized */}
+          <Card className="border">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Bot className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-semibold text-muted-foreground">Support Agents</CardTitle>
+                <Badge variant="secondary" className="text-[10px] ml-auto">{agentRoles.length}</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-5 gap-2">
+                {agentRoles.map((agent, i) => (
+                  <div key={i} className="p-3 rounded-lg border bg-card text-center">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center mx-auto mb-2">
+                      <agent.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+                    <p className="text-[11px] font-semibold text-foreground">{agent.name}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{agent.role}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Final CTA */}
           <div className="flex items-center justify-between pt-2 border-t">
-            <p className="text-xs text-muted-foreground">Review and edit any section above, then deploy to start running AI support</p>
+            <p className="text-xs text-muted-foreground">Review governance rules and approval boundaries, then deploy to start governed AI support</p>
             <div className="flex gap-2">
               <Button variant="outline" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview Blueprint</Button>
-              <Button className="gap-2" onClick={() => window.location.href = '/blueprint'}>
+              <Button className="gap-2" onClick={() => window.location.href = '/blueprints'}>
                 Deploy Blueprint <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </div>
