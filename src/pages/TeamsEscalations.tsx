@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUpRight, Clock, User, ChevronRight, Bot } from "lucide-react";
+import { ArrowUpRight, Clock, User, ChevronRight, Bot, AlertTriangle, Shield } from "lucide-react";
 import TeamsShell from "@/components/TeamsShell";
 import { escalations } from "@/data/mockData";
 
@@ -32,44 +32,53 @@ export default function TeamsEscalations() {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-lg font-semibold text-foreground tracking-tight">Active Escalations</h1>
-              <Badge className="status-danger border text-[10px]">{escalations.filter(e => e.status !== "resolved").length} active</Badge>
+              <Badge className="status-danger border text-[10px]">{escalations.filter(e => e.status !== "resolved").length} requiring attention</Badge>
             </div>
-            <p className="text-[12px] text-muted-foreground">Cases escalated beyond AI resolution — requires human expertise</p>
+            <p className="text-[12px] text-muted-foreground">Cases where AI could not safely resolve the issue — requires human expertise and judgment</p>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {escalations.map((e, i) => (
               <Card key={i} className="border border-l-4 animate-slide-up" style={{
                 borderLeftColor: e.severity === "critical" ? "hsl(var(--destructive))" : "hsl(var(--warning))",
                 animationDelay: `${i * 60}ms`,
               }}>
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3.5">
-                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${e.severity === "critical" ? "bg-destructive/10" : "bg-warning/10"}`}>
-                      <ArrowUpRight className={`h-4 w-4 ${e.severity === "critical" ? "text-destructive" : "text-warning"}`} />
+                <CardContent className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${e.severity === "critical" ? "bg-destructive/10" : "bg-warning/10"}`}>
+                      <AlertTriangle className={`h-5 w-5 ${e.severity === "critical" ? "text-destructive" : "text-warning"}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-2">
                         <span className="text-[10px] font-mono text-muted-foreground">{e.caseId}</span>
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${riskColor[e.severity]}`}>{e.severity}</Badge>
                         <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${riskColor[e.severity]}`}>{e.sla}</Badge>
-                        <span className="text-[11px] font-medium text-foreground">{e.customer}</span>
-                        <span className="text-[10px] text-muted-foreground">{e.product}</span>
                         <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ml-auto ${statusBadge[e.status]}`}>{e.status}</Badge>
                       </div>
-                      <p className="text-[12px] font-semibold text-foreground mb-2">{e.title}</p>
-                      <div className="flex items-center gap-2 mb-2">
+                      <p className="text-[13px] font-semibold text-foreground mb-2">{e.title}</p>
+
+                      {/* Why AI couldn't finish */}
+                      <div className="p-2.5 rounded-md bg-muted/50 border mb-3">
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Why AI escalated</p>
+                        <p className="text-[11px] text-foreground">{e.reason}</p>
+                      </div>
+
+                      <div className="flex items-center gap-4 text-[11px] text-muted-foreground mb-3">
+                        <span>{e.customer} · {e.product}</span>
+                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(e.escalatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+
+                      {/* Escalation path */}
+                      <div className="flex items-center gap-2 mb-3">
                         <Badge variant="secondary" className="text-[10px] gap-1"><Bot className="h-2.5 w-2.5" /> AI Agents</Badge>
                         <ChevronRight className="h-3 w-3 text-muted-foreground" />
                         <Badge variant="outline" className="text-[10px] gap-1 bg-primary/8 text-primary border-primary/20"><User className="h-2.5 w-2.5" /> {e.escalatedTo}</Badge>
                       </div>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">{e.reason}</p>
-                      <div className="flex items-center gap-4 mt-2.5 text-[10px] text-muted-foreground">
-                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(e.escalatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" className="h-8 text-[11px]">Take Ownership</Button>
+                        <Button size="sm" variant="outline" className="h-8 text-[11px]">View Thread</Button>
                       </div>
-                    </div>
-                    <div className="flex flex-col gap-1.5 shrink-0">
-                      <Button size="sm" className="h-8 text-[11px]">Take Ownership</Button>
-                      <Button size="sm" variant="outline" className="h-8 text-[11px]">View Thread</Button>
                     </div>
                   </div>
                 </CardContent>
