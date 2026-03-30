@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { FileText, Plus, Zap, Copy, Clock, Users, CheckCircle2 } from "lucide-react";
 
 const templates = [
-  { name: "SaaS Platform Support", description: "Multi-tenant SaaS with API integrations, SSO, and webhook-driven workflows", categories: 8, signals: 12, runbooks: 10, deployments: 3, updated: "Mar 28, 2026" },
-  { name: "AI Agent Runtime", description: "LLM-powered agent deployments with observability, guardrails, and fallback chains", categories: 6, signals: 9, runbooks: 7, deployments: 1, updated: "Mar 25, 2026" },
-  { name: "Data Pipeline Platform", description: "ETL/ELT pipelines with batch ingestion, CDC, schema management, and connectors", categories: 7, signals: 11, runbooks: 9, deployments: 2, updated: "Mar 22, 2026" },
-  { name: "Infrastructure Monitoring", description: "Cloud infrastructure with auto-scaling, failover, and compliance requirements", categories: 9, signals: 15, runbooks: 12, deployments: 0, updated: "Mar 18, 2026" },
-  { name: "Embedded Analytics", description: "Customer-facing dashboards with data refresh, export, and permission management", categories: 5, signals: 7, runbooks: 5, deployments: 0, updated: "Mar 12, 2026" },
+  { name: "B2B SaaS Platform", description: "Multi-tenant SaaS with API integrations, SSO, webhook-driven workflows, and per-customer configurations", categories: 8, signals: 12, runbooks: 10, deployments: 3, updated: "Mar 28, 2026" },
+  { name: "AI/ML Product", description: "AI software products with model serving, inference pipelines, quality monitoring, and customer-specific fine-tuning", categories: 6, signals: 9, runbooks: 7, deployments: 1, updated: "Mar 25, 2026" },
+  { name: "Data Platform", description: "Data integration and pipeline products with batch ingestion, CDC, schema management, and connector ecosystems", categories: 7, signals: 11, runbooks: 9, deployments: 2, updated: "Mar 22, 2026" },
+  { name: "Developer Tools & APIs", description: "API-first products with rate limiting, versioning, SDK compatibility, and developer experience support", categories: 9, signals: 15, runbooks: 12, deployments: 0, updated: "Mar 18, 2026" },
+  { name: "Embedded Analytics", description: "Customer-facing analytics products with dashboard rendering, data freshness, export, and access control", categories: 5, signals: 7, runbooks: 5, deployments: 0, updated: "Mar 12, 2026" },
 ];
 
 export default function Templates() {
@@ -17,7 +17,7 @@ export default function Templates() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Blueprint Templates</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Start from proven support system designs — customize for your product and customers</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Start from proven support blueprints for common B2B AI software patterns — customize per product and customer</p>
         </div>
         <Button variant="outline" className="gap-2"><Plus className="h-4 w-4" /> Create Template</Button>
       </div>
