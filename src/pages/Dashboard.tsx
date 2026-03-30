@@ -24,7 +24,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Command Center</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Support operations control plane — design, deploy, and monitor AI support systems</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Design, deploy, and monitor AI-powered support across every customer deployment</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs px-2.5 py-1 gap-1.5">
@@ -178,7 +178,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pt-0 space-y-2">
             {[
-              { name: "Helio CRM Agent", coverage: 84, deployments: 5, status: "active" },
+              { name: "Helio CRM", coverage: 84, deployments: 5, status: "active" },
               { name: "DataSync Pro", coverage: 82, deployments: 3, status: "active" },
               { name: "CloudGuard AI", coverage: 78, deployments: 2, status: "draft" },
             ].map((bp, i) => (
@@ -188,7 +188,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-foreground">{bp.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{bp.deployments} deployments · {bp.coverage}% coverage</p>
+                  <p className="text-[11px] text-muted-foreground">{bp.deployments} customer deployments · {bp.coverage}% coverage</p>
                 </div>
                 <Badge variant="outline" className={`text-[10px] ${bp.status === "active" ? "bg-success/10 text-success border-success/20" : "bg-muted text-muted-foreground"}`}>{bp.status}</Badge>
               </button>

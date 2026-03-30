@@ -1,6 +1,6 @@
 export const products = [
   { id: "prod-1", name: "DataSync Pro", version: "4.2.1", type: "Data Integration Platform" },
-  { id: "prod-2", name: "CloudGuard AI", version: "2.8.0", type: "Security Monitoring Agent" },
+  { id: "prod-2", name: "CloudGuard AI", version: "2.8.0", type: "AI Security Platform" },
   { id: "prod-3", name: "FlowEngine", version: "3.1.4", type: "Workflow Automation Suite" },
 ];
 

@@ -151,12 +151,12 @@ export default function Blueprint() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <span>Blueprints</span>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-foreground font-medium">Helio CRM Agent</span>
+            <span className="text-foreground font-medium">Helio CRM</span>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Helio CRM Agent — Support Blueprint</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">AI-generated support system design for CRM platform deployments</p>
+              <h1 className="text-xl font-semibold text-foreground">Helio CRM — Support Blueprint</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">AI-generated support system for B2B CRM product deployments</p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="gap-2"><RefreshCw className="h-3.5 w-3.5" /> Regenerate</Button>
@@ -443,8 +443,8 @@ export default function Blueprint() {
 
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Product</p>
-              <p className="text-sm font-semibold text-foreground">Helio CRM Agent</p>
-              <p className="text-[11px] text-muted-foreground">v3.4.2 · CRM Platform</p>
+              <p className="text-sm font-semibold text-foreground">Helio CRM</p>
+              <p className="text-[11px] text-muted-foreground">v3.4.2 · B2B CRM Platform</p>
             </div>
 
             <div>

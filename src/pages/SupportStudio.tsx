@@ -282,7 +282,7 @@ export default function SupportStudio() {
                     </select>
                   </div>
                 </div>
-                <InputRow icon={Server} label="Node Count" placeholder="e.g. 24" defaultValue="24 worker nodes" />
+                <InputRow icon={Server} label="Instance Count" placeholder="e.g. 24" defaultValue="24 instances" />
                 <InputRow icon={Clock} label="Maintenance Window" placeholder="e.g. Sun 02:00-06:00 UTC" defaultValue="Sun 02:00–06:00 UTC" />
               </div>
 

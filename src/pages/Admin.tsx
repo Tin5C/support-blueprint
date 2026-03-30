@@ -18,9 +18,9 @@ export default function Admin() {
         </CardHeader>
         <CardContent className="pt-0 space-y-3">
           {[
-            { name: "Microsoft Teams", status: "connected", detail: "5 customer channels, 3 agent bots deployed", icon: Globe },
+            { name: "Microsoft Teams", status: "connected", detail: "5 customer channels active, support bots deployed", icon: Globe },
             { name: "GitHub", status: "connected", detail: "3 repositories linked for knowledge ingestion", icon: Globe },
-            { name: "Datadog", status: "connected", detail: "Telemetry signals forwarded, 9 monitors active", icon: Globe },
+            { name: "Datadog", status: "connected", detail: "Product telemetry forwarded, 9 monitors active", icon: Globe },
             { name: "PagerDuty", status: "pending", detail: "Escalation routing configured, awaiting activation", icon: Globe },
             { name: "Salesforce", status: "not-connected", detail: "CRM context enrichment available", icon: Globe },
           ].map((int, i) => (
@@ -70,14 +70,14 @@ export default function Admin() {
 
         <Card className="border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2"><Bot className="h-4 w-4" /> Agent Configuration</CardTitle>
+            <CardTitle className="text-sm font-medium flex items-center gap-2"><Bot className="h-4 w-4" /> Support Agent Configuration</CardTitle>
           </CardHeader>
           <CardContent className="pt-0 space-y-3">
             {[
               { label: "Auto-approval threshold", value: "80%", desc: "Actions above this confidence execute automatically" },
               { label: "Max concurrent cases per agent", value: "10", desc: "Queue overflow triggers load balancing" },
               { label: "Escalation timeout", value: "4 hours", desc: "Cases auto-escalate after this duration" },
-              { label: "Knowledge refresh interval", value: "6 hours", desc: "How often agents re-index documentation" },
+              { label: "Knowledge refresh interval", value: "6 hours", desc: "How often agents re-index product documentation" },
             ].map((c, i) => (
               <div key={i} className="p-3 rounded border bg-card">
                 <div className="flex items-center justify-between mb-0.5">
