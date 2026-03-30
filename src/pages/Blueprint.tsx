@@ -145,7 +145,7 @@ export default function Blueprint() {
   return (
     <div className="flex h-full">
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 pb-16">
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-16 animate-fade-in">
         {/* Header */}
         <div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
@@ -155,10 +155,10 @@ export default function Blueprint() {
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Helio CRM — Support Blueprint</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">AI-generated support system for B2B CRM product deployments</p>
+              <h1 className="text-lg font-semibold text-foreground tracking-tight">Helio CRM — Support Blueprint</h1>
+              <p className="text-[12px] text-muted-foreground mt-0.5">AI-generated support system for B2B CRM product deployments</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button variant="outline" size="sm" className="gap-2"><RefreshCw className="h-3.5 w-3.5" /> Regenerate</Button>
               <Button variant="outline" size="sm" className="gap-2"><Edit2 className="h-3.5 w-3.5" /> Edit Mode</Button>
               <Button size="sm" className="gap-2"><Zap className="h-3.5 w-3.5" /> Deploy</Button>
@@ -513,13 +513,17 @@ export default function Blueprint() {
         <div className="p-5 border-b">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Deployed To</h3>
           <div className="space-y-2">
-            {["Meridian Financial", "Apex Healthcare", "NovaTech Industries", "Sterling Logistics"].map((name, i) => (
-              <div key={i} className="flex items-center gap-2 p-2 rounded border bg-background">
-                <div className={`h-2 w-2 rounded-full ${i === 3 ? "bg-destructive" : "bg-success"}`} />
-                <span className="text-[11px] font-medium text-foreground">{name}</span>
+            {[
+              { name: "Acme Manufacturing", status: "healthy" },
+              { name: "HelioWorks AG", status: "at-risk" },
+              { name: "Northwind Health", status: "healthy" },
+            ].map((c, i) => (
+              <div key={i} className="flex items-center gap-2 p-2 rounded-md border bg-background">
+                <div className={`h-1.5 w-1.5 rounded-full ${c.status === "at-risk" ? "bg-destructive" : "bg-success"}`} />
+                <span className="text-[11px] font-medium text-foreground">{c.name}</span>
               </div>
             ))}
-            <p className="text-[10px] text-muted-foreground mt-1">+ 1 more deployment (Pinnacle Media)</p>
+            <p className="text-[10px] text-muted-foreground mt-1">+ 2 more deployments</p>
           </div>
         </div>
 
