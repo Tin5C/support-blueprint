@@ -443,8 +443,8 @@ export default function Blueprint() {
 
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Product</p>
-              <p className="text-sm font-semibold text-foreground">Helio CRM Agent</p>
-              <p className="text-[11px] text-muted-foreground">v3.4.2 · CRM Platform</p>
+              <p className="text-sm font-semibold text-foreground">Helio CRM</p>
+              <p className="text-[11px] text-muted-foreground">v3.4.2 · B2B CRM Platform</p>
             </div>
 
             <div>
