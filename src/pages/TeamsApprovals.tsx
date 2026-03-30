@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, X, ArrowUpRight, Clock, Shield, Bot } from "lucide-react";
 import TeamsShell from "@/components/TeamsShell";
+import { pendingApprovals, recentApprovals } from "@/data/mockData";
 
 const riskColor: Record<string, string> = {
   low: "bg-success/10 text-success border-success/20",
@@ -10,13 +11,6 @@ const riskColor: Record<string, string> = {
   high: "bg-destructive/10 text-destructive border-destructive/20",
   critical: "bg-destructive text-destructive-foreground",
 };
-
-const pendingApprovals = [
-  { caseId: "CS-1001", customer: "Meridian Financial", action: "Scale worker nodes 24 → 32 and reduce batch size", confidence: 67, risk: "medium" as const, agent: "Resolution Agent", elapsed: "28 min", runbook: "RB-042" },
-  { caseId: "CS-1009", customer: "Sterling Logistics", action: "Initiate regional failover from US-East to US-West", confidence: 52, risk: "critical" as const, agent: "Resolution Agent", elapsed: "6 hr 45 min", runbook: "RB-044" },
-  { caseId: "CS-1012", customer: "Sterling Logistics", action: "Roll back schema migration from v4.2 to v4.1", confidence: 71, risk: "high" as const, agent: "Resolution Agent", elapsed: "12 hr", runbook: "RB-046" },
-  { caseId: "CS-1007", customer: "NovaTech Industries", action: "Force plugin recompilation against FlowEngine 3.1.4 API", confidence: 38, risk: "medium" as const, agent: "Knowledge Agent", elapsed: "3 hr 10 min", runbook: "RB-047" },
-];
 
 export default function TeamsApprovals() {
   return (
@@ -52,6 +46,7 @@ export default function TeamsApprovals() {
                         <span className="text-xs text-muted-foreground">·</span>
                         <span className="text-xs font-medium text-foreground">{a.customer}</span>
                         <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${riskColor[a.risk]}`}>{a.risk}</Badge>
+                        <span className="text-[10px] text-muted-foreground">{a.product}</span>
                       </div>
                       <p className="text-sm font-semibold text-foreground mb-2">{a.action}</p>
                       <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
@@ -75,17 +70,14 @@ export default function TeamsApprovals() {
           <div>
             <h2 className="text-sm font-semibold text-foreground mb-3">Recently Approved</h2>
             <div className="space-y-2">
-              {[
-                { case: "CS-1005", customer: "Apex Healthcare", action: "Whitelist backup traffic pattern in anomaly detection", by: "Jane Doe", time: "2 hr ago" },
-                { case: "CS-1003", customer: "Meridian Financial", action: "Update validation rules for schema v4.2 transforms", by: "Jane Doe", time: "5 hr ago" },
-              ].map((a, i) => (
+              {recentApprovals.map((a, i) => (
                 <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
                   <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-foreground">{a.action}</p>
-                    <p className="text-[11px] text-muted-foreground">{a.case} · {a.customer}</p>
+                    <p className="text-[11px] text-muted-foreground">{a.caseId} · {a.customer} · {a.outcome}</p>
                   </div>
-                  <span className="text-[11px] text-muted-foreground shrink-0">by {a.by} · {a.time}</span>
+                  <span className="text-[11px] text-muted-foreground shrink-0">by {a.approvedBy} · {a.time}</span>
                 </div>
               ))}
             </div>
