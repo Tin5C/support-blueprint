@@ -3,11 +3,12 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Map, TrendingUp, Settings,
   MessageSquare, CheckSquare, ArrowUpRight,
-  ExternalLink, Zap, FileText, Users,
+  ExternalLink, Zap, FileText, Users, Database,
 } from "lucide-react";
 
 const primaryNav = [
   { to: "/", icon: LayoutDashboard, label: "Overview" },
+  { to: "/intelligence", icon: Database, label: "Account Intelligence" },
   { to: "/studio", icon: Zap, label: "Blueprint Studio" },
   { to: "/blueprints", icon: Map, label: "Active Blueprint" },
   { to: "/insights", icon: TrendingUp, label: "Insights" },

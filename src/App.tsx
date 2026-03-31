@@ -11,6 +11,7 @@ import Templates from "@/pages/Templates";
 import Insights from "@/pages/Insights";
 import Admin from "@/pages/Admin";
 import TeamsCustomerSpaces from "@/pages/TeamsCustomerSpaces";
+import AccountIntelligencePage from "@/pages/AccountIntelligence";
 import TeamsLiveCases from "@/pages/TeamsLiveCases";
 import TeamsApprovals from "@/pages/TeamsApprovals";
 import TeamsAgentActivity from "@/pages/TeamsAgentActivity";
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/templates" element={<AppLayout><Templates /></AppLayout>} />
           <Route path="/insights" element={<AppLayout><Insights /></AppLayout>} />
           <Route path="/admin" element={<AppLayout><Admin /></AppLayout>} />
+          <Route path="/intelligence" element={<AppLayout><AccountIntelligencePage /></AppLayout>} />
           {/* Teams Execution Surfaces */}
           <Route path="/teams/customers" element={<AppLayout><TeamsCustomerSpaces /></AppLayout>} />
           <Route path="/teams/cases" element={<AppLayout><TeamsLiveCases /></AppLayout>} />
