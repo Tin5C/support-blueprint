@@ -445,7 +445,7 @@ export default function AccountIntelligence({ data }: Props) {
                       <ExternalLink className="h-3 w-3" />
                       Open Linked Cases
                     </Button>
-                    <Button size="sm" className="text-[11px] h-8 gap-1.5">
+                    <Button size="sm" className="text-[11px] h-8 gap-1.5" onClick={() => navigate('/studio?accountId=' + customer.id)}>
                       <BarChart3 className="h-3 w-3" />
                       Use in Blueprint Studio
                     </Button>
