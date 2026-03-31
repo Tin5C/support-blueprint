@@ -107,19 +107,23 @@ const statusDot: Record<string, string> = {
   neutral: "bg-muted-foreground",
 };
 
-function SectionHeader({ icon: Icon, title, count, children }: { icon: any; title: string; count?: number; children?: React.ReactNode }) {
-  const [open, setOpen] = useState(true);
+function SectionHeader({ icon: Icon, title, count, subtitle, open, onToggle, children }: {
+  icon: any; title: string; count?: number; subtitle?: string; open: boolean; onToggle: () => void; children?: React.ReactNode;
+}) {
   return (
     <div>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between mb-3 group">
-        <div className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-lg bg-primary/8 flex items-center justify-center">
+      <button onClick={onToggle} className="w-full flex items-center justify-between mb-3 group">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="h-7 w-7 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
             <Icon className="h-3.5 w-3.5 text-primary" />
           </div>
           <h2 className="text-[13px] font-semibold text-foreground">{title}</h2>
           {count !== undefined && <Badge variant="secondary" className="text-[10px]">{count}</Badge>}
+          {!open && subtitle && (
+            <span className="text-[11px] text-muted-foreground ml-1 truncate">· {subtitle}</span>
+          )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Button variant="ghost" size="sm" className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => { e.stopPropagation(); }}>
             <Edit2 className="h-3 w-3 text-muted-foreground" />
           </Button>
@@ -127,6 +131,26 @@ function SectionHeader({ icon: Icon, title, count, children }: { icon: any; titl
         </div>
       </button>
       {open && children}
+    </div>
+  );
+}
+
+function SidebarSection({ title, defaultOpen = true, subtitle, children }: {
+  title: string; defaultOpen?: boolean; subtitle?: string; children?: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="p-5 border-b">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between mb-0 group">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{title}</h3>
+        <div className="flex items-center gap-2">
+          {!open && subtitle && (
+            <span className="text-[10px] text-muted-foreground font-normal normal-case tracking-normal">{subtitle}</span>
+          )}
+          {open ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+        </div>
+      </button>
+      {open && <div className="mt-3">{children}</div>}
     </div>
   );
 }
@@ -142,6 +166,33 @@ export default function Blueprint() {
   const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
   const [wsType, setWsType] = useState<"isv" | "si">("isv");
   const [showTemplateBanner, setShowTemplateBanner] = useState(false);
+
+  // Section collapse state — only approvalRequired is open by default
+  const [sections, setSections] = useState({
+    automated: false,
+    approvalRequired: true,
+    humanOnly: false,
+    escalation: false,
+    categories: false,
+    signals: false,
+    failureModes: false,
+    health: false,
+    coverage: false,
+  });
+
+  const toggleSection = (key: keyof typeof sections) =>
+    setSections(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const openCount = Object.values(sections).filter(Boolean).length;
+  const mostExpanded = openCount > 4;
+  const toggleAll = () => {
+    const val = !mostExpanded;
+    setSections({
+      automated: val, approvalRequired: val, humanOnly: val,
+      escalation: val, categories: val, signals: val,
+      failureModes: val, health: val, coverage: val,
+    });
+  };
 
   useEffect(() => {
     if (accountId) {
@@ -198,30 +249,35 @@ export default function Blueprint() {
         </div>
 
         {/* Workflow navigation strip */}
-        <div className="flex items-center gap-1.5">
-          {[
-            { label: "Account Intelligence", path: `/intelligence`, active: false },
-            { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
-            { label: "Active Blueprint", path: null, active: true },
-            { label: "Live Cases", path: "/teams/cases", active: false },
-          ].map((step, i) => (
-            <div key={i} className="flex items-center gap-1.5">
-              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
-              {step.active ? (
-                <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
-                  {step.label}
-                </span>
-              ) : (
-                <button
-                  onClick={() => step.path && navigate(step.path)}
-                  className="text-[10px] text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-full border border-transparent hover:border-border transition-colors"
-                >
-                  {step.label}
-                  {step.label === "Live Cases" && <ArrowRight className="h-2.5 w-2.5 inline ml-1" />}
-                </button>
-              )}
-            </div>
-          ))}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            {[
+              { label: "Account Intelligence", path: `/intelligence`, active: false },
+              { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
+              { label: "Active Blueprint", path: null, active: true },
+              { label: "Live Cases", path: "/teams/cases", active: false },
+            ].map((step, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
+                {step.active ? (
+                  <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
+                    {step.label}
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => step.path && navigate(step.path)}
+                    className="text-[10px] text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-full border border-transparent hover:border-border transition-colors"
+                  >
+                    {step.label}
+                    {step.label === "Live Cases" && <ArrowRight className="h-2.5 w-2.5 inline ml-1" />}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button onClick={toggleAll} className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+            {mostExpanded ? "Collapse all" : "Expand all"}
+          </button>
         </div>
 
         {/* Governance summary bar */}
@@ -253,7 +309,7 @@ export default function Blueprint() {
         </div>
 
         {/* AUTOMATED ACTIONS — first to show governance */}
-        <SectionHeader icon={Unlock} title="Automated Actions" count={automatedActions.length}>
+        <SectionHeader icon={Unlock} title="Automated Actions" count={automatedActions.length} subtitle="6 actions · no human intervention required" open={sections.automated} onToggle={() => toggleSection("automated")}>
           <div className="space-y-2">
             {automatedActions.map((a, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -275,7 +331,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* APPROVAL-REQUIRED */}
-        <SectionHeader icon={Shield} title="Approval-Required Actions" count={approvalActions.length}>
+        <SectionHeader icon={Shield} title="Approval-Required Actions" count={approvalActions.length} subtitle="5 actions · Sarah Chen as primary approver" open={sections.approvalRequired} onToggle={() => toggleSection("approvalRequired")}>
           <div className="space-y-2">
             {approvalActions.map((a, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -294,7 +350,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* HUMAN-ONLY */}
-        <SectionHeader icon={UserX} title="Human-Only Actions" count={humanOnlyActions.length}>
+        <SectionHeader icon={UserX} title="Human-Only Actions" count={humanOnlyActions.length} subtitle="5 actions · complex or high-risk scenarios" open={sections.humanOnly} onToggle={() => toggleSection("humanOnly")}>
           <div className="space-y-2">
             {humanOnlyActions.map((a, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card border-destructive/10 hover:bg-accent/30 transition-colors">
@@ -315,7 +371,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* ESCALATION MATRIX */}
-        <SectionHeader icon={ArrowUpRight} title="Escalation Matrix" count={escalationMatrix.length}>
+        <SectionHeader icon={ArrowUpRight} title="Escalation Matrix" count={escalationMatrix.length} subtitle="6 rules · tiered L1→L2→L3 escalation" open={sections.escalation} onToggle={() => toggleSection("escalation")}>
           <div className="space-y-2">
             {escalationMatrix.map((e, i) => (
               <div key={i} className="flex items-center gap-3 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -340,7 +396,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* SUPPORT CATEGORIES */}
-        <SectionHeader icon={Target} title="Support Categories" count={categories.length}>
+        <SectionHeader icon={Target} title="Support Categories" count={categories.length} subtitle="7 categories · 84% average coverage" open={sections.categories} onToggle={() => toggleSection("categories")}>
           <div className="grid grid-cols-1 gap-2">
             {categories.map((cat, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors group">
@@ -379,7 +435,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* SIGNALS */}
-        <SectionHeader icon={Activity} title="Signals to Monitor" count={signals.length}>
+        <SectionHeader icon={Activity} title="Signals to Monitor" count={signals.length} subtitle="9 signals active · 0 anomalies detected" open={sections.signals} onToggle={() => toggleSection("signals")}>
           <div className="grid grid-cols-1 gap-1.5">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-x-4 px-3.5 py-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
               <span className="w-5" />
@@ -409,7 +465,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* FAILURE MODES */}
-        <SectionHeader icon={AlertTriangle} title="Common Failure Modes" count={failureModes.length}>
+        <SectionHeader icon={AlertTriangle} title="Common Failure Modes" count={failureModes.length} subtitle="7 identified · 1 flagged from Account Intelligence" open={sections.failureModes} onToggle={() => toggleSection("failureModes")}>
           <div className="space-y-2">
             {failureModes.map((fm, i) => (
               <div key={i} className="p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -435,7 +491,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* HEALTH INDICATORS */}
-        <SectionHeader icon={Thermometer} title="Customer Health Indicators" count={healthIndicators.length}>
+        <SectionHeader icon={Thermometer} title="Customer Health Indicators" count={healthIndicators.length} subtitle="6 indicators · all within baseline" open={sections.health} onToggle={() => toggleSection("health")}>
           <div className="grid grid-cols-2 gap-2">
             {healthIndicators.map((h, i) => (
               <div key={i} className="flex items-center gap-3.5 p-3.5 rounded-lg border bg-card">
@@ -451,7 +507,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* COVERAGE SCORE */}
-        <SectionHeader icon={BarChart3} title="Support Coverage Score">
+        <SectionHeader icon={BarChart3} title="Support Coverage Score" subtitle="84% overall · AI Confidence 81%" open={sections.coverage} onToggle={() => toggleSection("coverage")}>
           <Card className="border">
             <CardContent className="p-5">
               <div className="flex items-center gap-6">
@@ -520,8 +576,7 @@ export default function Blueprint() {
 
       {/* RIGHT PANEL */}
       <aside className="w-72 shrink-0 border-l bg-card overflow-y-auto">
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">Blueprint Summary</h3>
+        <SidebarSection title="Blueprint Summary" defaultOpen={true}>
           <div className="space-y-4">
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Status</p>
@@ -546,11 +601,9 @@ export default function Blueprint() {
               <p className="text-xs font-medium text-foreground">March 29, 2026 · 14:32 UTC</p>
             </div>
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Governance breakdown */}
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Governance Breakdown</h3>
+        <SidebarSection title="Governance Breakdown" defaultOpen={false} subtitle="22 total rules across 4 categories">
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Unlock className="h-3 w-3 text-success" /> Automated</span>
@@ -569,40 +622,36 @@ export default function Blueprint() {
               <span className="text-xs font-semibold text-foreground">{escalationMatrix.length}</span>
             </div>
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Scores */}
-        <div className="p-5 border-b space-y-4">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Scores</h3>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-foreground font-medium">Coverage Score</span>
-              <span className="text-xs font-bold text-primary">{coverageScore}%</span>
+        <SidebarSection title="Scores" defaultOpen={false} subtitle="Coverage 84% · Confidence 81%">
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-foreground font-medium">Coverage Score</span>
+                <span className="text-xs font-bold text-primary">{coverageScore}%</span>
+              </div>
+              <Progress value={coverageScore} className="h-1.5" />
+              <p className="text-[10px] text-success mt-1 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +6% from last revision</p>
             </div>
-            <Progress value={coverageScore} className="h-1.5" />
-            <p className="text-[10px] text-success mt-1 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +6% from last revision</p>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-foreground font-medium">AI Confidence</span>
-              <span className="text-xs font-bold text-foreground">{confidenceScore}%</span>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-foreground font-medium">AI Confidence</span>
+                <span className="text-xs font-bold text-foreground">{confidenceScore}%</span>
+              </div>
+              <Progress value={confidenceScore} className="h-1.5" />
             </div>
-            <Progress value={confidenceScore} className="h-1.5" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-foreground font-medium">Deployment Compat.</span>
-              <span className="text-xs font-bold text-success">96%</span>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-foreground font-medium">Deployment Compat.</span>
+                <span className="text-xs font-bold text-success">96%</span>
+              </div>
+              <Progress value={96} className="h-1.5" />
             </div>
-            <Progress value={96} className="h-1.5" />
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Deployed to */}
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-            {wsType === "si" ? "Active Deployments" : "Deployed To"}
-          </h3>
+        <SidebarSection title={wsType === "si" ? "Active Deployments" : "Deployed To"} defaultOpen={false} subtitle="1 active deployment">
           <div className="space-y-2">
             <div className="flex items-center gap-2 p-2 rounded-md border bg-background">
               <div className="h-1.5 w-1.5 rounded-full bg-success" />
@@ -614,11 +663,9 @@ export default function Blueprint() {
               <Plus className="h-3 w-3" /> {wsType === "si" ? "Add another client" : "Deploy to another customer"}
             </button>
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Version history */}
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Version History</h3>
+        <SidebarSection title="Version History" defaultOpen={false} subtitle="v2.4 current · 4 versions">
           <div className="space-y-3">
             {[
               { version: "v2.4", date: "Mar 29", note: "Added permission escalation failure mode" },
@@ -634,11 +681,9 @@ export default function Blueprint() {
               </div>
             ))}
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Live Execution */}
-        <div className="p-5">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Live Execution</h3>
+        <SidebarSection title="Live Execution" defaultOpen={true}>
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
@@ -662,7 +707,7 @@ export default function Blueprint() {
           <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-primary hover:underline flex items-center gap-1 mt-3">
             View Live Cases <ArrowRight className="h-3 w-3" />
           </button>
-        </div>
+        </SidebarSection>
       </aside>
     </div>
   );
