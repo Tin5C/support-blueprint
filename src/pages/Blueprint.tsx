@@ -529,6 +529,13 @@ export default function Blueprint() {
                 <CheckCircle2 className="h-3 w-3 mr-1.5" /> Active — Deployed
               </Badge>
             </div>
+            {accountContext && (
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Deployed For</p>
+                <p className="text-[12px] font-semibold text-foreground">{accountContext.context.productsInScope[0]} — {accountContext.customer.name}</p>
+                <p className="text-[10px] text-muted-foreground capitalize">{wsType === "si" ? "Service Integration" : "ISV"} · {accountContext.customer.supportTier} tier</p>
+              </div>
+            )}
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Product</p>
               <p className="text-sm font-semibold text-foreground">Helio CRM</p>
