@@ -24,7 +24,7 @@ const tierLabel: Record<string, string> = {
 export default function TeamsCustomerSpaces() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const [selectedId, setSelectedId] = useState(params.get("id") || "ai-cust-1");
+  const [selectedId, setSelectedId] = useState(params.get("id") || "cust-1");
   const [activeTab, setActiveTab] = useState("Intelligence");
   const selectedData = getAccountIntelligence(selectedId);
 
