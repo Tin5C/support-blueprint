@@ -607,18 +607,32 @@ export default function SupportStudio() {
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
-              {failureModes.map((fm, i) => (
-                <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground">{fm.mode}</p>
+              {failureModes.map((fm, i) => {
+                const riskKeywords = accountContext?.risks.map(r => r.title.toLowerCase()) || [];
+                const flagged = riskKeywords.some(kw =>
+                  fm.mode.toLowerCase().includes("memory") && kw.includes("memory") ||
+                  fm.mode.toLowerCase().includes("batch") && kw.includes("batch") ||
+                  fm.mode.toLowerCase().includes("token") && kw.includes("token") ||
+                  fm.mode.toLowerCase().includes("drift") && kw.includes("drift")
+                );
+                return (
+                  <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground">{fm.mode}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {flagged && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-warning/10 text-warning border-warning/20">
+                          Flagged in Account Intelligence
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
+                      <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
+                      <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
-                    <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
-                    <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
