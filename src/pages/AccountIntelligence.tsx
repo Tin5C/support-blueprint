@@ -175,6 +175,24 @@ export default function AccountIntelligencePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* ─── Account Switcher ─── */}
+      <div className="border-b bg-card/50">
+        <div className="max-w-[1280px] mx-auto px-8 py-2 flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mr-2">Account</span>
+          {allAccounts.map(a => (
+            <Button
+              key={a.id}
+              variant={selectedId === a.id ? "default" : "outline"}
+              size="sm"
+              className="h-7 text-[11px] px-3"
+              onClick={() => setSelectedId(a.id)}
+            >
+              {a.name}
+            </Button>
+          ))}
+        </div>
+      </div>
+
       {/* ─── 1. Header / Summary Strip ─── */}
       <div className="border-b bg-card">
         <div className="max-w-[1280px] mx-auto px-8 py-5">
