@@ -220,9 +220,9 @@ export default function SupportStudio() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <InputRow icon={Github} label="GitHub Repository" placeholder="https://github.com/org/repo" defaultValue="https://github.com/acme/datasync-pro" />
-                <InputRow icon={Globe} label="Documentation Site" placeholder="https://docs.yourproduct.io" defaultValue="https://docs.datasyncpro.io/v4.2" />
-                <InputRow icon={Code2} label="API Documentation" placeholder="https://api.yourproduct.io/docs" defaultValue="https://api.datasyncpro.io/v4/openapi.json" />
+                <InputRow icon={Github} label="GitHub Repository" placeholder="https://github.com/org/repo" defaultValue="https://github.com/acme/helio-crm-agent" />
+                <InputRow icon={Globe} label="Documentation Site" placeholder="https://docs.yourproduct.io" defaultValue="https://docs.helio-crm.io/v3.4.2" />
+                <InputRow icon={Code2} label="API Documentation" placeholder="https://api.yourproduct.io/docs" defaultValue="https://api.helio-crm.io/v3/openapi.json" />
                 <InputRow icon={Link} label="Additional URLs" placeholder="Confluence, Notion, wikis..." />
               </div>
             </div>
