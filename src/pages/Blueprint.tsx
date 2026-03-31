@@ -133,6 +133,7 @@ function SectionHeader({ icon: Icon, title, count, children }: { icon: any; titl
 
 // ============================================================
 export default function Blueprint() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const accountId = searchParams.get("accountId");
   const workspaceType = searchParams.get("workspaceType") || "isv";
