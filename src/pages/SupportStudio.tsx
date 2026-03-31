@@ -160,6 +160,7 @@ const riskBg: Record<string, string> = {
 
 // ================================================================
 export default function SupportStudio() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const accountId = searchParams.get("accountId");
   const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
