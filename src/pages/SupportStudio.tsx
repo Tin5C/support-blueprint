@@ -735,7 +735,7 @@ export default function SupportStudio() {
                     <Layers className="h-3.5 w-3.5" /> Save as service template
                   </Button>
                 )}
-                <Button className="gap-2" onClick={() => navigate('/blueprints')}>
+                <Button className="gap-2" onClick={() => navigate(`/blueprints?accountId=${accountContext?.customer.id || ''}&workspaceType=${accountContext?.workspaceType || 'isv'}`)}>
                   Deploy to {accountContext?.customer.name || "customer"} <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
