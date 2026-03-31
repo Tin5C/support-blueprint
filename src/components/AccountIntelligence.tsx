@@ -98,13 +98,19 @@ export default function AccountIntelligence({ data }: Props) {
 
   return (
     <div className="flex-1 overflow-y-auto animate-fade-in">
-      {/* Customer header */}
-      <div className="px-6 pt-5 pb-4 border-b bg-card">
+      {/* Customer header — aligned to Blueprint header pattern */}
+      <div className="px-6 pt-5 pb-4 border-b">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+          <span>Account Intelligence</span>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-foreground font-medium">{customer.name}</span>
+        </div>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Account Intelligence</p>
             <h1 className="text-lg font-semibold text-foreground tracking-tight">{customer.name}</h1>
-            <p className="text-[12px] text-muted-foreground mt-0.5">{customer.industry} · {customer.size} · {customer.region}</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">
+              {customer.industry} · {customer.size} · {customer.region}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className={`text-[10px] px-2 py-0.5 ${tierColor[customer.supportTier]}`}>
@@ -113,9 +119,9 @@ export default function AccountIntelligence({ data }: Props) {
             <Badge variant="outline" className={`text-[10px] px-2 py-0.5 ${healthColor[customer.healthStatus]}`}>
               {customer.healthStatus} health
             </Badge>
-            <div className="text-[10px] text-muted-foreground ml-2">
+            <span className="text-[10px] text-muted-foreground ml-2">
               <span className="font-medium text-foreground">{customer.accountOwner}</span> · {connectedCount}/{systems.length} systems
-            </div>
+            </span>
           </div>
         </div>
       </div>
