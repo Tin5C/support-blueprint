@@ -30,7 +30,7 @@ export default function TeamsCustomerSpaces() {
 
   return (
     <TeamsShell
-      section="Customer Spaces"
+      section="Account Intelligence"
       tabs={[
         { label: "Intelligence", active: activeTab === "Intelligence", onClick: () => setActiveTab("Intelligence") },
         { label: "Cases", active: activeTab === "Cases", onClick: () => setActiveTab("Cases") },
@@ -42,7 +42,7 @@ export default function TeamsCustomerSpaces() {
         {/* Channel list */}
         <div className="w-56 shrink-0 border-r bg-card overflow-y-auto">
           <div className="p-3 border-b">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Customer Channels</p>
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Accounts</p>
           </div>
           <div className="p-1.5 space-y-0.5">
             {aiCustomers.map(c => (
