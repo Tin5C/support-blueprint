@@ -107,19 +107,23 @@ const statusDot: Record<string, string> = {
   neutral: "bg-muted-foreground",
 };
 
-function SectionHeader({ icon: Icon, title, count, children }: { icon: any; title: string; count?: number; children?: React.ReactNode }) {
-  const [open, setOpen] = useState(true);
+function SectionHeader({ icon: Icon, title, count, subtitle, open, onToggle, children }: {
+  icon: any; title: string; count?: number; subtitle?: string; open: boolean; onToggle: () => void; children?: React.ReactNode;
+}) {
   return (
     <div>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between mb-3 group">
-        <div className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-lg bg-primary/8 flex items-center justify-center">
+      <button onClick={onToggle} className="w-full flex items-center justify-between mb-3 group">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="h-7 w-7 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
             <Icon className="h-3.5 w-3.5 text-primary" />
           </div>
           <h2 className="text-[13px] font-semibold text-foreground">{title}</h2>
           {count !== undefined && <Badge variant="secondary" className="text-[10px]">{count}</Badge>}
+          {!open && subtitle && (
+            <span className="text-[11px] text-muted-foreground ml-1 truncate">· {subtitle}</span>
+          )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Button variant="ghost" size="sm" className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => { e.stopPropagation(); }}>
             <Edit2 className="h-3 w-3 text-muted-foreground" />
           </Button>
@@ -127,6 +131,26 @@ function SectionHeader({ icon: Icon, title, count, children }: { icon: any; titl
         </div>
       </button>
       {open && children}
+    </div>
+  );
+}
+
+function SidebarSection({ title, defaultOpen = true, subtitle, children }: {
+  title: string; defaultOpen?: boolean; subtitle?: string; children?: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="p-5 border-b">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between mb-0 group">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{title}</h3>
+        <div className="flex items-center gap-2">
+          {!open && subtitle && (
+            <span className="text-[10px] text-muted-foreground font-normal normal-case tracking-normal">{subtitle}</span>
+          )}
+          {open ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+        </div>
+      </button>
+      {open && <div className="mt-3">{children}</div>}
     </div>
   );
 }
