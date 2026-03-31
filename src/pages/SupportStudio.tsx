@@ -231,7 +231,7 @@ export default function SupportStudio() {
           <Section title="Customer Context" icon={Building2} badge="Deployment-specific">
             <div className="space-y-5">
               <div className="grid grid-cols-3 gap-4">
-                <InputRow icon={Building2} label="Customer Name" placeholder="Acme Corp" defaultValue="Meridian Financial" />
+                <InputRow icon={Building2} label="Customer Name" placeholder="Acme Corp" defaultValue="Acme Manufacturing" />
                 <div>
                   <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Deployment Type</label>
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border bg-card">
