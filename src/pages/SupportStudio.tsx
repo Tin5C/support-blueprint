@@ -646,15 +646,29 @@ export default function SupportStudio() {
               </div>
             </CardHeader>
             <CardContent className="pt-0 grid grid-cols-2 gap-2">
-              {telemetrySignals.map((ts, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-card">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`h-2 w-2 rounded-full shrink-0 ${ts.priority === "P1" ? "bg-destructive" : ts.priority === "P2" ? "bg-warning" : "bg-muted-foreground"}`} />
-                    <p className="text-xs font-medium text-foreground">{ts.signal}</p>
+              {telemetrySignals.map((ts, i) => {
+                const gapKeywords = accountContext?.gaps.map(g => g.description.toLowerCase()) || [];
+                const addressesGap = gapKeywords.some(kw =>
+                  ts.signal.toLowerCase().includes("memory") && kw.includes("memory") ||
+                  ts.signal.toLowerCase().includes("model") && kw.includes("model") ||
+                  ts.signal.toLowerCase().includes("staleness") && kw.includes("staleness") ||
+                  ts.signal.toLowerCase().includes("error") && kw.includes("monitor")
+                );
+                return (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-card">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`h-2 w-2 rounded-full shrink-0 ${ts.priority === "P1" ? "bg-destructive" : ts.priority === "P2" ? "bg-warning" : "bg-muted-foreground"}`} />
+                      <div>
+                        <p className="text-xs font-medium text-foreground">{ts.signal}</p>
+                        {addressesGap && (
+                          <span className="text-[9px] text-teal-500">Addresses known gap</span>
+                        )}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] font-mono shrink-0">{ts.threshold}</Badge>
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-mono shrink-0">{ts.threshold}</Badge>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
