@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Map, TrendingUp, Settings,
   MessageSquare, CheckSquare, ArrowUpRight,
-  ExternalLink, Zap, FileText, Users,
+  ExternalLink, Zap, FileText, Users, Database,
 } from "lucide-react";
 
 const primaryNav = [
