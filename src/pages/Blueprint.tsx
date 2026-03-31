@@ -600,24 +600,24 @@ export default function Blueprint() {
 
         {/* Deployed to */}
         <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Deployed To</h3>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            {wsType === "si" ? "Active Deployments" : "Deployed To"}
+          </h3>
           <div className="space-y-2">
-            {[
-              { name: "Acme Manufacturing", status: "healthy" },
-              { name: "HelioWorks AG", status: "at-risk" },
-              { name: "Northwind Health", status: "healthy" },
-            ].map((c, i) => (
-              <div key={i} className="flex items-center gap-2 p-2 rounded-md border bg-background">
-                <div className={`h-1.5 w-1.5 rounded-full ${c.status === "at-risk" ? "bg-destructive" : "bg-success"}`} />
-                <span className="text-[11px] font-medium text-foreground">{c.name}</span>
-              </div>
-            ))}
-            <p className="text-[10px] text-muted-foreground mt-1">+ 2 more deployments</p>
+            <div className="flex items-center gap-2 p-2 rounded-md border bg-background">
+              <div className="h-1.5 w-1.5 rounded-full bg-success" />
+              <span className="text-[11px] font-medium text-foreground">
+                {accountContext?.customer.name || "Acme Manufacturing"}
+              </span>
+            </div>
+            <button onClick={() => navigate('/intelligence')} className="text-[10px] text-primary hover:underline flex items-center gap-1 mt-1">
+              <Plus className="h-3 w-3" /> {wsType === "si" ? "Add another client" : "Deploy to another customer"}
+            </button>
           </div>
         </div>
 
         {/* Version history */}
-        <div className="p-5">
+        <div className="p-5 border-b">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Version History</h3>
           <div className="space-y-3">
             {[
@@ -634,6 +634,34 @@ export default function Blueprint() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Live Execution */}
+        <div className="p-5">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Live Execution</h3>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+                <MessageSquare className="h-3 w-3 text-muted-foreground" /> Open cases
+              </button>
+              <span className="text-xs font-semibold text-foreground">4</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <button onClick={() => navigate('/teams/approvals')} className="text-[11px] text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+                <Lock className="h-3 w-3 text-warning" /> Awaiting approval
+              </button>
+              <span className="text-xs font-semibold text-warning">1</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                <CheckCircle2 className="h-3 w-3 text-success" /> Resolved today
+              </span>
+              <span className="text-xs font-semibold text-success">2</span>
+            </div>
+          </div>
+          <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-primary hover:underline flex items-center gap-1 mt-3">
+            View Live Cases <ArrowRight className="h-3 w-3" />
+          </button>
         </div>
       </aside>
     </div>
