@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getAccountIntelligence, type AccountIntelligenceData } from "@/data/accountIntelligence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import {
   TrendingUp, ChevronDown, ChevronRight,
   Plus, GripVertical, Lock, Unlock,
   Thermometer, ArrowUpRight, RefreshCw, BarChart3,
+  Database, Layers, ExternalLink, MessageSquare,
 } from "lucide-react";
 
 // ============================================================
@@ -132,6 +133,7 @@ function SectionHeader({ icon: Icon, title, count, children }: { icon: any; titl
 
 // ============================================================
 export default function Blueprint() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const accountId = searchParams.get("accountId");
   const workspaceType = searchParams.get("workspaceType") || "isv";
@@ -193,6 +195,33 @@ export default function Blueprint() {
               <Button size="sm" className="gap-2"><Zap className="h-3.5 w-3.5" /> Deploy</Button>
             </div>
           </div>
+        </div>
+
+        {/* Workflow navigation strip */}
+        <div className="flex items-center gap-1.5">
+          {[
+            { label: "Account Intelligence", path: `/intelligence`, active: false },
+            { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
+            { label: "Active Blueprint", path: null, active: true },
+            { label: "Live Cases", path: "/teams/cases", active: false },
+          ].map((step, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
+              {step.active ? (
+                <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
+                  {step.label}
+                </span>
+              ) : (
+                <button
+                  onClick={() => step.path && navigate(step.path)}
+                  className="text-[10px] text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-full border border-transparent hover:border-border transition-colors"
+                >
+                  {step.label}
+                  {step.label === "Live Cases" && <ArrowRight className="h-2.5 w-2.5 inline ml-1" />}
+                </button>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Governance summary bar */}
@@ -390,6 +419,11 @@ export default function Blueprint() {
                     <p className="text-[11px] text-muted-foreground">Mitigation: {fm.mitigation}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    {i === 0 && (
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-warning/10 text-warning border-warning/20">
+                        Flagged in Account Intelligence
+                      </Badge>
+                    )}
                     <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
                     <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
                     <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
@@ -454,6 +488,34 @@ export default function Blueprint() {
             </CardContent>
           </Card>
         </SectionHeader>
+
+        {/* Persona-specific footer CTAs */}
+        <div className="flex items-center justify-between pt-3 border-t">
+          <button onClick={() => navigate('/intelligence')} className="text-[11px] text-primary hover:underline flex items-center gap-1">
+            View in Account Intelligence <ExternalLink className="h-3 w-3" />
+          </button>
+          <div className="flex gap-2">
+            {wsType === "si" && (
+              savedTemplate ? (
+                <Button variant="outline" size="sm" className="gap-2 text-muted-foreground" disabled>
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Template saved
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Layers className="h-3.5 w-3.5" /> Save as service template
+                </Button>
+              )
+            )}
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate(`/studio${accountId ? `?accountId=${accountId}` : ""}`)}>
+              <Edit2 className="h-3.5 w-3.5" /> Edit blueprint
+            </Button>
+            {wsType === "isv" && (
+              <Button size="sm" className="gap-2" onClick={() => navigate('/intelligence')}>
+                <Plus className="h-3.5 w-3.5" /> Deploy to another customer
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* RIGHT PANEL */}
@@ -467,6 +529,13 @@ export default function Blueprint() {
                 <CheckCircle2 className="h-3 w-3 mr-1.5" /> Active — Deployed
               </Badge>
             </div>
+            {accountContext && (
+              <div>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Deployed For</p>
+                <p className="text-[12px] font-semibold text-foreground">{accountContext.context.productsInScope[0]} — {accountContext.customer.name}</p>
+                <p className="text-[10px] text-muted-foreground capitalize">{wsType === "si" ? "Service Integration" : "ISV"} · {accountContext.customer.supportTier} tier</p>
+              </div>
+            )}
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Product</p>
               <p className="text-sm font-semibold text-foreground">Helio CRM</p>
@@ -531,24 +600,24 @@ export default function Blueprint() {
 
         {/* Deployed to */}
         <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Deployed To</h3>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            {wsType === "si" ? "Active Deployments" : "Deployed To"}
+          </h3>
           <div className="space-y-2">
-            {[
-              { name: "Acme Manufacturing", status: "healthy" },
-              { name: "HelioWorks AG", status: "at-risk" },
-              { name: "Northwind Health", status: "healthy" },
-            ].map((c, i) => (
-              <div key={i} className="flex items-center gap-2 p-2 rounded-md border bg-background">
-                <div className={`h-1.5 w-1.5 rounded-full ${c.status === "at-risk" ? "bg-destructive" : "bg-success"}`} />
-                <span className="text-[11px] font-medium text-foreground">{c.name}</span>
-              </div>
-            ))}
-            <p className="text-[10px] text-muted-foreground mt-1">+ 2 more deployments</p>
+            <div className="flex items-center gap-2 p-2 rounded-md border bg-background">
+              <div className="h-1.5 w-1.5 rounded-full bg-success" />
+              <span className="text-[11px] font-medium text-foreground">
+                {accountContext?.customer.name || "Acme Manufacturing"}
+              </span>
+            </div>
+            <button onClick={() => navigate('/intelligence')} className="text-[10px] text-primary hover:underline flex items-center gap-1 mt-1">
+              <Plus className="h-3 w-3" /> {wsType === "si" ? "Add another client" : "Deploy to another customer"}
+            </button>
           </div>
         </div>
 
         {/* Version history */}
-        <div className="p-5">
+        <div className="p-5 border-b">
           <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Version History</h3>
           <div className="space-y-3">
             {[
@@ -565,6 +634,34 @@ export default function Blueprint() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Live Execution */}
+        <div className="p-5">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Live Execution</h3>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+                <MessageSquare className="h-3 w-3 text-muted-foreground" /> Open cases
+              </button>
+              <span className="text-xs font-semibold text-foreground">4</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <button onClick={() => navigate('/teams/approvals')} className="text-[11px] text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
+                <Lock className="h-3 w-3 text-warning" /> Awaiting approval
+              </button>
+              <span className="text-xs font-semibold text-warning">1</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                <CheckCircle2 className="h-3 w-3 text-success" /> Resolved today
+              </span>
+              <span className="text-xs font-semibold text-success">2</span>
+            </div>
+          </div>
+          <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-primary hover:underline flex items-center gap-1 mt-3">
+            View Live Cases <ArrowRight className="h-3 w-3" />
+          </button>
         </div>
       </aside>
     </div>
