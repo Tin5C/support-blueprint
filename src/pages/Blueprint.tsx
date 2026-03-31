@@ -683,9 +683,7 @@ export default function Blueprint() {
           </div>
         </SidebarSection>
 
-        {/* Live Execution */}
-        <div className="p-5">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Live Execution</h3>
+        <SidebarSection title="Live Execution" defaultOpen={true}>
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-foreground hover:text-primary transition-colors flex items-center gap-1.5">
@@ -709,7 +707,7 @@ export default function Blueprint() {
           <button onClick={() => navigate('/teams/cases')} className="text-[11px] text-primary hover:underline flex items-center gap-1 mt-3">
             View Live Cases <ArrowRight className="h-3 w-3" />
           </button>
-        </div>
+        </SidebarSection>
       </aside>
     </div>
   );
