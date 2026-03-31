@@ -60,6 +60,7 @@ interface Props {
 }
 
 export default function AccountIntelligence({ data }: Props) {
+  const navigate = useNavigate();
   const [state, setState] = useState<DemoState>("empty");
   const [ingestionStep, setIngestionStep] = useState(0);
   const [visibleActivities, setVisibleActivities] = useState<IngestionActivity[]>([]);
