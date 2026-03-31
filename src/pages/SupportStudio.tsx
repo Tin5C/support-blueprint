@@ -451,6 +451,17 @@ export default function SupportStudio() {
       {/* OUTPUT PHASE */}
       {phase === "output" && (
         <>
+          {/* Context summary banner */}
+          {accountContext && (
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border bg-muted/30">
+              <Database className="h-3.5 w-3.5 text-primary shrink-0" />
+              <p className="text-[11px] text-foreground">
+                Blueprint generated for <span className="font-semibold">{accountContext.customer.name}</span> — {accountContext.context.productsInScope.join(", ")} — <span className="capitalize">{accountContext.customer.supportTier}</span> tier
+              </p>
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 ml-auto capitalize">{accountContext.workspaceType === "si" ? "Service Integration" : "ISV"}</Badge>
+            </div>
+          )}
+
           <Card className="border border-primary/20 bg-primary/[0.03]">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
@@ -459,15 +470,14 @@ export default function SupportStudio() {
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — Helio CRM Agent × Acme Manufacturing</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      Governed Blueprint Generated — {accountContext ? `${accountContext.context.productsInScope[0]} × ${accountContext.customer.name}` : "Helio CRM Agent × Acme Manufacturing"}
+                    </p>
                     <p className="text-xs text-muted-foreground mt-0.5">6 categories · 8 signals · 6 runbooks · 7 approval rules · 6 escalation rules</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview</Button>
-                  <Button size="sm" className="gap-2" onClick={() => window.location.href = '/blueprints'}>
-                    Deploy Blueprint <ArrowRight className="h-3.5 w-3.5" />
-                  </Button>
                 </div>
               </div>
             </CardContent>
