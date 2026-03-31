@@ -11,6 +11,7 @@ import Templates from "@/pages/Templates";
 import Insights from "@/pages/Insights";
 import Admin from "@/pages/Admin";
 import TeamsCustomerSpaces from "@/pages/TeamsCustomerSpaces";
+import AccountIntelligencePage from "@/pages/AccountIntelligence";
 import TeamsLiveCases from "@/pages/TeamsLiveCases";
 import TeamsApprovals from "@/pages/TeamsApprovals";
 import TeamsAgentActivity from "@/pages/TeamsAgentActivity";
