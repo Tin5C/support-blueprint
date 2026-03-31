@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,6 +60,7 @@ interface Props {
 }
 
 export default function AccountIntelligence({ data }: Props) {
+  const navigate = useNavigate();
   const [state, setState] = useState<DemoState>("empty");
   const [ingestionStep, setIngestionStep] = useState(0);
   const [visibleActivities, setVisibleActivities] = useState<IngestionActivity[]>([]);
@@ -443,7 +445,7 @@ export default function AccountIntelligence({ data }: Props) {
                       <ExternalLink className="h-3 w-3" />
                       Open Linked Cases
                     </Button>
-                    <Button size="sm" className="text-[11px] h-8 gap-1.5">
+                    <Button size="sm" className="text-[11px] h-8 gap-1.5" onClick={() => navigate('/studio?accountId=' + customer.id)}>
                       <BarChart3 className="h-3 w-3" />
                       Use in Blueprint Studio
                     </Button>

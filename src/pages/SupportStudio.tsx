@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { getAccountIntelligence, type AccountIntelligenceData } from "@/data/accountIntelligence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -155,10 +157,20 @@ const riskBg: Record<string, string> = {
 
 // ================================================================
 export default function SupportStudio() {
+  const [searchParams] = useSearchParams();
+  const accountId = searchParams.get("accountId");
+  const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
   const [phase, setPhase] = useState<"input" | "generating" | "output">("input");
   const [progress, setProgress] = useState(0);
   const [uploadedDocs, setUploadedDocs] = useState(["helio-crm-agent-v3.4.2-guide.pdf", "architecture-overview.md"]);
   const [uploadedRunbooks, setUploadedRunbooks] = useState(["incident-response-playbook.yaml"]);
+
+  useEffect(() => {
+    if (accountId) {
+      const data = getAccountIntelligence(accountId);
+      setAccountContext(data);
+    }
+  }, [accountId]);
 
   const handleGenerate = () => {
     setPhase("generating");
