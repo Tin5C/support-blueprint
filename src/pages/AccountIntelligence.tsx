@@ -12,7 +12,7 @@ import {
   Bot, Zap, RefreshCw, Info, ArrowRight, Cpu, Server, Globe, Lock,
   Clipboard, Hash, FileWarning, Search, BellRing,
 } from "lucide-react";
-import { schindlerAccount, type AISource, type GapRecommendation } from "@/data/accountIntelData";
+import { acmeAccount, contosoAccount, allAccounts, type AISource, type GapRecommendation, type AccountIntelRecord } from "@/data/accountIntelData";
 
 // ─── Color helpers ───
 
