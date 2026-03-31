@@ -167,6 +167,33 @@ export default function Blueprint() {
   const [wsType, setWsType] = useState<"isv" | "si">("isv");
   const [showTemplateBanner, setShowTemplateBanner] = useState(false);
 
+  // Section collapse state — only approvalRequired is open by default
+  const [sections, setSections] = useState({
+    automated: false,
+    approvalRequired: true,
+    humanOnly: false,
+    escalation: false,
+    categories: false,
+    signals: false,
+    failureModes: false,
+    health: false,
+    coverage: false,
+  });
+
+  const toggleSection = (key: keyof typeof sections) =>
+    setSections(prev => ({ ...prev, [key]: !prev[key] }));
+
+  const openCount = Object.values(sections).filter(Boolean).length;
+  const mostExpanded = openCount > 4;
+  const toggleAll = () => {
+    const val = !mostExpanded;
+    setSections({
+      automated: val, approvalRequired: val, humanOnly: val,
+      escalation: val, categories: val, signals: val,
+      failureModes: val, health: val, coverage: val,
+    });
+  };
+
   useEffect(() => {
     if (accountId) {
       const data = getAccountIntelligence(accountId);
@@ -222,30 +249,35 @@ export default function Blueprint() {
         </div>
 
         {/* Workflow navigation strip */}
-        <div className="flex items-center gap-1.5">
-          {[
-            { label: "Account Intelligence", path: `/intelligence`, active: false },
-            { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
-            { label: "Active Blueprint", path: null, active: true },
-            { label: "Live Cases", path: "/teams/cases", active: false },
-          ].map((step, i) => (
-            <div key={i} className="flex items-center gap-1.5">
-              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
-              {step.active ? (
-                <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
-                  {step.label}
-                </span>
-              ) : (
-                <button
-                  onClick={() => step.path && navigate(step.path)}
-                  className="text-[10px] text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-full border border-transparent hover:border-border transition-colors"
-                >
-                  {step.label}
-                  {step.label === "Live Cases" && <ArrowRight className="h-2.5 w-2.5 inline ml-1" />}
-                </button>
-              )}
-            </div>
-          ))}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            {[
+              { label: "Account Intelligence", path: `/intelligence`, active: false },
+              { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
+              { label: "Active Blueprint", path: null, active: true },
+              { label: "Live Cases", path: "/teams/cases", active: false },
+            ].map((step, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
+                {step.active ? (
+                  <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
+                    {step.label}
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => step.path && navigate(step.path)}
+                    className="text-[10px] text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-full border border-transparent hover:border-border transition-colors"
+                  >
+                    {step.label}
+                    {step.label === "Live Cases" && <ArrowRight className="h-2.5 w-2.5 inline ml-1" />}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button onClick={toggleAll} className="text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+            {mostExpanded ? "Collapse all" : "Expand all"}
+          </button>
         </div>
 
         {/* Governance summary bar */}
