@@ -197,6 +197,32 @@ export default function Blueprint() {
           </div>
         </div>
 
+        {/* Workflow navigation strip */}
+        <div className="flex items-center gap-1.5">
+          {[
+            { label: "Account Intelligence", path: `/intelligence`, active: false },
+            { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
+            { label: "Active Blueprint", path: null, active: true },
+            { label: "Live Cases", path: "/teams/cases", active: false },
+          ].map((step, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              {i > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
+              {step.active ? (
+                <span className="text-[10px] font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
+                  {step.label}
+                </span>
+              ) : (
+                <button
+                  onClick={() => step.path && navigate(step.path)}
+                  className="text-[10px] text-muted-foreground hover:text-foreground px-2.5 py-1 rounded-full border border-transparent hover:border-border transition-colors"
+                >
+                  {step.label}
+                  {step.label === "Live Cases" && <ArrowRight className="h-2.5 w-2.5 inline ml-1" />}
+                </button>
+              )}
+            </div>
+          ))}
+
         {/* Governance summary bar */}
         <div className="grid grid-cols-3 gap-3">
           <div className="p-4 rounded-lg border bg-success/5 border-success/20">
