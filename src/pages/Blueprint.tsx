@@ -331,7 +331,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* APPROVAL-REQUIRED */}
-        <SectionHeader icon={Shield} title="Approval-Required Actions" count={approvalActions.length}>
+        <SectionHeader icon={Shield} title="Approval-Required Actions" count={approvalActions.length} subtitle="5 actions · Sarah Chen as primary approver" open={sections.approvalRequired} onToggle={() => toggleSection("approvalRequired")}>
           <div className="space-y-2">
             {approvalActions.map((a, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -350,7 +350,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* HUMAN-ONLY */}
-        <SectionHeader icon={UserX} title="Human-Only Actions" count={humanOnlyActions.length}>
+        <SectionHeader icon={UserX} title="Human-Only Actions" count={humanOnlyActions.length} subtitle="5 actions · complex or high-risk scenarios" open={sections.humanOnly} onToggle={() => toggleSection("humanOnly")}>
           <div className="space-y-2">
             {humanOnlyActions.map((a, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card border-destructive/10 hover:bg-accent/30 transition-colors">
@@ -371,7 +371,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* ESCALATION MATRIX */}
-        <SectionHeader icon={ArrowUpRight} title="Escalation Matrix" count={escalationMatrix.length}>
+        <SectionHeader icon={ArrowUpRight} title="Escalation Matrix" count={escalationMatrix.length} subtitle="6 rules · tiered L1→L2→L3 escalation" open={sections.escalation} onToggle={() => toggleSection("escalation")}>
           <div className="space-y-2">
             {escalationMatrix.map((e, i) => (
               <div key={i} className="flex items-center gap-3 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -396,7 +396,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* SUPPORT CATEGORIES */}
-        <SectionHeader icon={Target} title="Support Categories" count={categories.length}>
+        <SectionHeader icon={Target} title="Support Categories" count={categories.length} subtitle="7 categories · 84% average coverage" open={sections.categories} onToggle={() => toggleSection("categories")}>
           <div className="grid grid-cols-1 gap-2">
             {categories.map((cat, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors group">
@@ -435,7 +435,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* SIGNALS */}
-        <SectionHeader icon={Activity} title="Signals to Monitor" count={signals.length}>
+        <SectionHeader icon={Activity} title="Signals to Monitor" count={signals.length} subtitle="9 signals active · 0 anomalies detected" open={sections.signals} onToggle={() => toggleSection("signals")}>
           <div className="grid grid-cols-1 gap-1.5">
             <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-x-4 px-3.5 py-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
               <span className="w-5" />
@@ -465,7 +465,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* FAILURE MODES */}
-        <SectionHeader icon={AlertTriangle} title="Common Failure Modes" count={failureModes.length}>
+        <SectionHeader icon={AlertTriangle} title="Common Failure Modes" count={failureModes.length} subtitle="7 identified · 1 flagged from Account Intelligence" open={sections.failureModes} onToggle={() => toggleSection("failureModes")}>
           <div className="space-y-2">
             {failureModes.map((fm, i) => (
               <div key={i} className="p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -491,7 +491,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* HEALTH INDICATORS */}
-        <SectionHeader icon={Thermometer} title="Customer Health Indicators" count={healthIndicators.length}>
+        <SectionHeader icon={Thermometer} title="Customer Health Indicators" count={healthIndicators.length} subtitle="6 indicators · all within baseline" open={sections.health} onToggle={() => toggleSection("health")}>
           <div className="grid grid-cols-2 gap-2">
             {healthIndicators.map((h, i) => (
               <div key={i} className="flex items-center gap-3.5 p-3.5 rounded-lg border bg-card">
@@ -507,7 +507,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* COVERAGE SCORE */}
-        <SectionHeader icon={BarChart3} title="Support Coverage Score">
+        <SectionHeader icon={BarChart3} title="Support Coverage Score" subtitle="84% overall · AI Confidence 81%" open={sections.coverage} onToggle={() => toggleSection("coverage")}>
           <Card className="border">
             <CardContent className="p-5">
               <div className="flex items-center gap-6">
