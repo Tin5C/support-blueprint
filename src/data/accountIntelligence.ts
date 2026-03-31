@@ -241,6 +241,7 @@ export interface AccountIntelligenceData {
   gaps: GraphGap[];
   classified: ClassifiedEntity[];
   ingestion: IngestionActivity[];
+  workspaceType: "isv" | "si";
 }
 
 const dataMap: Record<string, AccountIntelligenceData> = {
