@@ -309,7 +309,7 @@ export default function Blueprint() {
         </div>
 
         {/* AUTOMATED ACTIONS — first to show governance */}
-        <SectionHeader icon={Unlock} title="Automated Actions" count={automatedActions.length}>
+        <SectionHeader icon={Unlock} title="Automated Actions" count={automatedActions.length} subtitle="6 actions · no human intervention required" open={sections.automated} onToggle={() => toggleSection("automated")}>
           <div className="space-y-2">
             {automatedActions.map((a, i) => (
               <div key={i} className="flex items-center gap-4 p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
