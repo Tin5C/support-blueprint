@@ -419,6 +419,11 @@ export default function Blueprint() {
                     <p className="text-[11px] text-muted-foreground">Mitigation: {fm.mitigation}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    {i === 0 && (
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-warning/10 text-warning border-warning/20">
+                        Flagged in Account Intelligence
+                      </Badge>
+                    )}
                     <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
                     <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
                     <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
