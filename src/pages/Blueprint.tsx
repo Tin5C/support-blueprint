@@ -576,8 +576,7 @@ export default function Blueprint() {
 
       {/* RIGHT PANEL */}
       <aside className="w-72 shrink-0 border-l bg-card overflow-y-auto">
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">Blueprint Summary</h3>
+        <SidebarSection title="Blueprint Summary" defaultOpen={true}>
           <div className="space-y-4">
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Status</p>
@@ -602,11 +601,9 @@ export default function Blueprint() {
               <p className="text-xs font-medium text-foreground">March 29, 2026 · 14:32 UTC</p>
             </div>
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Governance breakdown */}
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Governance Breakdown</h3>
+        <SidebarSection title="Governance Breakdown" defaultOpen={false} subtitle="22 total rules across 4 categories">
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-muted-foreground flex items-center gap-1.5"><Unlock className="h-3 w-3 text-success" /> Automated</span>
@@ -625,40 +622,36 @@ export default function Blueprint() {
               <span className="text-xs font-semibold text-foreground">{escalationMatrix.length}</span>
             </div>
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Scores */}
-        <div className="p-5 border-b space-y-4">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Scores</h3>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-foreground font-medium">Coverage Score</span>
-              <span className="text-xs font-bold text-primary">{coverageScore}%</span>
+        <SidebarSection title="Scores" defaultOpen={false} subtitle="Coverage 84% · Confidence 81%">
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-foreground font-medium">Coverage Score</span>
+                <span className="text-xs font-bold text-primary">{coverageScore}%</span>
+              </div>
+              <Progress value={coverageScore} className="h-1.5" />
+              <p className="text-[10px] text-success mt-1 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +6% from last revision</p>
             </div>
-            <Progress value={coverageScore} className="h-1.5" />
-            <p className="text-[10px] text-success mt-1 flex items-center gap-1"><TrendingUp className="h-3 w-3" /> +6% from last revision</p>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-foreground font-medium">AI Confidence</span>
-              <span className="text-xs font-bold text-foreground">{confidenceScore}%</span>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-foreground font-medium">AI Confidence</span>
+                <span className="text-xs font-bold text-foreground">{confidenceScore}%</span>
+              </div>
+              <Progress value={confidenceScore} className="h-1.5" />
             </div>
-            <Progress value={confidenceScore} className="h-1.5" />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-xs text-foreground font-medium">Deployment Compat.</span>
-              <span className="text-xs font-bold text-success">96%</span>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs text-foreground font-medium">Deployment Compat.</span>
+                <span className="text-xs font-bold text-success">96%</span>
+              </div>
+              <Progress value={96} className="h-1.5" />
             </div>
-            <Progress value={96} className="h-1.5" />
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Deployed to */}
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-            {wsType === "si" ? "Active Deployments" : "Deployed To"}
-          </h3>
+        <SidebarSection title={wsType === "si" ? "Active Deployments" : "Deployed To"} defaultOpen={false} subtitle="1 active deployment">
           <div className="space-y-2">
             <div className="flex items-center gap-2 p-2 rounded-md border bg-background">
               <div className="h-1.5 w-1.5 rounded-full bg-success" />
@@ -670,11 +663,9 @@ export default function Blueprint() {
               <Plus className="h-3 w-3" /> {wsType === "si" ? "Add another client" : "Deploy to another customer"}
             </button>
           </div>
-        </div>
+        </SidebarSection>
 
-        {/* Version history */}
-        <div className="p-5 border-b">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Version History</h3>
+        <SidebarSection title="Version History" defaultOpen={false} subtitle="v2.4 current · 4 versions">
           <div className="space-y-3">
             {[
               { version: "v2.4", date: "Mar 29", note: "Added permission escalation failure mode" },
@@ -690,7 +681,7 @@ export default function Blueprint() {
               </div>
             ))}
           </div>
-        </div>
+        </SidebarSection>
 
         {/* Live Execution */}
         <div className="p-5">
