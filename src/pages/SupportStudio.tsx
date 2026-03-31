@@ -724,15 +724,42 @@ export default function SupportStudio() {
             </CardContent>
           </Card>
 
-          {/* Final CTA */}
-          <div className="flex items-center justify-between pt-2 border-t">
-            <p className="text-xs text-muted-foreground">Review governance rules and approval boundaries, then deploy to start governed AI support</p>
-            <div className="flex gap-2">
-              <Button variant="outline" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview Blueprint</Button>
-              <Button className="gap-2" onClick={() => window.location.href = '/blueprints'}>
-                Deploy Blueprint <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
+          {/* Final CTA — persona-specific */}
+          <div className="pt-2 border-t space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Review governance rules and approval boundaries, then deploy to start governed AI support</p>
+              <div className="flex gap-2">
+                <Button variant="outline" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview Blueprint</Button>
+                {accountContext?.workspaceType === "si" && (
+                  <Button variant="outline" className="gap-2" onClick={() => setShowTemplateInput(!showTemplateInput)}>
+                    <Layers className="h-3.5 w-3.5" /> Save as service template
+                  </Button>
+                )}
+                <Button className="gap-2" onClick={() => navigate('/blueprints')}>
+                  Deploy to {accountContext?.customer.name || "customer"} <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
+            {accountContext?.workspaceType === "si" && showTemplateInput && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 animate-fade-in">
+                <Layers className="h-4 w-4 text-muted-foreground shrink-0" />
+                <div className="flex-1">
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1 block">Template Name</label>
+                  <input
+                    className="w-full text-sm bg-transparent outline-none placeholder:text-muted-foreground/60"
+                    defaultValue={`${accountContext.context.productsInScope[0]} — Cloud template`}
+                  />
+                </div>
+                <Button size="sm" className="text-[11px] h-8 gap-1.5 shrink-0">
+                  <CheckCircle2 className="h-3 w-3" /> Save Template
+                </Button>
+              </div>
+            )}
+            {accountContext?.workspaceType === "isv" && (
+              <button onClick={() => navigate('/intelligence')} className="text-[11px] text-primary hover:underline flex items-center gap-1">
+                Deploy to another customer <ExternalLink className="h-3 w-3" />
+              </button>
+            )}
           </div>
         </>
       )}
