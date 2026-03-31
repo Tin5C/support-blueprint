@@ -344,7 +344,7 @@ export default function SupportStudio() {
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — DataSync Pro × Meridian Financial</p>
+                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — Helio CRM Agent × Acme Manufacturing</p>
                     <p className="text-xs text-muted-foreground mt-0.5">6 categories · 8 signals · 6 runbooks · 7 approval rules · 6 escalation rules</p>
                   </div>
                 </div>

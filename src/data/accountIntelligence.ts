@@ -267,6 +267,7 @@ const dataMap: Record<string, AccountIntelligenceData> = {
     gaps: contosoGaps,
     classified: contosoClassified,
     ingestion: contosoIngestion,
+    workspaceType: "si",
   },
 };
 
