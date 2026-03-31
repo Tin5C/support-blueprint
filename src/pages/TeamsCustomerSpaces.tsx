@@ -30,7 +30,7 @@ export default function TeamsCustomerSpaces() {
 
   return (
     <TeamsShell
-      section="Customer Spaces"
+      section="Account Intelligence"
       tabs={[
         { label: "Intelligence", active: activeTab === "Intelligence", onClick: () => setActiveTab("Intelligence") },
         { label: "Cases", active: activeTab === "Cases", onClick: () => setActiveTab("Cases") },
