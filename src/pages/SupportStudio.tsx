@@ -735,7 +735,7 @@ export default function SupportStudio() {
                     <Layers className="h-3.5 w-3.5" /> Save as service template
                   </Button>
                 )}
-                <Button className="gap-2" onClick={() => navigate('/blueprints')}>
+                <Button className="gap-2" onClick={() => navigate(`/blueprints?accountId=${accountContext?.customer.id || ''}&workspaceType=${accountContext?.workspaceType || 'isv'}`)}>
                   Deploy to {accountContext?.customer.name || "customer"} <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -750,7 +750,7 @@ export default function SupportStudio() {
                     defaultValue={`${accountContext.context.productsInScope[0]} — Cloud template`}
                   />
                 </div>
-                <Button size="sm" className="text-[11px] h-8 gap-1.5 shrink-0">
+                <Button size="sm" className="text-[11px] h-8 gap-1.5 shrink-0" onClick={() => navigate(`/blueprints?accountId=${accountContext.customer.id}&workspaceType=si&savedTemplate=true`)}>
                   <CheckCircle2 className="h-3 w-3" /> Save Template
                 </Button>
               </div>

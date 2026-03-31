@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { getAccountIntelligence, type AccountIntelligenceData } from "@/data/accountIntelligence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -130,12 +132,49 @@ function SectionHeader({ icon: Icon, title, count, children }: { icon: any; titl
 
 // ============================================================
 export default function Blueprint() {
+  const [searchParams] = useSearchParams();
+  const accountId = searchParams.get("accountId");
+  const workspaceType = searchParams.get("workspaceType") || "isv";
+  const savedTemplate = searchParams.get("savedTemplate") === "true";
+
+  const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
+  const [wsType, setWsType] = useState<"isv" | "si">("isv");
+  const [showTemplateBanner, setShowTemplateBanner] = useState(false);
+
+  useEffect(() => {
+    if (accountId) {
+      const data = getAccountIntelligence(accountId);
+      setAccountContext(data);
+    }
+    if (workspaceType === "isv" || workspaceType === "si") {
+      setWsType(workspaceType);
+    }
+    if (savedTemplate) {
+      setShowTemplateBanner(true);
+    }
+  }, [accountId, workspaceType, savedTemplate]);
+
   const coverageScore = 84;
   const confidenceScore = 81;
 
   return (
     <div className="flex h-full">
       <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-16 animate-fade-in">
+        {/* Template saved banner */}
+        {showTemplateBanner && (
+          <div className="flex items-center justify-between px-4 py-3 rounded-lg border bg-success/5 border-success/20 animate-fade-in">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+              <p className="text-[12px] text-foreground">
+                <span className="font-semibold">Template saved</span> — {accountContext?.context.productsInScope[0] || "Finance Flow Agent"} — Cloud template is now available in your template library
+              </p>
+            </div>
+            <button onClick={() => setShowTemplateBanner(false)} className="text-muted-foreground hover:text-foreground">
+              <span className="sr-only">Dismiss</span>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        )}
         {/* Header */}
         <div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
