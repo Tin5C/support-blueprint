@@ -488,6 +488,34 @@ export default function Blueprint() {
             </CardContent>
           </Card>
         </SectionHeader>
+
+        {/* Persona-specific footer CTAs */}
+        <div className="flex items-center justify-between pt-3 border-t">
+          <button onClick={() => navigate('/intelligence')} className="text-[11px] text-primary hover:underline flex items-center gap-1">
+            View in Account Intelligence <ExternalLink className="h-3 w-3" />
+          </button>
+          <div className="flex gap-2">
+            {wsType === "si" && (
+              savedTemplate ? (
+                <Button variant="outline" size="sm" className="gap-2 text-muted-foreground" disabled>
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Template saved
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Layers className="h-3.5 w-3.5" /> Save as service template
+                </Button>
+              )
+            )}
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate(`/studio${accountId ? `?accountId=${accountId}` : ""}`)}>
+              <Edit2 className="h-3.5 w-3.5" /> Edit blueprint
+            </Button>
+            {wsType === "isv" && (
+              <Button size="sm" className="gap-2" onClick={() => navigate('/intelligence')}>
+                <Plus className="h-3.5 w-3.5" /> Deploy to another customer
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* RIGHT PANEL */}
