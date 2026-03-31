@@ -222,6 +222,7 @@ export default function Blueprint() {
               )}
             </div>
           ))}
+        </div>
 
         {/* Governance summary bar */}
         <div className="grid grid-cols-3 gap-3">
