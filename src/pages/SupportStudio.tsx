@@ -157,7 +157,7 @@ const riskBg: Record<string, string> = {
 export default function SupportStudio() {
   const [phase, setPhase] = useState<"input" | "generating" | "output">("input");
   const [progress, setProgress] = useState(0);
-  const [uploadedDocs, setUploadedDocs] = useState(["datasync-pro-v4.2-guide.pdf", "architecture-overview.md"]);
+  const [uploadedDocs, setUploadedDocs] = useState(["helio-crm-agent-v3.4.2-guide.pdf", "architecture-overview.md"]);
   const [uploadedRunbooks, setUploadedRunbooks] = useState(["incident-response-playbook.yaml"]);
 
   const handleGenerate = () => {
