@@ -11,7 +11,9 @@ import {
   Shield, ArrowRight, Github, Globe, Code2, Building2, Server,
   Clock, Lock, Plus, X, ChevronDown, ChevronRight,
   Zap, Brain, CheckCircle2, Eye, Layers, Target, Bot, Unlock,
+  Database, ExternalLink, Cloud, Checkbox,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // --- Generated output data ---
 const generatedCategories = [
