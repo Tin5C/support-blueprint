@@ -165,6 +165,7 @@ export default function SupportStudio() {
   const accountId = searchParams.get("accountId");
   const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
   const [phase, setPhase] = useState<"input" | "generating" | "output">("input");
+  const [showTemplateInput, setShowTemplateInput] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedDocs, setUploadedDocs] = useState(["helio-crm-agent-v3.4.2-guide.pdf", "architecture-overview.md"]);
   const [uploadedRunbooks, setUploadedRunbooks] = useState(["incident-response-playbook.yaml"]);
