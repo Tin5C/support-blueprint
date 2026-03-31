@@ -165,6 +165,7 @@ export default function SupportStudio() {
   const accountId = searchParams.get("accountId");
   const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
   const [phase, setPhase] = useState<"input" | "generating" | "output">("input");
+  const [showTemplateInput, setShowTemplateInput] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadedDocs, setUploadedDocs] = useState(["helio-crm-agent-v3.4.2-guide.pdf", "architecture-overview.md"]);
   const [uploadedRunbooks, setUploadedRunbooks] = useState(["incident-response-playbook.yaml"]);
@@ -451,6 +452,17 @@ export default function SupportStudio() {
       {/* OUTPUT PHASE */}
       {phase === "output" && (
         <>
+          {/* Context summary banner */}
+          {accountContext && (
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border bg-muted/30">
+              <Database className="h-3.5 w-3.5 text-primary shrink-0" />
+              <p className="text-[11px] text-foreground">
+                Blueprint generated for <span className="font-semibold">{accountContext.customer.name}</span> — {accountContext.context.productsInScope.join(", ")} — <span className="capitalize">{accountContext.customer.supportTier}</span> tier
+              </p>
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 ml-auto capitalize">{accountContext.workspaceType === "si" ? "Service Integration" : "ISV"}</Badge>
+            </div>
+          )}
+
           <Card className="border border-primary/20 bg-primary/[0.03]">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
@@ -459,15 +471,14 @@ export default function SupportStudio() {
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — Helio CRM Agent × Acme Manufacturing</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      Governed Blueprint Generated — {accountContext ? `${accountContext.context.productsInScope[0]} × ${accountContext.customer.name}` : "Helio CRM Agent × Acme Manufacturing"}
+                    </p>
                     <p className="text-xs text-muted-foreground mt-0.5">6 categories · 8 signals · 6 runbooks · 7 approval rules · 6 escalation rules</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview</Button>
-                  <Button size="sm" className="gap-2" onClick={() => window.location.href = '/blueprints'}>
-                    Deploy Blueprint <ArrowRight className="h-3.5 w-3.5" />
-                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -597,18 +608,32 @@ export default function SupportStudio() {
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-2">
-              {failureModes.map((fm, i) => (
-                <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-foreground">{fm.mode}</p>
+              {failureModes.map((fm, i) => {
+                const riskKeywords = accountContext?.risks.map(r => r.title.toLowerCase()) || [];
+                const flagged = riskKeywords.some(kw =>
+                  fm.mode.toLowerCase().includes("memory") && kw.includes("memory") ||
+                  fm.mode.toLowerCase().includes("batch") && kw.includes("batch") ||
+                  fm.mode.toLowerCase().includes("token") && kw.includes("token") ||
+                  fm.mode.toLowerCase().includes("drift") && kw.includes("drift")
+                );
+                return (
+                  <div key={i} className="flex items-center gap-4 p-3 rounded-lg border bg-card">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground">{fm.mode}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {flagged && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-warning/10 text-warning border-warning/20">
+                          Flagged in Account Intelligence
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
+                      <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
+                      <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
-                    <Badge variant="outline" className={`text-[10px] ${fm.impact === "Critical" ? riskBg.critical : fm.impact === "High" ? riskBg.high : riskBg.medium}`}>{fm.impact}</Badge>
-                    <Badge variant="secondary" className="text-[10px]">{fm.detection}</Badge>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
@@ -622,15 +647,29 @@ export default function SupportStudio() {
               </div>
             </CardHeader>
             <CardContent className="pt-0 grid grid-cols-2 gap-2">
-              {telemetrySignals.map((ts, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-card">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`h-2 w-2 rounded-full shrink-0 ${ts.priority === "P1" ? "bg-destructive" : ts.priority === "P2" ? "bg-warning" : "bg-muted-foreground"}`} />
-                    <p className="text-xs font-medium text-foreground">{ts.signal}</p>
+              {telemetrySignals.map((ts, i) => {
+                const gapKeywords = accountContext?.gaps.map(g => g.description.toLowerCase()) || [];
+                const addressesGap = gapKeywords.some(kw =>
+                  ts.signal.toLowerCase().includes("memory") && kw.includes("memory") ||
+                  ts.signal.toLowerCase().includes("model") && kw.includes("model") ||
+                  ts.signal.toLowerCase().includes("staleness") && kw.includes("staleness") ||
+                  ts.signal.toLowerCase().includes("error") && kw.includes("monitor")
+                );
+                return (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-lg border bg-card">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`h-2 w-2 rounded-full shrink-0 ${ts.priority === "P1" ? "bg-destructive" : ts.priority === "P2" ? "bg-warning" : "bg-muted-foreground"}`} />
+                      <div>
+                        <p className="text-xs font-medium text-foreground">{ts.signal}</p>
+                        {addressesGap && (
+                          <span className="text-[9px] text-teal-500">Addresses known gap</span>
+                        )}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] font-mono shrink-0">{ts.threshold}</Badge>
                   </div>
-                  <Badge variant="outline" className="text-[10px] font-mono shrink-0">{ts.threshold}</Badge>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
@@ -685,15 +724,42 @@ export default function SupportStudio() {
             </CardContent>
           </Card>
 
-          {/* Final CTA */}
-          <div className="flex items-center justify-between pt-2 border-t">
-            <p className="text-xs text-muted-foreground">Review governance rules and approval boundaries, then deploy to start governed AI support</p>
-            <div className="flex gap-2">
-              <Button variant="outline" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview Blueprint</Button>
-              <Button className="gap-2" onClick={() => window.location.href = '/blueprints'}>
-                Deploy Blueprint <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
+          {/* Final CTA — persona-specific */}
+          <div className="pt-2 border-t space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Review governance rules and approval boundaries, then deploy to start governed AI support</p>
+              <div className="flex gap-2">
+                <Button variant="outline" className="gap-2"><Eye className="h-3.5 w-3.5" /> Preview Blueprint</Button>
+                {accountContext?.workspaceType === "si" && (
+                  <Button variant="outline" className="gap-2" onClick={() => setShowTemplateInput(!showTemplateInput)}>
+                    <Layers className="h-3.5 w-3.5" /> Save as service template
+                  </Button>
+                )}
+                <Button className="gap-2" onClick={() => navigate('/blueprints')}>
+                  Deploy to {accountContext?.customer.name || "customer"} <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
+            {accountContext?.workspaceType === "si" && showTemplateInput && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 animate-fade-in">
+                <Layers className="h-4 w-4 text-muted-foreground shrink-0" />
+                <div className="flex-1">
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-1 block">Template Name</label>
+                  <input
+                    className="w-full text-sm bg-transparent outline-none placeholder:text-muted-foreground/60"
+                    defaultValue={`${accountContext.context.productsInScope[0]} — Cloud template`}
+                  />
+                </div>
+                <Button size="sm" className="text-[11px] h-8 gap-1.5 shrink-0">
+                  <CheckCircle2 className="h-3 w-3" /> Save Template
+                </Button>
+              </div>
+            )}
+            {accountContext?.workspaceType === "isv" && (
+              <button onClick={() => navigate('/intelligence')} className="text-[11px] text-primary hover:underline flex items-center gap-1">
+                Deploy to another customer <ExternalLink className="h-3 w-3" />
+              </button>
+            )}
           </div>
         </>
       )}
