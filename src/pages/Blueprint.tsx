@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getAccountIntelligence, type AccountIntelligenceData } from "@/data/accountIntelligence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import {
   TrendingUp, ChevronDown, ChevronRight,
   Plus, GripVertical, Lock, Unlock,
   Thermometer, ArrowUpRight, RefreshCw, BarChart3,
+  Database, Layers, ExternalLink, MessageSquare,
 } from "lucide-react";
 
 // ============================================================
