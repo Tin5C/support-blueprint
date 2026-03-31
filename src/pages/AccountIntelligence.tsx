@@ -12,7 +12,7 @@ import {
   Bot, Zap, RefreshCw, Info, ArrowRight, Cpu, Server, Globe, Lock,
   Clipboard, Hash, FileWarning, Search, BellRing,
 } from "lucide-react";
-import { schindlerAccount, type AISource, type GapRecommendation } from "@/data/accountIntelData";
+import { acmeAccount, contosoAccount, allAccounts, type AISource, type GapRecommendation, type AccountIntelRecord } from "@/data/accountIntelData";
 
 // ─── Color helpers ───
 
@@ -166,13 +166,33 @@ function SourceCard({ source }: { source: AISource }) {
 // ─── Main page ───
 
 export default function AccountIntelligencePage() {
-  const acct = schindlerAccount;
+  const [selectedId, setSelectedId] = useState("acct-acme");
+  const acct = allAccounts.find(a => a.id === selectedId) || acmeAccount;
+
   const connectedSources = acct.sources.filter(s => s.status === "connected").length;
   const partialSources = acct.sources.filter(s => s.status === "partial").length;
   const avgCoverage = Math.round(acct.sources.reduce((sum, s) => sum + s.coverage, 0) / acct.sources.length);
 
   return (
     <div className="min-h-screen bg-background">
+      {/* ─── Account Switcher ─── */}
+      <div className="border-b bg-card/50">
+        <div className="max-w-[1280px] mx-auto px-8 py-2 flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mr-2">Account</span>
+          {allAccounts.map(a => (
+            <Button
+              key={a.id}
+              variant={selectedId === a.id ? "default" : "outline"}
+              size="sm"
+              className="h-7 text-[11px] px-3"
+              onClick={() => setSelectedId(a.id)}
+            >
+              {a.name}
+            </Button>
+          ))}
+        </div>
+      </div>
+
       {/* ─── 1. Header / Summary Strip ─── */}
       <div className="border-b bg-card">
         <div className="max-w-[1280px] mx-auto px-8 py-5">
