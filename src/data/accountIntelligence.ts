@@ -241,6 +241,7 @@ export interface AccountIntelligenceData {
   gaps: GraphGap[];
   classified: ClassifiedEntity[];
   ingestion: IngestionActivity[];
+  workspaceType: "isv" | "si";
 }
 
 const dataMap: Record<string, AccountIntelligenceData> = {
@@ -254,6 +255,7 @@ const dataMap: Record<string, AccountIntelligenceData> = {
     gaps: acmeGaps,
     classified: acmeClassified,
     ingestion: acmeIngestion,
+    workspaceType: "isv",
   },
   "cust-3": {
     customer: contosoCustomer,
@@ -265,6 +267,7 @@ const dataMap: Record<string, AccountIntelligenceData> = {
     gaps: contosoGaps,
     classified: contosoClassified,
     ingestion: contosoIngestion,
+    workspaceType: "si",
   },
 };
 

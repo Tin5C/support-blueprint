@@ -157,7 +157,7 @@ const riskBg: Record<string, string> = {
 export default function SupportStudio() {
   const [phase, setPhase] = useState<"input" | "generating" | "output">("input");
   const [progress, setProgress] = useState(0);
-  const [uploadedDocs, setUploadedDocs] = useState(["datasync-pro-v4.2-guide.pdf", "architecture-overview.md"]);
+  const [uploadedDocs, setUploadedDocs] = useState(["helio-crm-agent-v3.4.2-guide.pdf", "architecture-overview.md"]);
   const [uploadedRunbooks, setUploadedRunbooks] = useState(["incident-response-playbook.yaml"]);
 
   const handleGenerate = () => {
@@ -220,9 +220,9 @@ export default function SupportStudio() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <InputRow icon={Github} label="GitHub Repository" placeholder="https://github.com/org/repo" defaultValue="https://github.com/acme/datasync-pro" />
-                <InputRow icon={Globe} label="Documentation Site" placeholder="https://docs.yourproduct.io" defaultValue="https://docs.datasyncpro.io/v4.2" />
-                <InputRow icon={Code2} label="API Documentation" placeholder="https://api.yourproduct.io/docs" defaultValue="https://api.datasyncpro.io/v4/openapi.json" />
+                <InputRow icon={Github} label="GitHub Repository" placeholder="https://github.com/org/repo" defaultValue="https://github.com/acme/helio-crm-agent" />
+                <InputRow icon={Globe} label="Documentation Site" placeholder="https://docs.yourproduct.io" defaultValue="https://docs.helio-crm.io/v3.4.2" />
+                <InputRow icon={Code2} label="API Documentation" placeholder="https://api.yourproduct.io/docs" defaultValue="https://api.helio-crm.io/v3/openapi.json" />
                 <InputRow icon={Link} label="Additional URLs" placeholder="Confluence, Notion, wikis..." />
               </div>
             </div>
@@ -231,7 +231,7 @@ export default function SupportStudio() {
           <Section title="Customer Context" icon={Building2} badge="Deployment-specific">
             <div className="space-y-5">
               <div className="grid grid-cols-3 gap-4">
-                <InputRow icon={Building2} label="Customer Name" placeholder="Acme Corp" defaultValue="Meridian Financial" />
+                <InputRow icon={Building2} label="Customer Name" placeholder="Acme Corp" defaultValue="Acme Manufacturing" />
                 <div>
                   <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Deployment Type</label>
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border bg-card">
@@ -344,7 +344,7 @@ export default function SupportStudio() {
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — DataSync Pro × Meridian Financial</p>
+                    <p className="text-sm font-semibold text-foreground">Governed Blueprint Generated — Helio CRM Agent × Acme Manufacturing</p>
                     <p className="text-xs text-muted-foreground mt-0.5">6 categories · 8 signals · 6 runbooks · 7 approval rules · 6 escalation rules</p>
                   </div>
                 </div>
