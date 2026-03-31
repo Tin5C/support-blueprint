@@ -8,13 +8,13 @@ import {
 
 const primaryNav = [
   { to: "/", icon: LayoutDashboard, label: "Overview" },
+  { to: "/intelligence", icon: Database, label: "Account Intelligence" },
   { to: "/studio", icon: Zap, label: "Blueprint Studio" },
   { to: "/blueprints", icon: Map, label: "Active Blueprint" },
   { to: "/insights", icon: TrendingUp, label: "Insights" },
 ];
 
 const teamsNav = [
-  { to: "/teams/customers", icon: Database, label: "Account Intelligence" },
   { to: "/teams/cases", icon: MessageSquare, label: "Live Cases" },
   { to: "/teams/approvals", icon: CheckSquare, label: "Approvals", highlight: true },
   { to: "/teams/escalations", icon: ArrowUpRight, label: "Escalations" },
