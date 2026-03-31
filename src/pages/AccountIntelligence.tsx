@@ -360,10 +360,13 @@ export default function AccountIntelligencePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Account switcher */}
+      {/* Page title + account switcher */}
       <div className="border-b bg-card/50">
-        <div className="max-w-[1400px] mx-auto px-8 py-2 flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mr-2">Account</span>
+        <div className="max-w-[1400px] mx-auto px-8 pt-4 pb-2">
+          <h1 className="text-[15px] font-semibold text-foreground tracking-tight">Account Intelligence</h1>
+          <p className="text-[11px] text-muted-foreground mt-0.5 mb-3">Connect key customer sources and surface the solution, environment, and support context agents need to create and run support.</p>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mr-2">Account</span>
           {allAccounts.map(a => (
             <Button
               key={a.id}
