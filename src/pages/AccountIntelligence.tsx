@@ -378,6 +378,7 @@ export default function AccountIntelligencePage() {
               {a.name}
             </Button>
           ))}
+          </div>
         </div>
       </div>
 
