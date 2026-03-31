@@ -392,7 +392,7 @@ export default function AccountIntelligencePage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-[15px] font-semibold text-foreground tracking-tight">{acct.name}</h1>
+                  <h2 className="text-[15px] font-semibold text-foreground tracking-tight">{acct.name}</h2>
                   <Badge variant="outline" className="text-[9px] px-2 py-0 status-info">{acct.deploymentStatus}</Badge>
                   <Badge variant="outline" className={`text-[9px] px-2 py-0 ${riskBadge[acct.riskLevel]}`}>Risk: {acct.riskLevel}</Badge>
                 </div>
