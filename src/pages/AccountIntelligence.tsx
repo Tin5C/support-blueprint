@@ -166,7 +166,9 @@ function SourceCard({ source }: { source: AISource }) {
 // ─── Main page ───
 
 export default function AccountIntelligencePage() {
-  const acct = schindlerAccount;
+  const [selectedId, setSelectedId] = useState("acct-acme");
+  const acct = allAccounts.find(a => a.id === selectedId) || acmeAccount;
+
   const connectedSources = acct.sources.filter(s => s.status === "connected").length;
   const partialSources = acct.sources.filter(s => s.status === "partial").length;
   const avgCoverage = Math.round(acct.sources.reduce((sum, s) => sum + s.coverage, 0) / acct.sources.length);
