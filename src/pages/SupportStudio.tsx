@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAccountIntelligence, type AccountIntelligenceData } from "@/data/accountIntelligence";
+import { productKnowledgeSources } from "@/data/productKnowledge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
