@@ -255,6 +255,7 @@ const dataMap: Record<string, AccountIntelligenceData> = {
     gaps: acmeGaps,
     classified: acmeClassified,
     ingestion: acmeIngestion,
+    workspaceType: "isv",
   },
   "cust-3": {
     customer: contosoCustomer,
