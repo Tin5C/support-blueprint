@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAccountIntelligence, type AccountIntelligenceData } from "@/data/accountIntelligence";
+import { productKnowledgeSources } from "@/data/productKnowledge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,9 @@ import {
   Shield, ArrowRight, Github, Globe, Code2, Building2, Server,
   Clock, Lock, Plus, X, ChevronDown, ChevronRight,
   Zap, Brain, CheckCircle2, Eye, Layers, Target, Bot, Unlock,
+  Database, ExternalLink, Cloud, Square,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // --- Generated output data ---
 const generatedCategories = [
@@ -157,6 +160,7 @@ const riskBg: Record<string, string> = {
 
 // ================================================================
 export default function SupportStudio() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const accountId = searchParams.get("accountId");
   const [accountContext, setAccountContext] = useState<AccountIntelligenceData | null>(null);
@@ -199,100 +203,195 @@ export default function SupportStudio() {
       {/* INPUT PHASE */}
       {(phase === "input" || phase === "generating") && (
         <>
-          <Section title="Product Knowledge" icon={BookOpen} badge="Core input">
-            <div className="space-y-5">
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Product Documentation</label>
-                <div className="border-2 border-dashed rounded-lg p-5 flex flex-col items-center gap-2 hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
-                  <Upload className="h-6 w-6 text-muted-foreground" />
-                  <p className="text-xs font-medium text-foreground">Drop product docs here or click to browse</p>
-                  <p className="text-[11px] text-muted-foreground">PDF, Markdown, DOCX, YAML — up to 50MB</p>
-                </div>
-                {uploadedDocs.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {uploadedDocs.map((f, i) => <FilePill key={i} name={f} onRemove={() => setUploadedDocs(uploadedDocs.filter((_, j) => j !== i))} />)}
+          {/* Two-panel layout */}
+          <div className="grid grid-cols-2 gap-5">
+            {/* LEFT PANEL — From Account Intelligence */}
+            <Card className="border">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="h-7 w-7 rounded-lg bg-primary/8 flex items-center justify-center">
+                    <Database className="h-3.5 w-3.5 text-primary" />
                   </div>
-                )}
-              </div>
-
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Runbooks & Playbooks</label>
-                <div className="border-2 border-dashed rounded-lg p-4 flex items-center gap-3 hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
-                  <BookOpen className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-xs font-medium text-foreground">Upload existing runbooks</p>
-                    <p className="text-[11px] text-muted-foreground">YAML, JSON, Markdown — we'll parse and structure them</p>
+                    <h3 className="text-[13px] font-semibold text-foreground">From Account Intelligence</h3>
+                    <p className="text-[10px] text-muted-foreground">Customer context for blueprint generation</p>
                   </div>
                 </div>
-                {uploadedRunbooks.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {uploadedRunbooks.map((f, i) => <FilePill key={i} name={f} onRemove={() => setUploadedRunbooks(uploadedRunbooks.filter((_, j) => j !== i))} />)}
+
+                {accountContext ? (
+                  <div className="space-y-3">
+                    {/* Account + product */}
+                    <div className="p-3 rounded-lg border bg-muted/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[11px] font-semibold text-foreground">{accountContext.customer.name}</span>
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{accountContext.customer.supportTier} tier</Badge>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">Products</span>
+                          <p className="text-[11px] text-foreground">{accountContext.context.productsInScope.join(", ")}</p>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">Environments</span>
+                          <p className="text-[11px] text-foreground">{accountContext.context.environments.join(", ")}</p>
+                        </div>
+                        <div>
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">Business Criticality</span>
+                          <p className="text-[11px] text-foreground capitalize">{accountContext.context.businessCriticality}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Top risks */}
+                    {accountContext.risks.length > 0 && (
+                      <div>
+                        <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1.5">Top Risks</span>
+                        <div className="space-y-1.5">
+                          {accountContext.risks.slice(0, 2).map(r => (
+                            <div key={r.id} className="flex items-start gap-2 p-2 rounded-md border bg-card">
+                              <AlertTriangle className={`h-3 w-3 mt-0.5 shrink-0 ${r.severity === "high" || r.severity === "critical" ? "text-destructive" : "text-warning"}`} />
+                              <span className="text-[10px] text-foreground flex-1">{r.title}</span>
+                              <Badge variant="outline" className={`text-[8px] px-1 py-0 shrink-0 ${riskBg[r.severity]}`}>{r.severity}</Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Gaps */}
+                    {accountContext.gaps.length > 0 && (
+                      <div>
+                        <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1.5">Open Gaps</span>
+                        <div className="space-y-1.5">
+                          {accountContext.gaps.slice(0, 2).map(g => (
+                            <div key={g.id} className="flex items-center gap-2 p-2 rounded-md border bg-card">
+                              <AlertTriangle className={`h-3 w-3 shrink-0 ${g.severity === "high" ? "text-destructive" : "text-warning"}`} />
+                              <span className="text-[10px] text-muted-foreground flex-1">{g.description}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Footer link */}
+                    <div className="flex items-center gap-1.5 pt-1">
+                      <CheckCircle2 className="h-3 w-3 text-success" />
+                      <span className="text-[10px] text-muted-foreground">Loaded from Account Intelligence</span>
+                      <button onClick={() => navigate('/intelligence')} className="text-[10px] text-primary hover:underline ml-auto flex items-center gap-1">
+                        View account <ExternalLink className="h-2.5 w-2.5" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Empty state — no account connected */
+                  <div className="py-8 text-center space-y-3">
+                    <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center mx-auto">
+                      <Database className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-[12px] font-medium text-foreground">Connect an account first</p>
+                      <p className="text-[10px] text-muted-foreground mt-1 max-w-[240px] mx-auto">
+                        Go to Account Intelligence to connect sources and build customer context
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" className="text-[11px] h-8 gap-1.5" onClick={() => navigate('/intelligence')}>
+                      <ExternalLink className="h-3 w-3" />
+                      Open Account Intelligence
+                    </Button>
                   </div>
                 )}
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="grid grid-cols-2 gap-4">
-                <InputRow icon={Github} label="GitHub Repository" placeholder="https://github.com/org/repo" defaultValue="https://github.com/acme/helio-crm-agent" />
-                <InputRow icon={Globe} label="Documentation Site" placeholder="https://docs.yourproduct.io" defaultValue="https://docs.helio-crm.io/v3.4.2" />
-                <InputRow icon={Code2} label="API Documentation" placeholder="https://api.yourproduct.io/docs" defaultValue="https://api.helio-crm.io/v3/openapi.json" />
-                <InputRow icon={Link} label="Additional URLs" placeholder="Confluence, Notion, wikis..." />
-              </div>
-            </div>
-          </Section>
+            {/* RIGHT PANEL — Product Knowledge */}
+            {(() => {
+              const wsType = accountContext?.workspaceType || "isv";
+              const pkSource = accountContext ? productKnowledgeSources.find(p => p.accountId === accountContext.customer.id) : null;
+              const isISV = wsType === "isv";
 
-          <Section title="Customer Context" icon={Building2} badge="Deployment-specific">
-            <div className="space-y-5">
-              <div className="grid grid-cols-3 gap-4">
-                <InputRow icon={Building2} label="Customer Name" placeholder="Acme Corp" defaultValue="Acme Manufacturing" />
-                <div>
-                  <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Deployment Type</label>
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border bg-card">
-                    <Server className="h-4 w-4 text-muted-foreground" />
-                    <select className="flex-1 text-sm bg-transparent outline-none text-foreground" defaultValue="cloud-multi">
-                      <option value="cloud-single">Cloud — Single Region</option>
-                      <option value="cloud-multi">Cloud — Multi Region</option>
-                      <option value="hybrid">Hybrid</option>
-                      <option value="on-prem">On-Premises</option>
-                    </select>
-                  </div>
-                </div>
-                <InputRow icon={Globe} label="Environment" placeholder="AWS US-East, Azure West EU..." defaultValue="AWS US-East-1, US-West-2" />
-              </div>
+              return (
+                <Card className="border">
+                  <CardContent className="p-5 space-y-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="h-7 w-7 rounded-lg bg-primary/8 flex items-center justify-center">
+                        <BookOpen className="h-3.5 w-3.5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-[13px] font-semibold text-foreground">
+                          {isISV ? "Your product sources" : "This engagement's sources"}
+                        </h3>
+                        <p className="text-[10px] text-muted-foreground">
+                          {isISV ? "Upload once — deployed per customer" : "Upload per client — save as template"}
+                        </p>
+                      </div>
+                      {!isISV && <Badge variant="outline" className="text-[9px] px-1.5 py-0 ml-auto">SI</Badge>}
+                    </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <TagInput label="Enabled Features" tags={["Batch Ingestion", "Real-time Sync", "Schema Validation", "CDC Streams", "Custom Transforms"]} />
-                <TagInput label="Integrations" tags={["Oracle 12c", "PostgreSQL 15", "Salesforce", "Snowflake", "Kafka"]} />
-              </div>
+                    {/* File drop zone */}
+                    <div>
+                      <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                        {isISV ? "Product Documentation" : "Solution Documentation"}
+                      </label>
+                      <div className="border-2 border-dashed rounded-lg p-4 flex flex-col items-center gap-1.5 hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
+                        <Upload className="h-5 w-5 text-muted-foreground" />
+                        <p className="text-[11px] font-medium text-foreground">
+                          {isISV ? "Product docs, architecture, API reference" : "Solution design, integration specs, deployment notes"}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">PDF, Markdown, DOCX, YAML — up to 50MB</p>
+                      </div>
+                      {uploadedDocs.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {uploadedDocs.map((f, i) => <FilePill key={i} name={f} onRemove={() => setUploadedDocs(uploadedDocs.filter((_, j) => j !== i))} />)}
+                        </div>
+                      )}
+                    </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">SLA Tier</label>
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg border bg-card">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <select className="flex-1 text-sm bg-transparent outline-none text-foreground" defaultValue="enterprise">
-                      <option value="standard">Standard — 8hr response</option>
-                      <option value="premium">Premium — 4hr response</option>
-                      <option value="enterprise">Enterprise — 1hr response</option>
-                      <option value="critical">Mission Critical — 15min</option>
-                    </select>
-                  </div>
-                </div>
-                <InputRow icon={Server} label="Instance Count" placeholder="e.g. 24" defaultValue="24 instances" />
-                <InputRow icon={Clock} label="Maintenance Window" placeholder="e.g. Sun 02:00-06:00 UTC" defaultValue="Sun 02:00–06:00 UTC" />
-              </div>
+                    {/* URL inputs */}
+                    <div className="space-y-3">
+                      <InputRow icon={Github} label="GitHub Repository" placeholder={isISV ? "https://github.com/org/repo" : "Client solution repo"} defaultValue={pkSource?.githubRepo || ""} />
+                      <InputRow icon={Globe} label={isISV ? "Documentation Site" : "Solution Documentation"} placeholder="https://docs.yourproduct.io" defaultValue={pkSource?.docsUrl || ""} />
+                      {isISV ? (
+                        <InputRow icon={Code2} label="API Documentation" placeholder="https://api.yourproduct.io/docs" defaultValue={pkSource?.apiDocsUrl || ""} />
+                      ) : (
+                        <InputRow icon={Link} label="Additional URLs" placeholder="Confluence, Notion, wikis..." />
+                      )}
+                    </div>
 
-              <div>
-                <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">Special Constraints</label>
-                <textarea
-                  className="w-full p-3 rounded-lg border bg-card text-sm outline-none placeholder:text-muted-foreground/60 resize-none"
-                  rows={3}
-                  placeholder="Compliance requirements, operational constraints, customer-specific policies..."
-                  defaultValue="PCI-DSS compliant environment. No data may leave US regions. Nightly batch window: 2–6 AM UTC. Customer has custom Oracle connector with vendor-specific patches."
-                />
-              </div>
-            </div>
-          </Section>
+                    {/* Runbook upload */}
+                    <div>
+                      <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                        {isISV ? "Runbooks & Playbooks" : "Delivery Runbooks"}
+                      </label>
+                      <div className="border-2 border-dashed rounded-lg p-3 flex items-center gap-3 hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
+                        <BookOpen className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <p className="text-[11px] font-medium text-foreground">
+                            {isISV ? "Upload existing runbooks" : "Delivery runbooks from this engagement"}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">YAML, JSON, Markdown</p>
+                        </div>
+                      </div>
+                      {uploadedRunbooks.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {uploadedRunbooks.map((f, i) => <FilePill key={i} name={f} onRemove={() => setUploadedRunbooks(uploadedRunbooks.filter((_, j) => j !== i))} />)}
+                        </div>
+                      )}
+                    </div>
 
+                    {/* SI-only: save as template checkbox */}
+                    {!isISV && (
+                      <label className="flex items-center gap-2 p-2.5 rounded-lg border bg-card cursor-pointer hover:bg-accent/30 transition-colors">
+                        <input type="checkbox" className="rounded border-muted-foreground" />
+                        <span className="text-[11px] text-foreground">Save as reusable template after blueprint generation</span>
+                      </label>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })()}
+          </div>
+
+          {/* Governance Boundaries — below both panels */}
           <Section title="Governance Boundaries" icon={Shield} badge="Critical" defaultOpen={true}>
             <p className="text-xs text-muted-foreground mb-4">Define what AI can do automatically, what requires human approval, and what must never be automated.</p>
             <div className="space-y-5">
@@ -335,10 +434,14 @@ export default function SupportStudio() {
               </Card>
             ) : (
               <div className="flex items-center gap-4">
-                <Button size="lg" onClick={handleGenerate} className="gap-2.5 px-6">
+                <Button size="lg" onClick={handleGenerate} className="gap-2.5 px-6" disabled={!accountContext}>
                   <Sparkles className="h-4 w-4" /> Generate Governed Blueprint
                 </Button>
-                <p className="text-xs text-muted-foreground">AI will analyze your inputs and create a governed support system with approval boundaries and escalation logic</p>
+                <p className="text-xs text-muted-foreground">
+                  {accountContext
+                    ? "AI will analyze your inputs and create a governed support system with approval boundaries and escalation logic"
+                    : "Connect an account in Account Intelligence to enable blueprint generation"}
+                </p>
               </div>
             )}
           </div>
