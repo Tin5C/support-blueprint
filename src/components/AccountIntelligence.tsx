@@ -103,7 +103,7 @@ export default function AccountIntelligence({ data }: Props) {
       {/* Customer header — aligned to Blueprint header pattern */}
       <div className="px-6 pt-5 pb-4 border-b">
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-          <span>Account Intelligence</span>
+          <span>Solution Intelligence</span>
           <ChevronRight className="h-3 w-3" />
           <span className="text-foreground font-medium">{customer.name}</span>
         </div>

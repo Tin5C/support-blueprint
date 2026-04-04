@@ -24,10 +24,10 @@ export interface Customer {
 
 export const customers: Customer[] = [
   { id: "cust-1", name: "Acme Manufacturing", product: "Helio CRM Agent", environment: "Azure West US", risk: "high", openCases: 4, automationRate: 68, healthScore: 62, lastActivity: "8 min ago", deploymentDate: "2024-06-12", nodes: 32 },
-  { id: "cust-2", name: "Northwind Health", product: "OpsPilot Assistant", environment: "AWS US-East", risk: "low", openCases: 1, automationRate: 93, healthScore: 91, lastActivity: "1 hr ago", deploymentDate: "2024-04-20", nodes: 48 },
+  { id: "cust-2", name: "Northwind Health", product: "OpsPilot Assistant", environment: "Azure North Europe", risk: "low", openCases: 1, automationRate: 93, healthScore: 91, lastActivity: "1 hr ago", deploymentDate: "2024-04-20", nodes: 48 },
   { id: "cust-3", name: "Contoso Digital", product: "Finance Flow Agent", environment: "Azure EU-West", risk: "medium", openCases: 3, automationRate: 79, healthScore: 73, lastActivity: "22 min ago", deploymentDate: "2024-09-05", nodes: 20 },
-  { id: "cust-4", name: "HelioWorks AG", product: "Helio CRM Agent", environment: "GCP EU-West", risk: "critical", openCases: 3, automationRate: 54, healthScore: 38, lastActivity: "2 min ago", deploymentDate: "2024-03-01", nodes: 64 },
-  { id: "cust-5", name: "Alpine Grid", product: "OpsPilot Assistant", environment: "AWS EU-Central", risk: "low", openCases: 1, automationRate: 96, healthScore: 95, lastActivity: "3 hr ago", deploymentDate: "2024-08-18", nodes: 16 },
+  { id: "cust-4", name: "HelioWorks AG", product: "Helio CRM Agent", environment: "Azure West Europe", risk: "critical", openCases: 3, automationRate: 54, healthScore: 38, lastActivity: "2 min ago", deploymentDate: "2024-03-01", nodes: 64 },
+  { id: "cust-5", name: "Alpine Grid", product: "OpsPilot Assistant", environment: "Azure Switzerland North", risk: "low", openCases: 1, automationRate: 96, healthScore: 95, lastActivity: "3 hr ago", deploymentDate: "2024-08-18", nodes: 16 },
 ];
 
 export interface Case {

@@ -252,7 +252,7 @@ export default function Blueprint() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             {[
-              { label: "Account Intelligence", path: `/intelligence`, active: false },
+              { label: "Solution Intelligence", path: `/intelligence`, active: false },
               { label: "Blueprint Studio", path: `/studio${accountId ? `?accountId=${accountId}` : ""}`, active: false },
               { label: "Active Blueprint", path: null, active: true },
               { label: "Live Cases", path: "/teams/cases", active: false },
@@ -465,7 +465,7 @@ export default function Blueprint() {
         </SectionHeader>
 
         {/* FAILURE MODES */}
-        <SectionHeader icon={AlertTriangle} title="Common Failure Modes" count={failureModes.length} subtitle="7 identified · 1 flagged from Account Intelligence" open={sections.failureModes} onToggle={() => toggleSection("failureModes")}>
+        <SectionHeader icon={AlertTriangle} title="Common Failure Modes" count={failureModes.length} subtitle="7 identified · 1 flagged from Solution Intelligence" open={sections.failureModes} onToggle={() => toggleSection("failureModes")}>
           <div className="space-y-2">
             {failureModes.map((fm, i) => (
               <div key={i} className="p-3.5 rounded-lg border bg-card hover:bg-accent/30 transition-colors">
@@ -477,7 +477,7 @@ export default function Blueprint() {
                   <div className="flex items-center gap-2 shrink-0">
                     {i === 0 && (
                       <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-warning/10 text-warning border-warning/20">
-                        Flagged in Account Intelligence
+                        Flagged in Solution Intelligence
                       </Badge>
                     )}
                     <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
@@ -548,7 +548,7 @@ export default function Blueprint() {
         {/* Persona-specific footer CTAs */}
         <div className="flex items-center justify-between pt-3 border-t">
           <button onClick={() => navigate('/intelligence')} className="text-[11px] text-primary hover:underline flex items-center gap-1">
-            View in Account Intelligence <ExternalLink className="h-3 w-3" />
+            View in Solution Intelligence <ExternalLink className="h-3 w-3" />
           </button>
           <div className="flex gap-2">
             {wsType === "si" && (

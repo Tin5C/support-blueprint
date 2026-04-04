@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 28" fill="none">
+  <!-- Geometric square mark -->
+  <rect x="0" y="2" width="24" height="24" rx="4.5" fill="#c47d2a"/>
+  <rect x="6" y="8" width="12" height="12" rx="2" fill="#d9922f" opacity="0.5"/>
+  <rect x="9" y="11" width="6" height="6" rx="1" fill="#f5f2ed" opacity="0.25"/>
+  <!-- Wordmark -->
+  <text x="32" y="20.5" font-family="Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif" font-size="18" font-weight="700" fill="#f5f2ed" letter-spacing="0.3">SavanoAI</text>
+</svg>

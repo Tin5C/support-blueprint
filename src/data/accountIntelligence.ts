@@ -1,4 +1,4 @@
-// Account Intelligence mock data — aligned with canonical customers from mockData.ts
+// Solution Intelligence mock data — aligned with canonical customers from mockData.ts
 
 export interface AICustomer {
   id: string;
@@ -90,7 +90,7 @@ export const acmeCustomer: AICustomer = {
   industry: "Manufacturing",
   size: "Enterprise",
   supportTier: "premium",
-  region: "US (West) + APAC",
+  region: "Azure West Europe + Southeast Asia",
   accountOwner: "Sarah Chen",
   primaryContact: "admin@acme.com",
   healthStatus: "medium",
@@ -161,7 +161,7 @@ export const acmeIngestion: IngestionActivity[] = [
 export const contosoCustomer: AICustomer = {
   id: "cust-3",
   name: "Contoso Digital",
-  industry: "Financial Services",
+  industry: "Swiss Financial Services",
   size: "Mid-market",
   supportTier: "standard",
   region: "EU (West)",

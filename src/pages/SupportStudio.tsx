@@ -206,7 +206,7 @@ export default function SupportStudio() {
         <>
           {/* Two-panel layout */}
           <div className="grid grid-cols-2 gap-5">
-            {/* LEFT PANEL — From Account Intelligence */}
+            {/* LEFT PANEL — From Solution Intelligence */}
             <Card className="border">
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-center gap-2 mb-1">
@@ -214,7 +214,7 @@ export default function SupportStudio() {
                     <Database className="h-3.5 w-3.5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-[13px] font-semibold text-foreground">From Account Intelligence</h3>
+                    <h3 className="text-[13px] font-semibold text-foreground">From Solution Intelligence</h3>
                     <p className="text-[10px] text-muted-foreground">Customer context for blueprint generation</p>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export default function SupportStudio() {
                     {/* Footer link */}
                     <div className="flex items-center gap-1.5 pt-1">
                       <CheckCircle2 className="h-3 w-3 text-success" />
-                      <span className="text-[10px] text-muted-foreground">Loaded from Account Intelligence</span>
+                      <span className="text-[10px] text-muted-foreground">Loaded from Solution Intelligence</span>
                       <button onClick={() => navigate('/intelligence')} className="text-[10px] text-primary hover:underline ml-auto flex items-center gap-1">
                         View account <ExternalLink className="h-2.5 w-2.5" />
                       </button>
@@ -292,12 +292,12 @@ export default function SupportStudio() {
                     <div>
                       <p className="text-[12px] font-medium text-foreground">Connect an account first</p>
                       <p className="text-[10px] text-muted-foreground mt-1 max-w-[240px] mx-auto">
-                        Go to Account Intelligence to connect sources and build customer context
+                        Go to Solution Intelligence to connect sources and build customer context
                       </p>
                     </div>
                     <Button variant="outline" size="sm" className="text-[11px] h-8 gap-1.5" onClick={() => navigate('/intelligence')}>
                       <ExternalLink className="h-3 w-3" />
-                      Open Account Intelligence
+                      Open Solution Intelligence
                     </Button>
                   </div>
                 )}
@@ -441,7 +441,7 @@ export default function SupportStudio() {
                 <p className="text-xs text-muted-foreground">
                   {accountContext
                     ? "AI will analyze your inputs and create a governed support system with approval boundaries and escalation logic"
-                    : "Connect an account in Account Intelligence to enable blueprint generation"}
+                    : "Connect an account in Solution Intelligence to enable blueprint generation"}
                 </p>
               </div>
             )}
@@ -624,7 +624,7 @@ export default function SupportStudio() {
                     <div className="flex items-center gap-2 shrink-0">
                       {flagged && (
                         <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-warning/10 text-warning border-warning/20">
-                          Flagged in Account Intelligence
+                          Flagged in Solution Intelligence
                         </Badge>
                       )}
                       <Badge variant="outline" className={`text-[10px] ${fm.probability === "High" ? riskBg.high : fm.probability === "Medium" ? riskBg.medium : riskBg.low}`}>{fm.probability}</Badge>
