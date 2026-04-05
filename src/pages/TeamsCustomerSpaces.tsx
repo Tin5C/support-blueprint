@@ -245,7 +245,7 @@ function ProjectDetail({ account, project }: { account: Account; project: Projec
           <div>
             <h1 className="text-lg font-semibold text-foreground tracking-tight">{p.name} <span className="text-sm font-normal text-muted-foreground">v{p.version}</span></h1>
             <p className="text-[12px] text-muted-foreground mt-0.5">
-              Connected {p.deployedDate} · {account.region}
+              Connected {ft ? "2 days ago" : p.deployedDate} · {account.region}
             </p>
           </div>
           <div className="flex items-center gap-2">
