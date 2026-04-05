@@ -90,9 +90,9 @@ Support Studio covers **Deploy → Re-evaluate**.
 
 ### Step 0 — Enterprise Context
 
-Before evaluating the solution, Launch Studio understands what "enterprise ready" means for this specific deployment context — the internal standards of the company deploying or buying the solution.
+Before evaluating the solution, Launch Studio understands what "enterprise ready" means for this specific deployment context — the internal standards of the receiving organisation.
 
-**Who provides these documents:** Both builder and buyer can contribute. Launch Studio accepts input from either side.
+**Who provides these documents:** Both builder and receiving organisation can contribute. Launch Studio accepts input from either side.
 
 **Sources accepted:**
 
@@ -109,7 +109,25 @@ Before evaluating the solution, Launch Studio understands what "enterprise ready
 | Internal audit reports | Previous findings — where they have been burned before |
 | IT asset management records | Approved vendors list |
 
-**If buyer documents are not available:** A structured questionnaire infers the same information. Evaluation proceeds with a visible warning that findings are based on questionnaire responses and may be less precise. Can be upgraded when documents become available.
+**Three input modes (all produce the same EnterpriseBaseline output):**
+
+**MODE 1 — Document upload**
+Upload real documents from the receiving organisation. Parser extracts requirements directly from documents. High accuracy, high specificity. Suitable for: Enterprises uploading their own estate, SIs with client documents from the engagement.
+
+**MODE 2 — Guided questionnaire**
+Answer targeted questions about the deployment context. Parser infers likely requirements from sector norms. Suitable for: Software Vendors with no receiving organisation documents yet.
+
+**MODE 3 — Hybrid (default, most common)**
+Upload what exists, questionnaire fills detected gaps.
+- Stage 1: Upload documents
+- Stage 2: Gap analysis — what's covered, what's missing
+- Stage 3: Targeted questions only for gaps
+
+Suitable for: All personas. Default mode.
+
+Each requirement in the output is labelled:
+- **"extracted"** — from a real document (high confidence)
+- **"inferred"** — from questionnaire answers (medium confidence)
 
 **Output:** Enterprise Readiness Baseline + internal standards mapped + gap preview.
 
@@ -272,7 +290,7 @@ Agent 9 produces a snapshot — intentionally incomplete. Shows the shape withou
 | Contextualised score | Always stated with context — "74/100 — Conditionally Ready for GDPR + FINMA" |
 | Graduated readiness | Stage-appropriate targets — pilot vs. production vs. regulated |
 | Expert review | Premium — named reviewer elevates self-assessment to third-party verified |
-| Procurement package | Full artifact set for enterprise buyer procurement teams |
+| Procurement package | Full artifact set for receiving organisation procurement teams |
 | Support Preview | Agent 9 output — snapshot of governed support, hands off to Support Studio |
 | Per-evaluation pricing | Each completed evaluation is a discrete charged transaction |
 
@@ -292,8 +310,12 @@ Agent 9 produces a snapshot — intentionally incomplete. Shows the shape withou
 
 | Account | Type | AI Risk | Regulatory context | Contact |
 |---------|------|---------|-------------------|---------|
+| FinTrack AG | ISV / Swiss Fintech | High | GDPR, FINMA, EU AI Act (High Risk), ISO 27001, Microsoft WAF | — |
 | Acme Manufacturing | ISV / Enterprise | Limited | ISO 27001, Microsoft WAF, internal IT runbooks | Sarah Chen |
 | Contoso Digital | SI / Swiss Financial Services | High | GDPR, FINMA, MiFID II, Microsoft WAF, internal audit history | Marcus Webb |
+
+**FinTrack AG** — primary demo scenario for all evaluation engine tests.
+Client: Alpina Freight (Swiss logistics enterprise). App: AI cash flow forecasting agent · Azure Switzerland North.
 
 ---
 
@@ -301,11 +323,11 @@ Agent 9 produces a snapshot — intentionally incomplete. Shows the shape withou
 
 | Screen | Route | Purpose |
 |--------|-------|---------|
-| Enterprise Context | /context | Step 0 — internal standards, buyer baseline |
+| Enterprise Context | /context | Step 0 — internal standards, receiving organisation baseline |
 | Solution Intelligence | /intelligence | Connect sources, classify AI risk, detect regulatory context |
 | Readiness Report | /readiness | 9-agent scores, gap register, remediation |
 | Expert Review | /review | Premium — expert validation and sign-off |
-| Procurement Package | /package | Generated artifacts for enterprise buyer |
+| Procurement Package | /package | Generated artifacts for receiving organisation |
 | Support Preview | /preview | Agent 9 output — teaser for Support Studio |
 
 ---
@@ -324,6 +346,8 @@ When building Launch Studio screens, apply these rules without being asked:
 - **Architecture diagram:** Always shown as auto-generated with an "expert validated" badge in premium tier
 - **Priority labels:** Always P0/P1/P2 — never Critical/High/Medium or other variants
 - **Vibe-coder language:** Plain language first, framework jargon secondary. Business impact before technical detail on all findings
+- **Navigation:** "+" button on LAUNCH STUDIO section header navigates to /context to start a new evaluation. No standalone "New Blueprint" CTA button
+- **Enterprise Context language:** Always use "receiving organisation" — never "buyer" — to remain persona-neutral across Software Vendors, SIs, and Enterprises
 
 ---
 
@@ -378,7 +402,7 @@ Save enterprise context profile per client for reuse across projects.
 *Done when:* Saved profile selectable on new evaluation start, updates don't affect completed evaluations.
 
 **US-05** · P1 · Startup founder
-Use a structured questionnaire when buyer documents aren't available.
+Use a structured questionnaire when receiving organisation documents aren't available.
 *Done when:* Questionnaire produces equivalent profile with visible warning distinguishing it from document scanning.
 
 #### Epic 1 — Solution Intelligence
@@ -447,7 +471,7 @@ See reviewer name, credentials, methodology, and scope.
 
 **US-20** · P0 (premium) · Any builder
 Expert flags critical findings discovered after package shared with prospect.
-*Done when:* Builder notified immediately, expert remediates with builder, re-signs updated package, buyer notified of new version.
+*Done when:* Builder notified immediately, expert remediates with builder, re-signs updated package, receiving organisation notified of new version.
 
 #### Epic 5 — Procurement Package
 
