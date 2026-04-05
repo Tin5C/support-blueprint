@@ -315,7 +315,7 @@ Agent 9 produces a snapshot — intentionally incomplete. Shows the shape withou
 | Contoso Digital | SI / Swiss Financial Services | High | GDPR, FINMA, MiFID II, Microsoft WAF, internal audit history | Marcus Webb |
 
 **FinTrack AG** — primary demo scenario for all evaluation engine tests.
-Client: Alpina Freight (Swiss logistics enterprise). App: AI cash flow forecasting agent · Azure Switzerland North.
+Client: Alpina Bank (Swiss private bank). App: AI cash flow forecasting agent · Azure Switzerland North.
 
 ---
 

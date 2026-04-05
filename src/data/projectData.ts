@@ -146,7 +146,7 @@ export const accounts: Account[] = [
         riskSignals: [
           { id: "rs-ft1", severity: "critical", title: "Hardcoded API key in repository", description: "Production API credentials found in plain text in committed source code", detectedDate: "2025-03-20", status: "new" },
           { id: "rs-ft2", severity: "high", title: "No human oversight for financial recommendations", description: "EU AI Act Article 14 requires human oversight for High Risk AI systems", detectedDate: "2025-03-20", status: "new" },
-          { id: "rs-ft3", severity: "high", title: "No GDPR data processing agreement", description: "Processing Alpina Freight's financial data without a signed Article 28 DPA", detectedDate: "2025-03-20", status: "new" },
+          { id: "rs-ft3", severity: "high", title: "No GDPR data processing agreement", description: "Processing Alpina Bank's financial data without a signed Article 28 DPA", detectedDate: "2025-03-20", status: "new" },
           { id: "rs-ft4", severity: "high", title: "No monitoring configured on Azure", description: "No Azure Monitor, no alerting, no logging — cannot meet Alpina's 4-hour SLA", detectedDate: "2025-03-20", status: "new" },
         ],
       },

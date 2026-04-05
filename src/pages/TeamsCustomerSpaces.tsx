@@ -360,7 +360,7 @@ function ProjectDetail({ account, project }: { account: Account; project: Projec
               {ft && (
                 <div>
                   <h3 className="text-[12px] font-semibold text-foreground mb-0.5">Enterprise Context Baseline</h3>
-                  <p className="text-[10px] text-muted-foreground mb-3">Requirements from Alpina Freight — imported from Step 0</p>
+                  <p className="text-[10px] text-muted-foreground mb-3">Requirements from Alpina Bank — imported from Step 0</p>
 
                   <Card className="border">
                     <CardContent className="p-4 space-y-3">
