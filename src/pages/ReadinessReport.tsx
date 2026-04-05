@@ -156,34 +156,32 @@ export default function ReadinessReport() {
   return (
     <div className="p-6 space-y-6 max-w-[1400px] mx-auto animate-fade-in">
       {/* ── Page Header ── */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-[22px] font-light text-foreground tracking-tight" style={{ fontFamily: "'Fraunces', serif" }}>
-            Readiness Report
-          </h1>
-          <p className="text-[13px] text-muted-foreground mt-1">
+      <div>
+        <h1 className="text-[22px] font-light text-foreground tracking-tight" style={{ fontFamily: "'Fraunces', serif" }}>
+          Readiness Report
+        </h1>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-[13px] text-muted-foreground">
             FinTrack AG — Cash Flow Forecasting Agent · Azure Switzerland North
           </p>
-        </div>
-
-        {/* Score display */}
-        <div className="text-right">
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center gap-3">
             <div
-              className="h-16 w-16 rounded-full border-4 flex items-center justify-center"
+              className="h-14 w-14 rounded-full border-4 flex items-center justify-center shrink-0"
               style={{
                 borderColor: currentScore >= 80 ? "hsl(var(--success))" : currentScore >= 60 ? "hsl(var(--warning))" : "hsl(var(--destructive))",
               }}
             >
-              <span className="text-xl font-bold text-foreground">{currentScore}</span>
+              <span className="text-lg font-bold text-foreground">{currentScore}</span>
+            </div>
+            <div className="shrink-0">
+              <p className="text-[11px] text-muted-foreground whitespace-nowrap">
+                {scoreBand} for GDPR · FINMA · EU AI Act (High Risk) · ISO 27001
+              </p>
+              <Badge className="mt-1 bg-amber-500/10 text-amber-700 border-amber-500/20 text-[10px] px-2 py-0.5 uppercase font-semibold">
+                {scoreBand}
+              </Badge>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-1.5 max-w-[340px]">
-            {scoreBand} for GDPR · FINMA · EU AI Act (High Risk) · ISO 27001
-          </p>
-          <Badge className="mt-1.5 bg-amber-500/10 text-amber-700 border-amber-500/20 text-[10px] px-2 py-0.5 uppercase font-semibold">
-            {scoreBand}
-          </Badge>
         </div>
       </div>
 
