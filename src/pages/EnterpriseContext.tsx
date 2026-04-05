@@ -119,7 +119,7 @@ export default function EnterpriseContext() {
           <div>
             <h2 className="text-[14px] font-semibold text-foreground">Enterprise context documents</h2>
             <p className="text-[12px] text-muted-foreground mt-0.5">
-              Documents from your enterprise buyer that define their internal standards
+              The more context you provide, the more precisely Launch Studio can define enterprise readiness for this deployment — policies, runbooks, industry requirements, existing procedures.
             </p>
           </div>
 

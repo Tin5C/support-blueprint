@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight, ChevronDown, Database, Plus, Sparkles,
+  AlertTriangle, Shield, CheckCircle2, XCircle, Clock,
 } from "lucide-react";
 import { accounts, findProject } from "@/data/projectData";
 import type { Account, Project } from "@/data/projectData";
@@ -101,13 +102,13 @@ const compStatusDot: Record<string, string> = {
 export default function TeamsCustomerSpaces() {
   const [params, setParams] = useSearchParams();
 
-  const defaultAccountId = params.get("accountId") || "cust-1";
+  const defaultAccountId = params.get("accountId") || "fintrack-ag";
   const defaultProjectId = params.get("projectId") || accounts.find(a => a.id === defaultAccountId)?.projects[0]?.id || "";
 
   const [selectedAccountId, setSelectedAccountId] = useState(defaultAccountId);
   const [selectedProjectId, setSelectedProjectId] = useState(defaultProjectId);
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(
-    new Set(["cust-1", "cust-3"])
+    new Set(["fintrack-ag", "cust-1", "cust-3"])
   );
 
   const toggleAccount = (id: string) => {
@@ -123,7 +124,6 @@ export default function TeamsCustomerSpaces() {
     setSelectedAccountId(accountId);
     setSelectedProjectId(projectId);
     setParams({ accountId, projectId });
-    // auto-expand
     setExpandedAccounts(prev => new Set(prev).add(accountId));
   };
 
@@ -150,7 +150,6 @@ export default function TeamsCustomerSpaces() {
             const expanded = expandedAccounts.has(acct.id);
             return (
               <div key={acct.id}>
-                {/* Account row */}
                 <button
                   onClick={() => toggleAccount(acct.id)}
                   className="w-full text-left px-3 py-2 rounded-md text-xs transition-all duration-150 hover:bg-accent/50 flex items-center gap-2"
@@ -165,7 +164,6 @@ export default function TeamsCustomerSpaces() {
                   </div>
                 </button>
 
-                {/* Projects (expanded) */}
                 {expanded && (
                   <div className="ml-5 pl-2.5 border-l border-border space-y-0.5 pb-1">
                     {acct.projects.map(proj => {
@@ -209,9 +207,27 @@ export default function TeamsCustomerSpaces() {
 
 // ─── Project Detail ──────────────────────────────────────────
 
+const isFinTrack = (accountId: string) => accountId === "fintrack-ag";
+
+const regulatoryFrameworks = ["GDPR", "FINMA", "EU AI Act", "ISO 27001", "Microsoft WAF"];
+
+const enterpriseBaseline = [
+  { requirement: "ISO 27001 alignment", status: "fail" as const, detail: "Not demonstrated" },
+  { requirement: "4-hour incident SLA", status: "fail" as const, detail: "Not met — no monitoring configured" },
+  { requirement: "Tier 1 data handling", status: "partial" as const, detail: "Partial — residency not confirmed" },
+  { requirement: "GDPR Article 28 DPA", status: "fail" as const, detail: "Not executed" },
+];
+
+const baselineStatusIcon: Record<string, { icon: typeof CheckCircle2; color: string }> = {
+  pass: { icon: CheckCircle2, color: "text-success" },
+  fail: { icon: XCircle, color: "text-destructive" },
+  partial: { icon: AlertTriangle, color: "text-amber-600" },
+};
+
 function ProjectDetail({ account, project }: { account: Account; project: Project }) {
+  const navigate = useNavigate();
   const p = project;
-  const isSeeded = account.isFullySeeded;
+  const ft = isFinTrack(account.id);
   const hasMinimalData = p.agents.length === 0 && p.knowledgeSources.length === 0 && p.riskSignals.length === 0;
 
   return (
@@ -229,7 +245,7 @@ function ProjectDetail({ account, project }: { account: Account; project: Projec
           <div>
             <h1 className="text-lg font-semibold text-foreground tracking-tight">{p.name} <span className="text-sm font-normal text-muted-foreground">v{p.version}</span></h1>
             <p className="text-[12px] text-muted-foreground mt-0.5">
-              Deployed {p.deployedDate} · {account.region}
+              Connected {p.deployedDate} · {account.region}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -239,19 +255,57 @@ function ProjectDetail({ account, project }: { account: Account; project: Projec
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="px-6 pt-4">
-        <TabsList className="h-8 text-[11px]">
-          <TabsTrigger value="overview" className="text-[11px] px-3 py-1">Overview</TabsTrigger>
-          <TabsTrigger value="environments" className="text-[11px] px-3 py-1">Environments</TabsTrigger>
-          <TabsTrigger value="agents" className="text-[11px] px-3 py-1">Agents</TabsTrigger>
-          <TabsTrigger value="services" className="text-[11px] px-3 py-1">Connected Services</TabsTrigger>
-          <TabsTrigger value="knowledge" className="text-[11px] px-3 py-1">Knowledge Sources</TabsTrigger>
-          <TabsTrigger value="risks" className="text-[11px] px-3 py-1">Risk Signals</TabsTrigger>
-        </TabsList>
+      <div className="px-6 pt-4 pb-6 space-y-5">
+        {/* ── TOP ROW — FinTrack-specific cards ── */}
+        {ft && (
+          <div className="grid grid-cols-3 gap-3">
+            {/* AI Risk Classification */}
+            <Card className="border">
+              <CardContent className="p-4">
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>AI Risk Classification</span>
+                <p className="text-xl font-bold text-destructive mt-1">HIGH RISK</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Financial recommendations — EU AI Act Article 6</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Requires conformity assessment, human oversight, registration</p>
+                <Badge className="mt-2 bg-amber-500/10 text-amber-700 border-amber-500/20 text-[9px] px-1.5 py-0">
+                  Expert validation required
+                </Badge>
+              </CardContent>
+            </Card>
 
-        {/* ── OVERVIEW ── */}
-        <TabsContent value="overview" className="space-y-5 pb-8">
-          {/* Metrics */}
+            {/* Graph Readiness */}
+            <Card className="border">
+              <CardContent className="p-4">
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>Graph Readiness</span>
+                <div className="flex items-center gap-3 mt-1.5">
+                  <div className="h-14 w-14 rounded-full border-4 border-amber-500 flex items-center justify-center shrink-0">
+                    <span className="text-lg font-bold text-foreground">74%</span>
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-medium text-foreground">Knowledge base 74% complete</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">3 sources pending connection</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Regulatory Profile */}
+            <Card className="border">
+              <CardContent className="p-4">
+                <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>Regulatory Profile</span>
+                <p className="text-xl font-bold text-foreground mt-1">5 frameworks</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Auto-detected from code and enterprise context</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {regulatoryFrameworks.map(fw => (
+                    <Badge key={fw} variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[9px] px-1.5 py-0">{fw}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* ── Non-FinTrack: show original metrics ── */}
+        {!ft && (
           <div className="grid grid-cols-4 gap-3">
             {[
               { label: "Open Cases", value: p.metrics.openCases, fmt: (v: number) => String(v) },
@@ -267,174 +321,235 @@ function ProjectDetail({ account, project }: { account: Account; project: Projec
               </Card>
             ))}
           </div>
+        )}
 
-          {/* Architecture */}
-          <div>
-            <h3 className="text-[12px] font-semibold text-foreground mb-2">Architecture Components</h3>
-            <div className="grid grid-cols-3 gap-2">
-              {p.architecture.map((c, i) => (
-                <Card key={i} className="border">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <div className={`h-2 w-2 rounded-full shrink-0 ${compStatusDot[c.status]}`} />
-                      <span className="text-[11px] font-semibold text-foreground flex-1 truncate">{c.name}</span>
-                      <Badge variant="outline" className={`text-[8px] px-1.5 py-0 border ${compTypeBadge[c.type]}`}>{c.type}</Badge>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground leading-snug">{c.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
+        {/* ── TABS ── */}
+        <Tabs defaultValue="overview">
+          <TabsList className="h-8 text-[11px]">
+            <TabsTrigger value="overview" className="text-[11px] px-3 py-1">Overview</TabsTrigger>
+            <TabsTrigger value="environments" className="text-[11px] px-3 py-1">Environments</TabsTrigger>
+            <TabsTrigger value="agents" className="text-[11px] px-3 py-1">Agents</TabsTrigger>
+            <TabsTrigger value="services" className="text-[11px] px-3 py-1">Connected Services</TabsTrigger>
+            <TabsTrigger value="knowledge" className="text-[11px] px-3 py-1">Knowledge Sources</TabsTrigger>
+            <TabsTrigger value="risks" className="text-[11px] px-3 py-1">Risk Signals</TabsTrigger>
+          </TabsList>
+
+          {/* ── OVERVIEW ── */}
+          <TabsContent value="overview" className="space-y-5 pb-8">
+            <div className={ft ? "grid grid-cols-2 gap-5" : ""}>
+              {/* Architecture */}
+              <div>
+                <h3 className="text-[12px] font-semibold text-foreground mb-2">Architecture Components</h3>
+                <div className={ft ? "space-y-2" : "grid grid-cols-3 gap-2"}>
+                  {p.architecture.map((c, i) => (
+                    <Card key={i} className="border">
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <div className={`h-2 w-2 rounded-full shrink-0 ${compStatusDot[c.status]}`} />
+                          <span className="text-[11px] font-semibold text-foreground flex-1 truncate">{c.name}</span>
+                          <Badge variant="outline" className={`text-[8px] px-1.5 py-0 border ${compTypeBadge[c.type] || "bg-muted/50 text-muted-foreground"}`}>{c.type}</Badge>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-snug">{c.description}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              {/* Enterprise Context Baseline (FinTrack only) */}
+              {ft && (
+                <div>
+                  <h3 className="text-[12px] font-semibold text-foreground mb-0.5">Enterprise Context Baseline</h3>
+                  <p className="text-[10px] text-muted-foreground mb-3">Requirements from Alpina Freight — imported from Step 0</p>
+
+                  <Card className="border">
+                    <CardContent className="p-4 space-y-3">
+                      {enterpriseBaseline.map((item, i) => {
+                        const si = baselineStatusIcon[item.status];
+                        const Icon = si.icon;
+                        return (
+                          <div key={i} className="flex items-center gap-3">
+                            <Icon className={`h-4 w-4 shrink-0 ${si.color}`} />
+                            <div className="flex-1 min-w-0">
+                              <span className="text-[12px] font-medium text-foreground">{item.requirement}</span>
+                              <span className="text-[11px] text-muted-foreground ml-2">{item.detail}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </CardContent>
+                  </Card>
+
+                  <p className="text-[11px] text-amber-700 mt-2 flex items-center gap-1.5">
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    4 gaps detected — see Readiness Report for remediation
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Empty state for minimal data */}
-          {hasMinimalData && !isSeeded && <EmptyStateCTA account={account} project={p} />}
-        </TabsContent>
+            {hasMinimalData && !ft && !account.isFullySeeded && <EmptyStateCTA project={p} />}
+          </TabsContent>
 
-        {/* ── ENVIRONMENTS ── */}
-        <TabsContent value="environments" className="space-y-3 pb-8">
-          <div className="grid grid-cols-2 gap-3">
-            {p.environments.map(env => (
-              <Card key={env.id} className="border">
-                <CardContent className="p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] font-semibold text-foreground">{env.name}</span>
-                    <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${envStatusBadge[env.status]}`}>{env.status}</Badge>
-                  </div>
-                  <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">{env.cloud}</Badge>
-                    <span>{env.region}</span>
-                    <span>{env.nodes} nodes</span>
-                    <span>Uptime {env.uptime}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {p.environments.length === 0 && <p className="text-sm text-muted-foreground py-4">No environments configured.</p>}
-        </TabsContent>
-
-        {/* ── AGENTS ── */}
-        <TabsContent value="agents" className="space-y-3 pb-8">
-          {p.agents.length > 0 ? (
+          {/* ── ENVIRONMENTS ── */}
+          <TabsContent value="environments" className="space-y-3 pb-8">
             <div className="grid grid-cols-2 gap-3">
-              {p.agents.map(ag => (
-                <Card key={ag.id} className="border">
-                  <CardContent className="p-4 space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[12px] font-semibold text-foreground">{ag.name}</span>
-                        <span className="text-[10px] text-muted-foreground ml-2">v{ag.version}</span>
-                      </div>
-                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${agentStatusColor[ag.status]}`}>{ag.status}</Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{ag.type}</Badge>
-                      <span>{ag.casesHandled} cases</span>
-                      <span>{ag.autoResolved} auto-resolved</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-16">Confidence</span>
-                      <Progress value={ag.confidence} className="h-1.5 flex-1" />
-                      <span className="text-[10px] font-mono text-foreground w-8 text-right">{ag.confidence}%</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <EmptyStateCTA account={account} project={p} />
-          )}
-        </TabsContent>
-
-        {/* ── CONNECTED SERVICES ── */}
-        <TabsContent value="services" className="space-y-3 pb-8">
-          {p.connectedServices.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
-              {p.connectedServices.map(svc => (
-                <Card key={svc.id} className="border">
+              {p.environments.map(env => (
+                <Card key={env.id} className="border">
                   <CardContent className="p-4 space-y-2">
                     <div className="flex items-center justify-between">
+                      <span className="text-[12px] font-semibold text-foreground">{env.name}</span>
+                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${envStatusBadge[env.status]}`}>{env.status}</Badge>
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">{env.cloud}</Badge>
+                      <span>{env.region}</span>
+                      <span>{env.nodes} nodes</span>
+                      <span>Uptime {env.uptime}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            {p.environments.length === 0 && <p className="text-sm text-muted-foreground py-4">No environments configured.</p>}
+          </TabsContent>
+
+          {/* ── AGENTS ── */}
+          <TabsContent value="agents" className="space-y-3 pb-8">
+            {p.agents.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {p.agents.map(ag => (
+                  <Card key={ag.id} className="border">
+                    <CardContent className="p-4 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[12px] font-semibold text-foreground">{ag.name}</span>
+                          <span className="text-[10px] text-muted-foreground ml-2">v{ag.version}</span>
+                        </div>
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${agentStatusColor[ag.status]}`}>{ag.status}</Badge>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{ag.type}</Badge>
+                        <span>{ag.casesHandled} cases</span>
+                        <span>{ag.autoResolved} auto-resolved</span>
+                      </div>
                       <div className="flex items-center gap-2">
-                        <div className={`h-2 w-2 rounded-full shrink-0 ${serviceStatusColor[svc.status]}`} />
-                        <span className="text-[12px] font-semibold text-foreground">{svc.name}</span>
+                        <span className="text-[10px] text-muted-foreground w-16">Confidence</span>
+                        <Progress value={ag.confidence} className="h-1.5 flex-1" />
+                        <span className="text-[10px] font-mono text-foreground w-8 text-right">{ag.confidence}%</span>
                       </div>
-                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${serviceStatusBadge[svc.status]}`}>{svc.status}</Badge>
-                    </div>
-                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{svc.type}</Badge>
-                      <span>Synced {svc.lastSync}</span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground">{svc.detail}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <EmptyStateCTA account={account} project={p} />
-          )}
-        </TabsContent>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <EmptyStateCTA project={p} />
+            )}
+          </TabsContent>
 
-        {/* ── KNOWLEDGE SOURCES ── */}
-        <TabsContent value="knowledge" className="space-y-3 pb-8">
-          {p.knowledgeSources.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
-              {p.knowledgeSources.map(ks => (
-                <Card key={ks.id} className="border">
-                  <CardContent className="p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[12px] font-semibold text-foreground">{ks.name}</span>
-                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${knowledgeStatusBadge[ks.status]}`}>{ks.status}</Badge>
-                    </div>
-                    <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{ks.type}</Badge>
-                      {ks.pages > 0 && <span>{ks.pages} pages</span>}
-                      <span>Updated {ks.lastUpdated}</span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground">Uploaded by {ks.uploadedBy}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <EmptyStateCTA account={account} project={p} />
-          )}
-        </TabsContent>
+          {/* ── CONNECTED SERVICES ── */}
+          <TabsContent value="services" className="space-y-3 pb-8">
+            {p.connectedServices.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {p.connectedServices.map(svc => (
+                  <Card key={svc.id} className="border">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`h-2 w-2 rounded-full shrink-0 ${serviceStatusColor[svc.status]}`} />
+                          <span className="text-[12px] font-semibold text-foreground">{svc.name}</span>
+                        </div>
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${serviceStatusBadge[svc.status]}`}>{svc.status}</Badge>
+                      </div>
+                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{svc.type}</Badge>
+                        <span>Synced {svc.lastSync}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">{svc.detail}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <EmptyStateCTA project={p} />
+            )}
+          </TabsContent>
 
-        {/* ── RISK SIGNALS ── */}
-        <TabsContent value="risks" className="space-y-3 pb-8">
-          {p.riskSignals.length > 0 ? (
-            <div className="space-y-2">
-              {p.riskSignals.map(rs => (
-                <Card key={rs.id} className="border">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <Badge variant="outline" className={`text-[9px] px-1.5 py-0 mt-0.5 shrink-0 ${severityBadge[rs.severity]}`}>{rs.severity}</Badge>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[12px] font-semibold text-foreground">{rs.title}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">{rs.description}</p>
-                        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-muted-foreground">
-                          <span>Detected {rs.detectedDate}</span>
-                          <Badge variant="outline" className={`text-[8px] px-1.5 py-0 ${riskStatusBadge[rs.status]}`}>{rs.status}</Badge>
+          {/* ── KNOWLEDGE SOURCES ── */}
+          <TabsContent value="knowledge" className="space-y-3 pb-8">
+            {p.knowledgeSources.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {p.knowledgeSources.map(ks => (
+                  <Card key={ks.id} className="border">
+                    <CardContent className="p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] font-semibold text-foreground">{ks.name}</span>
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${knowledgeStatusBadge[ks.status]}`}>{ks.status}</Badge>
+                      </div>
+                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 capitalize">{ks.type}</Badge>
+                        {ks.pages > 0 && <span>{ks.pages} pages</span>}
+                        <span>Updated {ks.lastUpdated}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">Uploaded by {ks.uploadedBy}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <EmptyStateCTA project={p} />
+            )}
+          </TabsContent>
+
+          {/* ── RISK SIGNALS ── */}
+          <TabsContent value="risks" className="space-y-3 pb-8">
+            {p.riskSignals.length > 0 ? (
+              <div className="space-y-2">
+                {p.riskSignals.map(rs => (
+                  <Card key={rs.id} className="border">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 mt-0.5 shrink-0 ${severityBadge[rs.severity]}`}>{rs.severity}</Badge>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-semibold text-foreground">{rs.title}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{rs.description}</p>
+                          <div className="flex items-center gap-3 mt-1.5 text-[10px] text-muted-foreground">
+                            <span>Detected {rs.detectedDate}</span>
+                            <Badge variant="outline" className={`text-[8px] px-1.5 py-0 ${riskStatusBadge[rs.status]}`}>{rs.status}</Badge>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground py-4">No active risk signals.</p>
+            )}
+          </TabsContent>
+        </Tabs>
+
+        {/* ── BOTTOM CTA (FinTrack only) ── */}
+        {ft && (
+          <div className="border-t pt-4 flex items-center justify-between" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+            <div>
+              <p className="text-[12px] font-medium text-foreground">Graph readiness: 74% — evaluation can proceed</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">Connect remaining sources to improve accuracy</p>
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground py-4">No active risk signals.</p>
-          )}
-        </TabsContent>
-      </Tabs>
+            <Button className="h-9 text-[12px] gap-2 px-5" onClick={() => navigate("/readiness")}>
+              Proceed to Readiness Report
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 // ─── Empty / minimal state CTA ───────────────────────────────
 
-function EmptyStateCTA({ account, project }: { account: Account; project: Project }) {
+function EmptyStateCTA({ project }: { project: Project }) {
   const svcCount = project.connectedServices.length;
   const ksCount = project.knowledgeSources.length;
 

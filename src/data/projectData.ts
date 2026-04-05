@@ -98,9 +98,61 @@ export interface RiskSignal {
   status: "new" | "investigating" | "mitigated" | "resolved";
 }
 
-// ─── 12 ACCOUNTS ─────────────────────────────────────────────
+// ─── 13 ACCOUNTS ─────────────────────────────────────────────
 
 export const accounts: Account[] = [
+  // ── 0. FinTrack AG (Launch Studio demo) ──
+  {
+    id: "fintrack-ag",
+    name: "FinTrack AG",
+    industry: "Financial Services",
+    tier: "standard",
+    health: "medium",
+    region: "Azure Switzerland North",
+    accountOwner: "Sarah Chen",
+    isFullySeeded: true,
+    projects: [
+      {
+        id: "proj-ft1",
+        name: "Cash Flow Forecasting Agent",
+        version: "1.0.0",
+        status: "active",
+        workspaceType: "isv",
+        deployedDate: "2025-03-15",
+        metrics: { openCases: 0, resolutionRate: 0, automationRate: 0, csat: 0 },
+        architecture: [
+          { name: "Azure API Gateway", type: "gateway", status: "healthy", description: "Primary entry point for all agent requests" },
+          { name: "Cash Flow Analysis Engine", type: "model", status: "healthy", description: "Core ML model for liquidity forecasting" },
+          { name: "ERP Integration Layer", type: "worker", status: "healthy", description: "Connects to SAP/Oracle ERP systems" },
+          { name: "Notification Service", type: "worker", status: "healthy", description: "Alerts and recommendations delivery" },
+          { name: "Azure Key Vault", type: "cache", status: "healthy", description: "Secrets and certificate management" },
+          { name: "PostgreSQL on Azure", type: "database", status: "healthy", description: "Transaction and forecast data store" },
+        ],
+        environments: [
+          { id: "env-ft1", name: "Production (Switzerland North)", cloud: "Azure", region: "Switzerland North", nodes: 4, uptime: "99.2%", status: "running" },
+          { id: "env-ft2", name: "Staging", cloud: "Azure", region: "Switzerland North", nodes: 2, uptime: "99.9%", status: "running" },
+        ],
+        agents: [],
+        connectedServices: [
+          { id: "cs-ft1", name: "Azure Switzerland North Subscription", type: "azure", status: "connected", lastSync: "5 min ago", detail: "2 environments, 6 nodes monitored" },
+          { id: "cs-ft2", name: "fintrack/cashflow-agent", type: "github", status: "connected", lastSync: "1 hr ago", detail: "42 commits indexed" },
+          { id: "cs-ft3", name: "#fintrack-ag", type: "slack", status: "connected", lastSync: "2 min ago", detail: "Case notifications active" },
+          { id: "cs-ft4", name: "Banking Data Provider API", type: "salesforce", status: "partial", lastSync: "3 hr ago", detail: "Vendor risk assessment pending" },
+        ],
+        knowledgeSources: [
+          { id: "ks-ft1", name: "Cash Flow Agent Architecture Doc", type: "documentation", status: "partial", pages: 8, lastUpdated: "1 week ago", uploadedBy: "Sarah Chen" },
+          { id: "ks-ft2", name: "Deployment Runbook (Draft)", type: "runbook", status: "partial", pages: 4, lastUpdated: "3 days ago", uploadedBy: "Sarah Chen" },
+        ],
+        riskSignals: [
+          { id: "rs-ft1", severity: "critical", title: "Hardcoded API key in repository", description: "Production API credentials found in plain text in committed source code", detectedDate: "2025-03-20", status: "new" },
+          { id: "rs-ft2", severity: "high", title: "No human oversight for financial recommendations", description: "EU AI Act Article 14 requires human oversight for High Risk AI systems", detectedDate: "2025-03-20", status: "new" },
+          { id: "rs-ft3", severity: "high", title: "No GDPR data processing agreement", description: "Processing Alpina Freight's financial data without a signed Article 28 DPA", detectedDate: "2025-03-20", status: "new" },
+          { id: "rs-ft4", severity: "high", title: "No monitoring configured on Azure", description: "No Azure Monitor, no alerting, no logging — cannot meet Alpina's 4-hour SLA", detectedDate: "2025-03-20", status: "new" },
+        ],
+      },
+    ],
+  },
+
   // ── 1. Acme Manufacturing (fully seeded) ──
   {
     id: "cust-1",

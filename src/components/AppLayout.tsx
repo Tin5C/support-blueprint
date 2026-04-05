@@ -69,14 +69,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <nav className="flex-1 py-4 px-3 overflow-y-auto space-y-5">
           {/* Launch Studio */}
           <div>
-            <p className="px-2.5 pb-2 text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Launch Studio</p>
-            <NavLink
-              to="/studio"
-              className="flex items-center justify-center gap-2 w-full px-2.5 py-2 mb-2 rounded-md text-[12px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-150"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              New Blueprint
-            </NavLink>
+            <div className="flex items-center justify-between px-2.5 pb-2">
+              <p className="text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Launch Studio</p>
+              <NavLink to="/context" title="Start new evaluation" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
+                <Plus className="h-3 w-3" />
+              </NavLink>
+            </div>
             <div className="space-y-0.5">
               {launchStudioNav.map(item => renderNavItem(item))}
             </div>
@@ -86,7 +84,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Support Studio */}
           <div>
-            <p className="px-2.5 pb-2 text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Support Studio</p>
+            <div className="flex items-center justify-between px-2.5 pb-2">
+              <p className="text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Support Studio</p>
+              <NavLink to="/blueprints" title="Set up new support blueprint" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
+                <Plus className="h-3 w-3" />
+              </NavLink>
+            </div>
             <div className="space-y-0.5">
               {supportStudioNav.map(item => renderNavItem(item))}
             </div>
