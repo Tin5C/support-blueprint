@@ -138,6 +138,15 @@ export default function EnterpriseContext() {
     }, 1800);
   };
 
+  const loadAlpinaDemo = () => {
+    setWebsiteLoading(true);
+    setTimeout(() => {
+      setWebsiteLoading(false);
+      setWebsiteAnalysed(true);
+      setDocs(prev => prev.map(d => ({ ...d, status: "analysed" as const })));
+    }, 1200);
+  };
+
   const addDocument = (index: number) => {
     setDocs(prev => {
       const next = [...prev];
@@ -201,7 +210,7 @@ export default function EnterpriseContext() {
                 <p className="text-[11px] text-muted-foreground">
                   Launch Studio will infer industry, geography, regulatory context and certification status
                 </p>
-                <button onClick={analyseWebsite} className="text-[11px] text-primary hover:underline">
+                <button onClick={loadAlpinaDemo} className="text-[11px] text-primary hover:underline">
                   → Load Alpina Bank demo
                 </button>
               </>
@@ -249,71 +258,53 @@ export default function EnterpriseContext() {
 
           {/* Section 2 — Documents */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-[14px] font-semibold ${websiteAnalysed ? "text-foreground" : "text-muted-foreground/50"}`}>Documents</h2>
-              {!websiteAnalysed && (
-                <span className="text-[10px] text-muted-foreground">Complete Step 1 first</span>
-              )}
+            <h2 className="text-[14px] font-semibold text-foreground">Documents</h2>
+            <p className="text-[11px] text-muted-foreground">Upload documents from the receiving organisation</p>
+
+            {/* Demo document cards */}
+            <div className="space-y-2">
+              {docs.map((doc, i) => (
+                <Card key={i} className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                      <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-medium text-foreground truncate">{doc.name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground">{doc.pages} pages</span>
+                        <Badge variant="outline" className={`text-[9px] px-1 py-0 border ${doc.tagColor}`} style={{ fontFamily: "'DM Mono', monospace" }}>
+                          {doc.tag}
+                        </Badge>
+                      </div>
+                    </div>
+                    {doc.status === "available" && (
+                      <Button variant="outline" size="sm" className="text-[10px] h-7 px-2.5 shrink-0" onClick={() => addDocument(i)}>
+                        + Add
+                      </Button>
+                    )}
+                    {doc.status === "scanning" && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-primary/10 text-primary border-primary/20 shrink-0">
+                        <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />
+                        Scanning…
+                      </Badge>
+                    )}
+                    {doc.status === "analysed" && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0">
+                        <CheckCircle2 className="h-2.5 w-2.5 mr-1" />
+                        Analysed
+                      </Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
-            {websiteAnalysed ? (
-              <>
-                <p className="text-[11px] text-muted-foreground">Upload documents from the deployment environment to improve accuracy</p>
-
-                {/* Demo document cards */}
-                <div className="space-y-2">
-                  {docs.map((doc, i) => (
-                    <Card key={i} className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
-                      <CardContent className="p-3 flex items-center gap-3">
-                        <div className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                          <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-medium text-foreground truncate">{doc.name}</p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[10px] text-muted-foreground">{doc.pages} pages</span>
-                            <Badge variant="outline" className={`text-[9px] px-1 py-0 border ${doc.tagColor}`} style={{ fontFamily: "'DM Mono', monospace" }}>
-                              {doc.tag}
-                            </Badge>
-                          </div>
-                        </div>
-                        {doc.status === "available" && (
-                          <Button variant="outline" size="sm" className="text-[10px] h-7 px-2.5 shrink-0" onClick={() => addDocument(i)}>
-                            + Add
-                          </Button>
-                        )}
-                        {doc.status === "scanning" && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-primary/10 text-primary border-primary/20 shrink-0">
-                            <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />
-                            Scanning…
-                          </Badge>
-                        )}
-                        {doc.status === "analysed" && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0">
-                            <CheckCircle2 className="h-2.5 w-2.5 mr-1" />
-                            Analysed
-                          </Badge>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* Real upload area */}
-                <div className="border-2 border-dashed rounded-md p-5 text-center cursor-pointer hover:bg-muted/20 transition-colors" style={{ borderColor: "rgba(212,207,198,0.3)" }}>
-                  <Upload className="h-4 w-4 text-muted-foreground/50 mx-auto mb-1" />
-                  <p className="text-[11px] text-muted-foreground">Or drop your own documents here</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="text-[11px] text-muted-foreground/50">Upload documents from the deployment environment</p>
-                <div className="border-2 border-dashed rounded-md p-6 text-center opacity-40" style={{ borderColor: "rgba(212,207,198,0.2)" }}>
-                  <Upload className="h-4 w-4 text-muted-foreground/30 mx-auto mb-1" />
-                  <p className="text-[10px] text-muted-foreground/50">Security policies · IT runbooks · SLA agreements · Vendor questionnaires · Data classification policies</p>
-                </div>
-              </>
-            )}
+            {/* Upload area */}
+            <div className="border-2 border-dashed rounded-md p-5 text-center cursor-pointer hover:bg-muted/20 transition-colors" style={{ borderColor: "rgba(212,207,198,0.3)" }}>
+              <Upload className="h-4 w-4 text-muted-foreground/50 mx-auto mb-1" />
+              <p className="text-[11px] text-muted-foreground">Or drop your own documents here</p>
+            </div>
           </div>
 
           {/* Section 3 — Connected systems */}

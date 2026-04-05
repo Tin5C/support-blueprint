@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,6 +124,7 @@ const P0_BOOST = 3;
 // ─── Component ───────────────────────────────────────────────
 
 export default function ReadinessReport() {
+  const navigate = useNavigate();
   const [resolvedIds, setResolvedIds] = useState<Set<string>>(new Set());
   const [activeFilter, setActiveFilter] = useState<"all" | "P0" | "P1" | "P2">("all");
 
@@ -273,7 +275,7 @@ export default function ReadinessReport() {
               return (
                 <Card
                   key={finding.id}
-                  className={`border border-l-4 ${borderColor} ${bgTint}`}
+                  className={`border border-l-4 ${borderColor} ${bgTint} ${isResolved ? "opacity-50" : ""}`}
                   style={{ borderTopColor: "rgba(212,207,198,0.25)", borderRightColor: "rgba(212,207,198,0.25)", borderBottomColor: "rgba(212,207,198,0.25)" }}
                 >
                   <CardContent className="p-4">
@@ -324,21 +326,21 @@ export default function ReadinessReport() {
                         <Clock className="h-2.5 w-2.5 mr-1" />
                         {finding.effort}
                       </Badge>
-                      <Button
-                        variant={isResolved ? "ghost" : "outline"}
-                        size="sm"
-                        className={`text-[11px] h-7 gap-1.5 ${!isResolved ? "border-primary/30 text-primary hover:bg-primary/5" : "text-muted-foreground"}`}
-                        onClick={() => toggleResolved(finding.id)}
-                      >
-                        {isResolved ? (
-                          <>
-                            <CheckCircle2 className="h-3 w-3" />
-                            View evidence
-                          </>
-                        ) : (
-                          "Mark as resolved"
-                        )}
-                      </Button>
+                      {isResolved ? (
+                        <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          ✓ Resolved
+                        </span>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-[11px] h-7 gap-1.5 border-primary/30 text-primary hover:bg-primary/5"
+                          onClick={() => toggleResolved(finding.id)}
+                        >
+                          Mark as resolved
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -367,6 +369,7 @@ export default function ReadinessReport() {
                 : "opacity-50 cursor-not-allowed"
             }`}
             disabled={!allP0Resolved}
+            onClick={() => allP0Resolved && navigate("/review")}
           >
             {allP0Resolved ? (
               <>

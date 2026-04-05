@@ -11,6 +11,7 @@ import Templates from "@/pages/Templates";
 import Insights from "@/pages/Insights";
 import Admin from "@/pages/Admin";
 import TeamsCustomerSpaces from "@/pages/TeamsCustomerSpaces";
+import SolutionIntelligence from "@/pages/SolutionIntelligence";
 import TeamsLiveCases from "@/pages/TeamsLiveCases";
 import TeamsApprovals from "@/pages/TeamsApprovals";
 import TeamsAgentActivity from "@/pages/TeamsAgentActivity";
@@ -33,7 +34,7 @@ const App = () => (
         <Routes>
           {/* Launch Studio */}
           <Route path="/context" element={<AppLayout><EnterpriseContext /></AppLayout>} />
-          <Route path="/intelligence" element={<AppLayout><TeamsCustomerSpaces /></AppLayout>} />
+          <Route path="/intelligence" element={<AppLayout><SolutionIntelligence /></AppLayout>} />
           <Route path="/readiness" element={<AppLayout><ReadinessReport /></AppLayout>} />
           <Route path="/review" element={<AppLayout><ExpertReview /></AppLayout>} />
           <Route path="/package" element={<AppLayout><ProcurementPackage /></AppLayout>} />
