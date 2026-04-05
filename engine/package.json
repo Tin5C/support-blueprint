@@ -1,0 +1,16 @@
+{
+  "name": "savanoai-engine",
+  "version": "0.1.0",
+  "description": "SavanoAI AI Evaluation Engine",
+  "scripts": {
+    "test": "ts-node tests/fintrack-ag-context.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "@types/node": "^20.0.0"
+  }
+}
