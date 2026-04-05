@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  FileText, Upload, CheckCircle2, ChevronRight,
+  FileText, Upload, CheckCircle2, ChevronRight, AlertTriangle,
   Shield, Clock, Database, ClipboardCheck,
 } from "lucide-react";
 
@@ -204,6 +204,49 @@ export default function EnterpriseContext() {
               </Card>
             ))}
           </div>
+
+          {/* Baseline coverage */}
+          <div>
+            <h2 className="text-[14px] font-semibold text-foreground mb-2">Baseline coverage</h2>
+            <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+              <CardContent className="p-4 space-y-2.5">
+                {[
+                  { label: "Security Requirements", count: "5 requirements detected", status: "pass" as const },
+                  { label: "SLA Commitments", count: "4 requirements detected", status: "pass" as const },
+                  { label: "Data Requirements", count: "3 requirements detected (partial)", status: "partial" as const },
+                  { label: "Procurement Requirements", count: "4 requirements detected", status: "pass" as const },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    {item.status === "pass" ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                    )}
+                    <span className="text-[13px] font-medium text-foreground">{item.label}</span>
+                    <span className="text-[11px] text-muted-foreground">— {item.count}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Gaps detected */}
+          <div>
+            <h2 className="text-[14px] font-semibold text-foreground mb-2">Gaps detected</h2>
+            <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+              <CardContent className="p-4">
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[13px] font-medium text-foreground">Data residency confirmation — not explicitly stated in documents</p>
+                    <a href="#" className="text-[12px] text-primary hover:underline mt-1 inline-block">
+                      Answer 1 question to fill this gap →
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
@@ -234,6 +277,10 @@ export default function EnterpriseContext() {
             Graph readiness will be calculated once solution sources are connected
           </p>
         </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          Baseline established from 4 documents · 1 gap filled by profile · 95% confidence
+        </p>
       </div>
     </div>
   );
