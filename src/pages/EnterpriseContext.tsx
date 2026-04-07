@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   FileText, Upload, CheckCircle2, ChevronRight, AlertTriangle,
   Shield, Clock, Database, ClipboardCheck, Loader2, Globe,
-  Search, Link2, Server, Lock,
+  Search, Server, Lock,
 } from "lucide-react";
 
 // ─── Types & data ────────────────────────────────────────────
@@ -28,7 +28,6 @@ const initialDocs: DocEntry[] = [
   { name: "Alpina Bank — IT Operations Runbook v4.pdf", pages: 67, tag: "runbook", tagColor: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20", status: "available" },
 ];
 
-// Baseline sections keyed by how many docs are analysed
 interface BaselineSection {
   label: string;
   icon: typeof Shield;
@@ -39,83 +38,61 @@ interface BaselineSection {
 }
 
 function getBaseline(websiteAnalysed: boolean, analysedCount: number): BaselineSection[] {
-  const security: BaselineSection = {
-    label: "Security Requirements", icon: Shield, status: "missing", count: "0", items: [],
-  };
-  const procurement: BaselineSection = {
-    label: "Procurement Requirements", icon: ClipboardCheck, status: "missing", count: "0", items: [],
-  };
-  const data: BaselineSection = {
-    label: "Data Requirements", icon: Database, status: "missing", count: "0", items: [],
-  };
-  const sla: BaselineSection = {
-    label: "SLA Commitments", icon: Clock, status: "missing", count: "0", items: [],
-  };
-  const aiGov: BaselineSection = {
-    label: "AI Governance Framework", icon: Shield, status: "missing", count: "0", items: [],
-  };
+  const security: BaselineSection = { label: "Security Requirements", icon: Shield, status: "missing", count: "0", items: [] };
+  const procurement: BaselineSection = { label: "Procurement Requirements", icon: ClipboardCheck, status: "missing", count: "0", items: [] };
+  const data: BaselineSection = { label: "Data Requirements", icon: Database, status: "missing", count: "0", items: [] };
+  const sla: BaselineSection = { label: "SLA Commitments", icon: Clock, status: "missing", count: "0", items: [] };
+  const aiGov: BaselineSection = { label: "AI Governance Framework", icon: Shield, status: "missing", count: "0", items: [] };
 
   if (websiteAnalysed) {
-    security.status = "partial";
-    security.count = "3 inferred";
+    security.status = "partial"; security.count = "3 inferred";
     security.items = ["ISO 27001 alignment required", "MFA likely required (financial services norm)", "Encryption at rest and in transit expected"];
     security.source = "alpinabank.ch";
   }
-
   if (analysedCount >= 1) {
-    // Vendor Security Questionnaire
-    security.status = "found";
-    security.count = "6 detected";
+    security.status = "found"; security.count = "6 detected";
     security.items = ["ISO 27001 alignment · MFA required · AES-256 encryption", "Penetration testing annually · Right to audit", "Incident notification within 4 hours"];
     security.source = "alpinabank.ch + Vendor Security Questionnaire";
-    procurement.status = "found";
-    procurement.count = "4 detected";
+    procurement.status = "found"; procurement.count = "4 detected";
     procurement.items = ["SOC 2 Type II or ISO 27001 cert required", "Annual third-party security audit", "Incident notification within 4 hours", "Right to audit clause in all contracts"];
     procurement.source = "Vendor Security Questionnaire";
   }
-
   if (analysedCount >= 2) {
-    // IT Security Policy
     security.count = "8 detected";
     security.items = ["ISO 27001 alignment · MFA required · AES-256 encryption", "Penetration testing annually · Vulnerability scanning quarterly", "Right to audit · Incident notification 4hrs", "Approved vendor list required · Change management approval"];
     security.source = "alpinabank.ch + IT Security Policy 2025";
   }
-
   if (analysedCount >= 3) {
-    // Data Classification Policy
-    data.status = "found";
-    data.count = "4 detected";
+    data.status = "found"; data.count = "4 detected";
     data.items = ["Financial data classified as Tier 1 (highest sensitivity)", "Tier 1 data must remain in Switzerland", "GDPR Article 28 DPA required before processing", "Retention: 10 years for financial records (FINMA)"];
     data.source = "Data Classification Policy";
   }
-
   if (analysedCount >= 4) {
-    // IT Operations Runbook
-    sla.status = "found";
-    sla.count = "5 detected";
+    sla.status = "found"; sla.count = "5 detected";
     sla.items = ["P1: 1hr acknowledgement / 4hr resolution", "P2: 4hr acknowledgement / next business day", "System availability: 99.9% uptime required", "Maintenance windows: Sundays 02:00–06:00 CET only", "24/7 monitoring for Tier 1 systems"];
     sla.source = "IT Operations Runbook v4";
   }
-
   return [security, sla, data, procurement, aiGov];
 }
 
 function getCoverage(websiteAnalysed: boolean, analysedCount: number): number {
   if (!websiteAnalysed) return 0;
-  const base = 45;
-  const perDoc = [15, 8, 12, 8]; // coverage added per doc
-  let c = base;
+  let c = 45;
+  const perDoc = [15, 8, 12, 8];
   for (let i = 0; i < analysedCount && i < perDoc.length; i++) c += perDoc[i];
   return c;
 }
 
-const frameworks = ["FINMA", "GDPR", "ISO 27001", "EU AI Act"];
+const frameworksList = ["FINMA", "GDPR", "ISO 27001", "EU AI Act"];
 
 const connectedSystems = [
   { icon: Lock, label: "Azure AD", sub: "real MFA adoption and access control" },
   { icon: Server, label: "ServiceNow / Jira SM", sub: "real SLA performance history" },
   { icon: Shield, label: "GRC platform", sub: "existing risk register and audit findings" },
 ];
+
+// Baseline section index mapping: 0=security, 1=sla, 2=data, 3=procurement, 4=aiGov
+const sectionRevealStep = [2, 3, 4, 5, -1]; // aiGov never auto-revealed
 
 // ─── Component ───────────────────────────────────────────────
 
@@ -124,41 +101,51 @@ export default function EnterpriseContext() {
   const [websiteAnalysed, setWebsiteAnalysed] = useState(false);
   const [websiteLoading, setWebsiteLoading] = useState(false);
   const [docs, setDocs] = useState<DocEntry[]>(initialDocs.map(d => ({ ...d })));
+  const [revealStep, setRevealStep] = useState(0);
+  const [dataProcessingAnswer, setDataProcessingAnswer] = useState<"yes" | "no" | "unsure" | null>(null);
 
   const analysedCount = docs.filter(d => d.status === "analysed").length;
   const baseline = getBaseline(websiteAnalysed, analysedCount);
   const coverage = getCoverage(websiteAnalysed, analysedCount);
+  const effectiveCoverage = dataProcessingAnswer !== null && dataProcessingAnswer !== "unsure" ? Math.min(100, coverage + 6) : coverage;
   const allDocsAnalysed = analysedCount === docs.length;
+
+  const triggerReveal = () => {
+    setTimeout(() => setRevealStep(1), 100);
+    setTimeout(() => setRevealStep(2), 700);
+    setTimeout(() => setRevealStep(3), 1200);
+    setTimeout(() => setRevealStep(4), 1700);
+    setTimeout(() => setRevealStep(5), 2200);
+    setTimeout(() => setRevealStep(6), 3000);
+  };
 
   const analyseWebsite = () => {
     setWebsiteLoading(true);
+    setRevealStep(0);
+    setDataProcessingAnswer(null);
     setTimeout(() => {
       setWebsiteLoading(false);
       setWebsiteAnalysed(true);
+      triggerReveal();
     }, 1800);
   };
 
   const loadAlpinaDemo = () => {
     setWebsiteLoading(true);
+    setRevealStep(0);
+    setDataProcessingAnswer(null);
     setTimeout(() => {
       setWebsiteLoading(false);
       setWebsiteAnalysed(true);
       setDocs(prev => prev.map(d => ({ ...d, status: "analysed" as const })));
+      triggerReveal();
     }, 1200);
   };
 
   const addDocument = (index: number) => {
-    setDocs(prev => {
-      const next = [...prev];
-      next[index] = { ...next[index], status: "scanning" };
-      return next;
-    });
+    setDocs(prev => { const next = [...prev]; next[index] = { ...next[index], status: "scanning" }; return next; });
     setTimeout(() => {
-      setDocs(prev => {
-        const next = [...prev];
-        next[index] = { ...next[index], status: "analysed" };
-        return next;
-      });
+      setDocs(prev => { const next = [...prev]; next[index] = { ...next[index], status: "analysed" }; return next; });
     }, 1500);
   };
 
@@ -166,12 +153,8 @@ export default function EnterpriseContext() {
     <div className="p-6 space-y-5 max-w-[1400px] mx-auto animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="text-[22px] font-light text-foreground tracking-tight" style={{ fontFamily: "'Fraunces', serif" }}>
-          Enterprise Context
-        </h1>
-        <p className="text-[13px] text-muted-foreground mt-1">
-          Step 0 — Establish what enterprise-ready means for this deployment environment
-        </p>
+        <h1 className="text-[22px] font-light text-foreground tracking-tight" style={{ fontFamily: "'Fraunces', serif" }}>Enterprise Context</h1>
+        <p className="text-[13px] text-muted-foreground mt-1">Step 0 — Establish what enterprise-ready means for this deployment environment</p>
       </div>
 
       {/* ISV banner */}
@@ -185,34 +168,20 @@ export default function EnterpriseContext() {
       <div className="flex gap-6">
         {/* ── LEFT COLUMN (45%) ── */}
         <div className="w-[45%] shrink-0 space-y-5">
-
           {/* Section 1 — Deployment environment */}
           <div className="space-y-3">
             <h2 className="text-[14px] font-semibold text-foreground">Deployment environment</h2>
-
             {!websiteAnalysed && !websiteLoading ? (
               <>
                 <div className="flex gap-2">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="e.g. alpinabank.ch or Alpina Bank"
-                      className="w-full h-10 pl-10 pr-4 rounded-md border bg-background text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                      style={{ borderColor: "rgba(212,207,198,0.4)" }}
-                      readOnly
-                    />
+                    <input type="text" placeholder="e.g. alpinabank.ch or Alpina Bank" className="w-full h-10 pl-10 pr-4 rounded-md border bg-background text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" style={{ borderColor: "rgba(212,207,198,0.4)" }} readOnly />
                   </div>
-                  <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0" onClick={analyseWebsite}>
-                    Analyse <ChevronRight className="h-3.5 w-3.5" />
-                  </Button>
+                  <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0" onClick={analyseWebsite}>Analyse <ChevronRight className="h-3.5 w-3.5" /></Button>
                 </div>
-                <p className="text-[11px] text-muted-foreground">
-                  Launch Studio will infer industry, geography, regulatory context and certification status
-                </p>
-                <button onClick={loadAlpinaDemo} className="text-[11px] text-primary hover:underline">
-                  → Load Alpina Bank demo
-                </button>
+                <p className="text-[11px] text-muted-foreground">Launch Studio will infer industry, geography, regulatory context and certification status</p>
+                <button onClick={loadAlpinaDemo} className="text-[11px] text-primary hover:underline">→ Load Alpina Bank demo</button>
               </>
             ) : websiteLoading ? (
               <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
@@ -237,15 +206,9 @@ export default function EnterpriseContext() {
                         <Badge variant="outline" className="text-[9px] px-1.5 py-0">250–500 employees</Badge>
                       </div>
                       <div className="mt-2.5 space-y-1">
-                        {[
-                          "FINMA supervised (Swiss financial regulator)",
-                          "GDPR applicable (EU customer data)",
-                          "ISO 27001 certified (detected from public profile)",
-                          "Azure infrastructure signals detected",
-                        ].map((s, i) => (
+                        {["FINMA supervised (Swiss financial regulator)", "GDPR applicable (EU customer data)", "ISO 27001 certified (detected from public profile)", "Azure infrastructure signals detected"].map((s, i) => (
                           <p key={i} className="text-[11px] text-muted-foreground flex items-start gap-1.5">
-                            <span className="h-1 w-1 rounded-full bg-primary mt-[6px] shrink-0" />
-                            {s}
+                            <span className="h-1 w-1 rounded-full bg-primary mt-[6px] shrink-0" />{s}
                           </p>
                         ))}
                       </div>
@@ -260,8 +223,6 @@ export default function EnterpriseContext() {
           <div className="space-y-3">
             <h2 className="text-[14px] font-semibold text-foreground">Documents</h2>
             <p className="text-[11px] text-muted-foreground">Upload documents from the receiving organisation</p>
-
-            {/* Demo document cards */}
             <div className="space-y-2">
               {docs.map((doc, i) => (
                 <Card key={i} className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
@@ -273,34 +234,16 @@ export default function EnterpriseContext() {
                       <p className="text-[12px] font-medium text-foreground truncate">{doc.name}</p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] text-muted-foreground">{doc.pages} pages</span>
-                        <Badge variant="outline" className={`text-[9px] px-1 py-0 border ${doc.tagColor}`} style={{ fontFamily: "'DM Mono', monospace" }}>
-                          {doc.tag}
-                        </Badge>
+                        <Badge variant="outline" className={`text-[9px] px-1 py-0 border ${doc.tagColor}`} style={{ fontFamily: "'DM Mono', monospace" }}>{doc.tag}</Badge>
                       </div>
                     </div>
-                    {doc.status === "available" && (
-                      <Button variant="outline" size="sm" className="text-[10px] h-7 px-2.5 shrink-0" onClick={() => addDocument(i)}>
-                        + Add
-                      </Button>
-                    )}
-                    {doc.status === "scanning" && (
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-primary/10 text-primary border-primary/20 shrink-0">
-                        <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />
-                        Scanning…
-                      </Badge>
-                    )}
-                    {doc.status === "analysed" && (
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0">
-                        <CheckCircle2 className="h-2.5 w-2.5 mr-1" />
-                        Analysed
-                      </Badge>
-                    )}
+                    {doc.status === "available" && <Button variant="outline" size="sm" className="text-[10px] h-7 px-2.5 shrink-0" onClick={() => addDocument(i)}>+ Add</Button>}
+                    {doc.status === "scanning" && <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-primary/10 text-primary border-primary/20 shrink-0"><Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />Scanning…</Badge>}
+                    {doc.status === "analysed" && <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0"><CheckCircle2 className="h-2.5 w-2.5 mr-1" />Analysed</Badge>}
                   </CardContent>
                 </Card>
               ))}
             </div>
-
-            {/* Upload area */}
             <div className="border-2 border-dashed rounded-md p-5 text-center cursor-pointer hover:bg-muted/20 transition-colors" style={{ borderColor: "rgba(212,207,198,0.3)" }}>
               <Upload className="h-4 w-4 text-muted-foreground/50 mx-auto mb-1" />
               <p className="text-[11px] text-muted-foreground">Or drop your own documents here</p>
@@ -328,7 +271,6 @@ export default function EnterpriseContext() {
 
         {/* ── RIGHT COLUMN (55%) ── */}
         <div className="flex-1 space-y-4">
-
           {/* Empty state */}
           {!websiteAnalysed && !websiteLoading && (
             <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
@@ -350,71 +292,76 @@ export default function EnterpriseContext() {
             </Card>
           )}
 
-          {/* Live baseline */}
+          {/* Live baseline — progressive reveal */}
           {websiteAnalysed && (
-            <div className="space-y-4 animate-fade-in">
-              {/* Coverage score */}
+            <div className="space-y-4">
+              {/* Coverage ring — always shown */}
               <div className="flex items-center gap-4">
-                <div
-                  className="h-16 w-16 rounded-full border-4 flex items-center justify-center shrink-0"
-                  style={{ borderColor: coverage >= 80 ? "hsl(var(--success))" : "hsl(var(--warning))" }}
-                >
-                  <span className="text-lg font-bold text-foreground">{coverage}%</span>
+                <div className="h-16 w-16 rounded-full border-4 flex items-center justify-center shrink-0" style={{ borderColor: effectiveCoverage >= 80 ? "hsl(var(--success))" : "hsl(var(--warning))" }}>
+                  <span className="text-lg font-bold text-foreground">{effectiveCoverage}%</span>
                 </div>
                 <div>
                   <p className="text-[14px] font-semibold text-foreground">Baseline coverage</p>
                   <p className="text-[11px] text-muted-foreground">
-                    {coverage < 80
-                      ? "Add documents to complete your baseline"
-                      : allDocsAnalysed
-                        ? "Baseline established — ready to proceed"
-                        : "Good coverage — add more documents for higher confidence"}
+                    {effectiveCoverage < 80 ? "Add documents to complete your baseline" : "Baseline established — ready to proceed"}
                   </p>
                 </div>
               </div>
+
+              {/* STEP 1 — Regulatory context card */}
+              {revealStep >= 1 && (
+                <div className="animate-fade-in border rounded-lg p-4 bg-secondary/30" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-3" style={{ fontFamily: "'DM Mono', monospace" }}>
+                    Regulatory context · April 2026
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
+                    Three active developments directly affect this deployment:
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <span className="text-primary text-[11px] mt-0.5 flex-shrink-0">•</span>
+                      <p className="text-[11px] text-foreground leading-relaxed">
+                        <span className="font-medium">FINMA Circular 2024/1 on AI</span> — effective January 2025, Swiss financial institutions must document AI decision-making and maintain human oversight for liquidity and credit recommendations
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-primary text-[11px] mt-0.5 flex-shrink-0">•</span>
+                      <p className="text-[11px] text-foreground leading-relaxed">
+                        <span className="font-medium">EU AI Act enforcement</span> — High Risk AI systems must be registered in the EU database by August 2026. Cash flow forecasting agents making financial recommendations qualify under Annex III
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="text-primary text-[11px] mt-0.5 flex-shrink-0">•</span>
+                      <p className="text-[11px] text-foreground leading-relaxed">
+                        <span className="font-medium">Swiss nDSG</span> — revised Swiss Data Protection Act in full effect since September 2023, stricter requirements for data processing agreements with third-party vendors including AI providers
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-3 pt-3 border-t italic" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+                    This evaluation reflects current requirements — not last year's standards.
+                  </p>
+                </div>
+              )}
 
               {/* Detected frameworks */}
-              <div>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2" style={{ fontFamily: "'DM Mono', monospace" }}>
-                  Detected Frameworks
-                </p>
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {frameworks.map(fw => (
-                    <Badge key={fw} className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 py-0.5 font-medium">{fw}</Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Regulatory context (website only) */}
-              {analysedCount === 0 && (
+              {revealStep >= 1 && (
                 <div className="animate-fade-in">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2" style={{ fontFamily: "'DM Mono', monospace" }}>
-                    Regulatory Context
-                  </p>
-                  <div className="space-y-1.5">
-                    {[
-                      "FINMA supervised — financial services regulation applies",
-                      "GDPR — EU customer data processing obligations",
-                      "EU AI Act — HIGH RISK likely (financial recommendations)",
-                      "ISO 27001 — certification detected",
-                    ].map((item, i) => (
-                      <p key={i} className="text-[12px] text-foreground flex items-start gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary mt-[6px] shrink-0" />
-                        {item}
-                      </p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2" style={{ fontFamily: "'DM Mono', monospace" }}>Detected Frameworks</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {frameworksList.map(fw => (
+                      <Badge key={fw} className="bg-primary/10 text-primary border-primary/20 text-[10px] px-2 py-0.5 font-medium">{fw}</Badge>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Baseline sections */}
-              <div>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2" style={{ fontFamily: "'DM Mono', monospace" }}>
-                  Baseline Coverage
-                </p>
-                <div className="space-y-2">
-                  {baseline.map((section, i) => (
-                    <Card key={i} className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+              {/* Baseline sections — progressive reveal */}
+              {baseline.map((section, i) => {
+                const step = sectionRevealStep[i];
+                if (step < 0 || revealStep < step) return null;
+                return (
+                  <div key={i} className="animate-fade-in">
+                    <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
                       <CardContent className="p-3">
                         <div className="flex items-center gap-2">
                           {section.status === "found" ? (
@@ -425,13 +372,12 @@ export default function EnterpriseContext() {
                             <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 shrink-0" />
                           )}
                           <span className="text-[12px] font-medium text-foreground">{section.label}</span>
-                          {section.status !== "missing" && (
+                          {section.status !== "missing" ? (
                             <span className="text-[10px] text-muted-foreground">— {section.count}</span>
-                          )}
-                          {section.status === "missing" && (
+                          ) : (
                             <span className="text-[10px] text-muted-foreground">— not found</span>
                           )}
-                          {section.source && section.source.includes("alpinabank") && section.status === "partial" && (
+                          {section.source?.includes("alpinabank") && section.status === "partial" && (
                             <Badge variant="outline" className="text-[8px] px-1 py-0 bg-amber-500/10 text-amber-700 border-amber-500/20 ml-auto" style={{ fontFamily: "'DM Mono', monospace" }}>inferred</Badge>
                           )}
                         </div>
@@ -444,12 +390,22 @@ export default function EnterpriseContext() {
                         )}
                       </CardContent>
                     </Card>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                );
+              })}
 
-              {/* AI Governance gap panel */}
-              {allDocsAnalysed && (
+              {/* STEP 6 — Data processing question */}
+              {revealStep >= 6 && dataProcessingAnswer === null && (
+                <DataProcessingQuestion onAnswer={setDataProcessingAnswer} />
+              )}
+
+              {/* STEP 6 — Result after answer */}
+              {revealStep >= 6 && dataProcessingAnswer !== null && (
+                <DataProcessingResult answer={dataProcessingAnswer} />
+              )}
+
+              {/* AI Governance warning — only when question unanswered */}
+              {revealStep >= 5 && dataProcessingAnswer === null && allDocsAnalysed && (
                 <Card className="border-l-4 border-l-amber-500 bg-amber-500/[0.03] border animate-fade-in" style={{ borderTopColor: "rgba(212,207,198,0.25)", borderRightColor: "rgba(212,207,198,0.25)", borderBottomColor: "rgba(212,207,198,0.25)" }}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-2.5">
@@ -466,11 +422,9 @@ export default function EnterpriseContext() {
               )}
 
               {/* Sources */}
-              {allDocsAnalysed && (
+              {revealStep >= 2 && (
                 <div className="animate-fade-in">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2" style={{ fontFamily: "'DM Mono', monospace" }}>
-                    Sources
-                  </p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2" style={{ fontFamily: "'DM Mono', monospace" }}>Sources</p>
                   <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
                     <CardContent className="p-3 space-y-1.5">
                       <div className="flex items-center gap-2">
@@ -495,10 +449,10 @@ export default function EnterpriseContext() {
       </div>
 
       {/* ═══ BOTTOM CTA ═══ */}
-      {allDocsAnalysed && websiteAnalysed && (
+      {allDocsAnalysed && websiteAnalysed && revealStep >= 5 && (
         <div className="border-t pt-4 flex items-center justify-between animate-fade-in" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
           <p className="text-[12px] text-muted-foreground">
-            Baseline established · {coverage}% confidence · 1 gap (AI Governance) · Evaluation proceeds with EU AI Act defaults
+            Baseline established · {effectiveCoverage}% confidence · {dataProcessingAnswer !== null && dataProcessingAnswer !== "unsure" ? "Data processing policy confirmed" : "1 gap (AI Governance)"} · Evaluation proceeds with EU AI Act defaults
           </p>
           <Button className="h-10 text-[13px] gap-2 px-5" onClick={() => navigate("/intelligence")}>
             Proceed to Solution Intelligence
@@ -506,6 +460,87 @@ export default function EnterpriseContext() {
           </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Data Processing Question ────────────────────────────────
+
+function DataProcessingQuestion({ onAnswer }: { onAnswer: (answer: "yes" | "no" | "unsure") => void }) {
+  return (
+    <div className="animate-fade-in border border-amber-200 rounded-lg p-4 bg-amber-50/50">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-5 h-5 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center flex-shrink-0">
+          <span className="text-amber-700 text-[10px] font-bold">?</span>
+        </div>
+        <p className="text-[10px] font-semibold text-amber-800 uppercase tracking-wider" style={{ fontFamily: "'DM Mono', monospace" }}>
+          One question before we proceed
+        </p>
+      </div>
+      <p className="text-[12px] text-foreground leading-relaxed mb-3">
+        Based on FINMA supervision and EU AI Act High Risk classification, I need to confirm Alpina Bank's data processing policy:
+      </p>
+      <p className="text-[12px] font-medium text-foreground mb-4">
+        Does Alpina Bank's policy require that all financial data is processed exclusively within Switzerland — including by third-party AI and software vendors?
+      </p>
+      <div className="flex flex-col gap-2">
+        {([
+          { value: "yes" as const, label: "Yes", detail: "— all processing must remain in Switzerland" },
+          { value: "no" as const, label: "No", detail: "— EEA processing is acceptable" },
+          { value: "unsure" as const, label: "Not documented", detail: "— needs confirmation from compliance team" },
+        ]).map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => onAnswer(opt.value)}
+            className="text-left px-3 py-2.5 rounded-md border border-border bg-background text-[12px] text-foreground hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
+          >
+            <span className="font-medium">{opt.label}</span> {opt.detail}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Data Processing Result ──────────────────────────────────
+
+function DataProcessingResult({ answer }: { answer: "yes" | "no" | "unsure" }) {
+  const configs = {
+    yes: {
+      icon: "✓", label: "Data residency requirement confirmed",
+      iconClass: "bg-green-100 border-green-300", textClass: "text-green-700",
+      borderClass: "border-green-200", bgClass: "bg-green-50/50",
+      body: "All financial data must remain in Switzerland. This requirement will be applied to the evaluation — any vendor or tool routing data outside Switzerland will be flagged.",
+      sub: "Data Requirements updated. Baseline coverage → 94%.",
+    },
+    no: {
+      icon: "✓", label: "EEA processing accepted",
+      iconClass: "bg-green-100 border-green-300", textClass: "text-green-700",
+      borderClass: "border-green-200", bgClass: "bg-green-50/50",
+      body: "EEA-wide data processing is acceptable. GDPR Article 45 adequacy decision applies. Swiss nDSG cross-border transfer requirements still apply.",
+      sub: "Data Requirements updated. Baseline coverage → 94%.",
+    },
+    unsure: {
+      icon: "△", label: "Flagged for compliance review",
+      iconClass: "bg-amber-100 border-amber-300", textClass: "text-amber-700",
+      borderClass: "border-amber-200", bgClass: "bg-amber-50/50",
+      body: "Data processing policy is undocumented. Evaluation will proceed using the stricter Switzerland-only assumption as a default.",
+      sub: "This will appear as a P1 gap in the Readiness Report.",
+    },
+  };
+  const c = configs[answer];
+  return (
+    <div className={`animate-fade-in border ${c.borderClass} rounded-lg p-4 ${c.bgClass}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`w-5 h-5 rounded-full ${c.iconClass} border flex items-center justify-center flex-shrink-0`}>
+          <span className={`${c.textClass} text-[10px] font-bold`}>{c.icon}</span>
+        </div>
+        <p className={`text-[11px] font-semibold ${c.textClass} uppercase tracking-wider`} style={{ fontFamily: "'DM Mono', monospace" }}>
+          {c.label}
+        </p>
+      </div>
+      <p className="text-[12px] text-foreground leading-relaxed mb-2">{c.body}</p>
+      <p className="text-[11px] text-muted-foreground">{c.sub}</p>
     </div>
   );
 }
