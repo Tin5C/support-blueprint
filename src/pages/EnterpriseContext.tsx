@@ -327,7 +327,7 @@ export default function EnterpriseContext() {
                     <div className="flex gap-2">
                       <span className="text-primary text-[11px] mt-0.5 flex-shrink-0">•</span>
                       <p className="text-[11px] text-foreground leading-relaxed">
-                        <span className="font-medium">EU AI Act enforcement</span> — High Risk AI systems must be registered in the EU database by August 2026. Cash flow forecasting agents making financial recommendations qualify under Annex III
+                        <span className="font-medium">EU AI Act enforcement</span> — High Risk AI systems must be registered in the EU database by August 2026. AI systems making financial recommendations or credit decisions qualify under Annex III — registration deadline August 2026
                       </p>
                     </div>
                     <div className="flex gap-2">
