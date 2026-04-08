@@ -2,9 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { kpis, customers, cases, trendData, activityHistory, pendingApprovals, escalations } from "@/data/mockData";
+import { Link } from "react-router-dom";
 import {
   ArrowUpRight, ArrowDownRight, AlertTriangle, CheckCircle2, Clock, Users,
-  TrendingUp, ExternalLink, Shield, Activity, ChevronRight,
+  TrendingUp, ExternalLink, Shield, Activity, ChevronRight, ShieldCheck,
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
@@ -33,13 +34,14 @@ export default function Dashboard() {
       </div>
 
       {/* KPIs — scale and governance metrics */}
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-6 gap-3">
         {[
           { label: "Automation Rate", value: `${kpis.automationRate}%`, icon: CheckCircle2, iconClass: "text-success", change: "+3.2% this week", positive: true, desc: "Cases resolved without human intervention" },
           { label: "Pending Approvals", value: pendingApprovals.length, icon: Shield, iconClass: "text-warning", change: "Awaiting human review", positive: false, desc: "Actions requiring human approval" },
           { label: "Active Escalations", value: activeEscalations.length, icon: ArrowUpRight, iconClass: "text-destructive", change: `${activeEscalations.filter(e => e.severity === "critical").length} critical`, positive: false, desc: "Beyond AI resolution capability" },
           { label: "At-Risk Customers", value: kpis.atRiskCustomers, icon: AlertTriangle, iconClass: "text-destructive", change: `of ${customers.length} total`, positive: false, desc: "Health score below threshold" },
           { label: "Avg Resolution", value: kpis.avgResolutionTime, icon: Clock, iconClass: "text-primary", change: "−18 min vs last week", positive: true, desc: "Including AI-assisted cases" },
+          { label: "Annual Audit", value: "Certified", icon: ShieldCheck, iconClass: "text-emerald-600", change: "Next: 68 days · Jun 14 · KPMG", positive: false, desc: "March 2025 · with recommendations" },
         ].map((kpi, i) => (
           <Card key={i} className="kpi-card border animate-slide-up" style={{ animationDelay: `${i * 40}ms` }}>
             <CardContent className="p-4">

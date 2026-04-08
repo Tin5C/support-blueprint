@@ -1,34 +1,48 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard, Map, TrendingUp, Settings,
+  LayoutDashboard, TrendingUp, Settings,
   MessageSquare, CheckSquare, ArrowUpRight,
   ExternalLink, Zap, FileText, Database, Plus,
-  Shield, Lock, Package, Eye, FileSearch,
+  Shield, Lock, Eye, FileSearch, ShieldCheck,
 } from "lucide-react";
 import logo from "@/assets/logo.svg";
 
-const launchStudioNav = [
+const lsAssess = [
   { to: "/context", icon: FileSearch, label: "Enterprise Context" },
   { to: "/intelligence", icon: Database, label: "Solution Intelligence" },
+];
+
+const lsValidate = [
   { to: "/readiness", icon: Shield, label: "Readiness Report" },
   { to: "/review", icon: Lock, label: "Expert Review", badge: "Premium" },
-  { to: "/package", icon: Package, label: "Procurement Package" },
+];
+
+const lsDeliver = [
   { to: "/preview", icon: Eye, label: "Support Preview" },
 ];
 
-const supportStudioNav = [
+const ssOverview = [
   { to: "/", icon: LayoutDashboard, label: "Overview" },
-  { to: "/blueprints", icon: Map, label: "Active Blueprint" },
-  { to: "/studio", icon: Zap, label: "Blueprint Studio" },
+];
+
+const ssSetUp = [
+  { to: "/studio", icon: Zap, label: "Blueprint" },
+];
+
+const ssOperate = [
   { to: "/teams/cases", icon: MessageSquare, label: "Live Cases" },
   { to: "/teams/approvals", icon: CheckSquare, label: "Approvals" },
   { to: "/teams/escalations", icon: ArrowUpRight, label: "Escalations" },
+];
+
+const ssGovern = [
   { to: "/insights", icon: TrendingUp, label: "Insights" },
+  { to: "/audit", icon: ShieldCheck, label: "Audit" },
+  { to: "/compliance", icon: FileText, label: "Compliance" },
 ];
 
 const secondaryNav = [
-  { to: "/templates", icon: FileText, label: "Templates" },
   { to: "/admin", icon: Settings, label: "Settings" },
 ];
 
@@ -68,30 +82,70 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         <nav className="flex-1 py-4 px-3 overflow-y-auto space-y-5">
           {/* Launch Studio */}
-          <div>
-            <div className="flex items-center justify-between px-2.5 pb-2">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-2.5 pb-1">
               <p className="text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Launch Studio</p>
               <NavLink to="/context" title="Start new evaluation" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
                 <Plus className="h-3 w-3" />
               </NavLink>
             </div>
-            <div className="space-y-0.5">
-              {launchStudioNav.map(item => renderNavItem(item))}
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Assess</p>
+              <div className="space-y-0.5">
+                {lsAssess.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Validate</p>
+              <div className="space-y-0.5">
+                {lsValidate.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Deliver</p>
+              <div className="space-y-0.5">
+                {lsDeliver.map(item => renderNavItem(item))}
+              </div>
             </div>
           </div>
 
           <div className="border-t border-sidebar-border" />
 
           {/* Support Studio */}
-          <div>
-            <div className="flex items-center justify-between px-2.5 pb-2">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-2.5 pb-1">
               <p className="text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Support Studio</p>
-              <NavLink to="/blueprints" title="Set up new support blueprint" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
+              <NavLink to="/studio" title="Set up new support blueprint" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
                 <Plus className="h-3 w-3" />
               </NavLink>
             </div>
+
             <div className="space-y-0.5">
-              {supportStudioNav.map(item => renderNavItem(item))}
+              {ssOverview.map(item => renderNavItem(item))}
+            </div>
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Set up</p>
+              <div className="space-y-0.5">
+                {ssSetUp.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Operate</p>
+              <div className="space-y-0.5">
+                {ssOperate.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Govern</p>
+              <div className="space-y-0.5">
+                {ssGovern.map(item => renderNavItem(item))}
+              </div>
             </div>
           </div>
 

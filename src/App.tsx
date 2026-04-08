@@ -19,8 +19,10 @@ import TeamsEscalations from "@/pages/TeamsEscalations";
 import EnterpriseContext from "@/pages/EnterpriseContext";
 import ReadinessReport from "@/pages/ReadinessReport";
 import ExpertReview from "@/pages/ExpertReview";
-import ProcurementPackage from "@/pages/ProcurementPackage";
+
 import SupportPreview from "@/pages/SupportPreview";
+import Audit from "@/pages/Audit";
+import ComplianceReport from "@/pages/ComplianceReport";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,7 +39,7 @@ const App = () => (
           <Route path="/intelligence" element={<AppLayout><SolutionIntelligence /></AppLayout>} />
           <Route path="/readiness" element={<AppLayout><ReadinessReport /></AppLayout>} />
           <Route path="/review" element={<AppLayout><ExpertReview /></AppLayout>} />
-          <Route path="/package" element={<AppLayout><ProcurementPackage /></AppLayout>} />
+
           <Route path="/preview" element={<AppLayout><SupportPreview /></AppLayout>} />
           {/* Support Studio */}
           <Route path="/" element={<AppLayout><Dashboard /></AppLayout>} />
@@ -47,6 +49,8 @@ const App = () => (
           <Route path="/teams/approvals" element={<AppLayout><TeamsApprovals /></AppLayout>} />
           <Route path="/teams/escalations" element={<AppLayout><TeamsEscalations /></AppLayout>} />
           <Route path="/insights" element={<AppLayout><Insights /></AppLayout>} />
+          <Route path="/audit" element={<AppLayout><Audit /></AppLayout>} />
+          <Route path="/compliance" element={<AppLayout><ComplianceReport /></AppLayout>} />
           {/* Shared */}
           <Route path="/templates" element={<AppLayout><Templates /></AppLayout>} />
           <Route path="/admin" element={<AppLayout><Admin /></AppLayout>} />
