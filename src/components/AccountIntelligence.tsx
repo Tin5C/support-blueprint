@@ -468,12 +468,6 @@ export default function AccountIntelligence({ data }: Props) {
               </div>
             </div>
 
-            {/* Reset for demo */}
-            <div className="text-center pt-2">
-              <Button variant="ghost" size="sm" className="text-[10px] text-muted-foreground h-7" onClick={resetToEmpty}>
-                Reset demo state
-              </Button>
-            </div>
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,22 +28,14 @@ const match = findProject("fintrack-ag", "proj-ft1");
 const account = match!.account;
 const project = match!.project;
 
-const ingestSteps = [
-  { label: "Repository connected — 42 commits indexed", done: true },
-  { label: "Architecture components detected — 6 found", done: true },
-  { label: "AI risk classified — HIGH RISK (EU AI Act Article 6)", done: true },
-  { label: "Detecting regulatory frameworks", active: true },
-  { label: "Mapping data flows and PII", pending: true },
-  { label: "Scanning for risk signals", pending: true },
-  { label: "Building knowledge graph", pending: true },
-];
+
 
 const sourceCards = [
-  { title: "GitHub repo", sub: "Architecture auto-mapped from code", icon: GitBranch },
-  { title: "Architecture docs", sub: "PDF, Markdown, YAML", icon: FileText },
-  { title: "Cloud environment", sub: "Azure · AWS · GCP", icon: Cloud },
-  { title: "API spec", sub: "OpenAPI, Swagger, Postman", icon: Globe },
-  { title: "Runbooks & ops", sub: "Monitoring, incident, on-call", icon: BookOpen, span2: true },
+  { key: "github", title: "GitHub repo", sub: "Architecture auto-mapped from code", icon: GitBranch },
+  { key: "docs", title: "Architecture docs", sub: "PDF, Markdown, YAML", icon: FileText },
+  { key: "cloud", title: "Cloud environment", sub: "Azure · AWS · GCP", icon: Cloud },
+  { key: "api", title: "API spec", sub: "OpenAPI, Swagger, Postman", icon: Globe },
+  { key: "runbooks", title: "Runbooks & ops", sub: "Monitoring, incident, on-call", icon: BookOpen, span2: true },
 ];
 
 const baselineGaps = [
@@ -110,7 +102,7 @@ const riskSignals = [
 
 export default function SolutionIntelligence() {
   const navigate = useNavigate();
-  const [solutionState, setSolutionState] = useState<SolutionState>("populated");
+  const [solutionState, setSolutionState] = useState<SolutionState>("empty");
   const [riskRationaleOpen, setRiskRationaleOpen] = useState(false);
   const [frameworks, setFrameworks] = useState<Framework[]>([
     { id: "gdpr", label: "GDPR", signal: "Swiss customer data detected · Azure Switzerland North" },
@@ -121,8 +113,85 @@ export default function SolutionIntelligence() {
   ]);
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [hoveredFw, setHoveredFw] = useState<string | null>(null);
+  const [githubInput, setGithubInput] = useState("");
+  const [connectReadiness, setConnectReadiness] = useState(0);
+  const [activeTiles, setActiveTiles] = useState<Set<string>>(new Set());
+  const [ingestStep, setIngestStep] = useState(0);
+  const [ingestReadiness, setIngestReadiness] = useState(41);
 
   const removeFramework = (id: string) => setFrameworks(prev => prev.filter(f => f.id !== id));
+
+  const typeText = (text: string, setter: (v: string) => void, onDone?: () => void) => {
+    let i = 0;
+    setter("");
+    const interval = setInterval(() => {
+      setter(text.slice(0, i + 1));
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
+        onDone?.();
+      }
+    }, 55);
+  };
+
+  const runConnectDemo = () => {
+    typeText("github.com/fintrack/cashflow-agent", setGithubInput, () => {
+      setTimeout(() => {
+        setActiveTiles(prev => new Set([...prev, "github"]));
+        setConnectReadiness(12);
+      }, 300);
+      setTimeout(() => {
+        setActiveTiles(prev => new Set([...prev, "cloud"]));
+        setConnectReadiness(28);
+      }, 1100);
+      setTimeout(() => {
+        setActiveTiles(prev => new Set([...prev, "docs"]));
+        setConnectReadiness(41);
+      }, 1900);
+      setTimeout(() => {
+        setSolutionState("ingesting");
+        setConnectReadiness(0);
+        setActiveTiles(new Set());
+        setGithubInput("");
+      }, 2800);
+    });
+  };
+
+  useEffect(() => {
+    if (solutionState !== "ingesting") {
+      setIngestStep(0);
+      setIngestReadiness(41);
+      return;
+    }
+    setIngestStep(0);
+    setIngestReadiness(41);
+
+    const steps = [
+      { delay: 600, readiness: 47 },
+      { delay: 1600, readiness: 52 },
+      { delay: 2800, readiness: 58 },
+      { delay: 4200, readiness: 63 },
+      { delay: 5800, readiness: 68 },
+      { delay: 7200, readiness: 72 },
+      { delay: 8800, readiness: 74 },
+    ];
+
+    const timers = steps.map((s, i) =>
+      setTimeout(() => {
+        setIngestStep(i + 1);
+        setIngestReadiness(s.readiness);
+      }, s.delay)
+    );
+
+    const finalTimer = setTimeout(() => {
+      setSolutionState("populated");
+    }, 10000);
+
+    return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(finalTimer);
+    };
+  }, [solutionState]);
 
   const stateLabel = { empty: "Not connected", ingesting: "Ingesting…", populated: "Populated" };
   const stateDot = { empty: "bg-muted-foreground/40", ingesting: "bg-amber-500", populated: "bg-success" };
@@ -266,28 +335,37 @@ export default function SolutionIntelligence() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-left">
-                {sourceCards.map((sc, i) => (
-                  <Card key={i} className={`border cursor-pointer hover:border-primary/30 transition-colors ${sc.span2 ? "col-span-2" : ""}`} style={{ borderColor: "rgba(212,207,198,0.25)" }}>
-                    <CardContent className="p-3 flex items-start gap-2.5">
-                      <sc.icon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-[12px] font-semibold text-foreground">{sc.title}</p>
-                        <p className="text-[10px] text-muted-foreground">{sc.sub}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {sourceCards.map((sc, i) => {
+                  const isActive = activeTiles.has(sc.key);
+                  return (
+                    <Card key={i} className={`relative cursor-pointer transition-all duration-300 ${sc.span2 ? "col-span-2" : ""} ${isActive ? "border-emerald-500 bg-emerald-50/30" : "border hover:border-primary/30"}`} style={!isActive ? { borderColor: "rgba(212,207,198,0.25)" } : undefined}>
+                      {isActive && (
+                        <div className="absolute top-2 right-2 h-4 w-4 rounded-full bg-emerald-600 flex items-center justify-center">
+                          <CheckCircle2 className="h-2.5 w-2.5 text-white" />
+                        </div>
+                      )}
+                      <CardContent className="p-3 flex items-start gap-2.5">
+                        <sc.icon className={`h-4 w-4 shrink-0 mt-0.5 ${isActive ? "text-emerald-600" : "text-muted-foreground"}`} />
+                        <div>
+                          <p className="text-[12px] font-semibold text-foreground">{sc.title}</p>
+                          <p className="text-[10px] text-muted-foreground">{sc.sub}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
 
               <div className="flex gap-2">
                 <input
                   type="text"
+                  value={githubInput}
+                  onChange={e => setGithubInput(e.target.value)}
                   placeholder="https://github.com/your-org/repo"
                   className="flex-1 h-10 px-3 rounded-md border bg-background text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                   style={{ borderColor: "rgba(212,207,198,0.4)" }}
-                  readOnly
                 />
-                <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0" onClick={() => setSolutionState("ingesting")}>
+                <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0" onClick={runConnectDemo}>
                   Connect <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -296,66 +374,79 @@ export default function SolutionIntelligence() {
               <div className="pt-2 text-left">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider" style={{ fontFamily: "'DM Mono', monospace" }}>Graph readiness</span>
-                  <span className="text-[11px] text-muted-foreground" style={{ fontFamily: "'DM Mono', monospace" }}>0%</span>
+                  <span className="text-[11px] text-muted-foreground" style={{ fontFamily: "'DM Mono', monospace" }}>{connectReadiness}%</span>
                 </div>
-                <div className="h-2 rounded-full bg-muted/30" />
-                <p className="text-[10px] text-muted-foreground mt-1">Add sources to begin evaluation</p>
+                <div className="h-2 rounded-full bg-muted/30 overflow-hidden">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${connectReadiness}%`, transition: "width 0.6s ease-out" }} />
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1">{connectReadiness > 0 ? "Sources connecting…" : "Add sources to begin evaluation"}</p>
               </div>
             </div>
           )}
 
           {/* ════ INGESTING STATE ════ */}
-          {solutionState === "ingesting" && (
-            <div className="space-y-5 animate-fade-in">
-              <Card className="border bg-secondary/30" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
-                <CardContent className="p-5 flex items-center gap-4">
-                  <Loader2 className="h-6 w-6 text-primary animate-spin shrink-0" />
-                  <div>
-                    <p className="text-[14px] font-semibold text-foreground">Analysing repository…</p>
-                    <p className="text-[12px] text-muted-foreground">fintrack/cashflow-agent · 42 commits · Detecting frameworks and classifying AI risk</p>
+          {solutionState === "ingesting" && (() => {
+            const stepLabels = [
+              "Repository connected — 42 commits indexed",
+              "Architecture components detected — 6 found",
+              "AI risk classified — HIGH RISK (EU AI Act Article 6)",
+              "Detecting regulatory frameworks",
+              "Mapping data flows and PII",
+              "Scanning for risk signals",
+              "Building knowledge graph",
+            ];
+            const heroLabel = ingestStep < 4 ? "Analysing repository…" : ingestStep < 6 ? "Mapping solution intelligence…" : "Building knowledge graph…";
+            return (
+              <div className="space-y-5 animate-fade-in">
+                <Card className="border bg-secondary/30" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+                  <CardContent className="p-5 flex items-center gap-4">
+                    <Loader2 className="h-6 w-6 text-primary animate-spin shrink-0" />
+                    <div>
+                      <p className="text-[14px] font-semibold text-foreground">{heroLabel}</p>
+                      <p className="text-[12px] text-muted-foreground">fintrack/cashflow-agent · 42 commits · Detecting frameworks and classifying AI risk</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <div className="text-left">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider" style={{ fontFamily: "'DM Mono', monospace" }}>Graph readiness</span>
+                    <span className="text-[11px] text-primary font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>{ingestReadiness}%</span>
                   </div>
-                </CardContent>
-              </Card>
-
-              <div className="text-left">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider" style={{ fontFamily: "'DM Mono', monospace" }}>Graph readiness</span>
-                  <span className="text-[11px] text-primary font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>47%</span>
+                  <div className="h-2 rounded-full bg-muted/30 overflow-hidden">
+                    <div className="h-full rounded-full bg-primary" style={{ width: `${ingestReadiness}%`, transition: "width 0.8s ease-out" }} />
+                  </div>
                 </div>
-                <div className="h-2 rounded-full bg-muted/30 overflow-hidden">
-                  <div className="h-full rounded-full bg-primary w-[47%] transition-all" />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                {ingestSteps.map((step, i) => (
-                  <div key={i} className={`flex items-start gap-3 px-4 py-2.5 rounded-md border ${step.active ? "bg-primary/[0.04] border-primary/20" : ""}`} style={!step.active ? { borderColor: "rgba(212,207,198,0.25)" } : undefined}>
-                    {step.done ? (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    ) : step.active ? (
-                      <div className="h-4 w-4 rounded-full border-2 border-primary flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-[8px] text-primary font-bold">…</span>
+                <div className="space-y-2">
+                  {stepLabels.map((label, i) => {
+                    const done = ingestStep > i + 1;
+                    const active = ingestStep === i + 1;
+                    const pending = ingestStep < i + 1;
+                    return (
+                      <div key={i} className={`flex items-center gap-3 p-3 rounded-md border transition-colors ${active ? "border-amber-200 bg-amber-50/30" : ""}`} style={!active ? { borderColor: "rgba(212,207,198,0.25)" } : undefined}>
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[11px] font-bold ${done ? "bg-green-100 border border-green-300 text-green-700" : active ? "bg-amber-100 border border-amber-300 text-amber-700" : "bg-secondary border border-border text-muted-foreground"}`}>
+                          {done ? "✓" : active ? "…" : ""}
+                        </div>
+                        <span className={`text-[13px] ${pending ? "text-muted-foreground" : "text-foreground"}`}>{label}</span>
                       </div>
-                    ) : (
-                      <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30 shrink-0 mt-0.5" />
-                    )}
-                    <span className={`text-[12px] ${step.done ? "text-foreground" : step.active ? "text-foreground font-medium" : "text-muted-foreground"}`}>
-                      {step.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
 
-              <div className="flex items-center gap-3">
-                <Button className="h-9 text-[12px] gap-1.5 px-4" onClick={() => setSolutionState("populated")}>
-                  Preview results <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" className="h-9 text-[12px] text-muted-foreground" onClick={() => setSolutionState("empty")}>
-                  Cancel
-                </Button>
+                <div className="flex items-center gap-3">
+                  {ingestStep >= 4 && (
+                    <Button className="h-9 text-[12px] gap-1.5 px-4 animate-fade-in" onClick={() => setSolutionState("populated")}>
+                      Preview results <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  <Button variant="ghost" className="h-9 text-[12px] text-muted-foreground" onClick={() => setSolutionState("empty")}>
+                    Cancel
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ════ POPULATED STATE ════ */}
           {solutionState === "populated" && (

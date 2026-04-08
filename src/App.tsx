@@ -21,6 +21,7 @@ import ReadinessReport from "@/pages/ReadinessReport";
 import ExpertReview from "@/pages/ExpertReview";
 
 import SupportPreview from "@/pages/SupportPreview";
+import Support from "@/pages/Support";
 import Audit from "@/pages/Audit";
 import ComplianceReport from "@/pages/ComplianceReport";
 import NotFound from "@/pages/NotFound";
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/preview" element={<AppLayout><SupportPreview /></AppLayout>} />
           {/* Support Studio */}
           <Route path="/" element={<AppLayout><Dashboard /></AppLayout>} />
+          <Route path="/support" element={<AppLayout><Support /></AppLayout>} />
           <Route path="/blueprints" element={<AppLayout><Blueprint /></AppLayout>} />
           <Route path="/studio" element={<AppLayout><SupportStudio /></AppLayout>} />
           <Route path="/teams/cases" element={<AppLayout><TeamsLiveCases /></AppLayout>} />

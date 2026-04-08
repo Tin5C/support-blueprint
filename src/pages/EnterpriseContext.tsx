@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -99,56 +99,108 @@ const sectionRevealStep = [2, 3, 4, 5, -1]; // aiGov never auto-revealed
 export default function EnterpriseContext() {
   const navigate = useNavigate();
   const [websiteAnalysed, setWebsiteAnalysed] = useState(false);
-  const [websiteLoading, setWebsiteLoading] = useState(false);
   const [docs, setDocs] = useState<DocEntry[]>([]);
   const [revealStep, setRevealStep] = useState(0);
   const [dataProcessingAnswer, setDataProcessingAnswer] = useState<"yes" | "no" | "unsure" | null>(null);
+  const [aiGovernanceAnswer, setAiGovernanceAnswer] = useState<"documented" | "informal" | "none" | null>(null);
+  const [inputValue, setInputValue] = useState("");
+  const [analysisPhase, setAnalysisPhase] = useState<"idle" | "analysing" | "complete">("idle");
+  const [analysisStep, setAnalysisStep] = useState(0);
+  const [docsVisible, setDocsVisible] = useState(0);
+  const [resultVisible, setResultVisible] = useState(false);
+
+  const handleDataProcessingAnswer = (a: "yes" | "no" | "unsure") => {
+    setDataProcessingAnswer(a);
+    setTimeout(() => setRevealStep(7), 1500);
+  };
 
   const analysedCount = docs.filter(d => d.status === "analysed").length;
   const baseline = getBaseline(websiteAnalysed, analysedCount);
   const coverage = getCoverage(websiteAnalysed, analysedCount);
-  const effectiveCoverage = dataProcessingAnswer !== null && dataProcessingAnswer !== "unsure" ? Math.min(100, coverage + 6) : coverage;
-  const allDocsAnalysed = analysedCount === docs.length;
+  const effectiveCoverage =
+    aiGovernanceAnswer === "documented"
+      ? Math.min(100, coverage + 9)
+      : aiGovernanceAnswer === "informal" || (dataProcessingAnswer !== null && dataProcessingAnswer !== "unsure")
+        ? Math.min(100, coverage + 6)
+        : coverage;
+  const allDocsAnalysed = analysedCount === docs.length && docs.length > 0;
 
   const triggerReveal = () => {
-    setTimeout(() => setRevealStep(1), 100);
-    setTimeout(() => setRevealStep(2), 700);
-    setTimeout(() => setRevealStep(3), 1200);
-    setTimeout(() => setRevealStep(4), 1700);
-    setTimeout(() => setRevealStep(5), 2200);
-    setTimeout(() => setRevealStep(6), 3000);
+    setTimeout(() => setRevealStep(1), 200);
+    setTimeout(() => setRevealStep(2), 1200);
+    setTimeout(() => setRevealStep(3), 2000);
+    setTimeout(() => setRevealStep(4), 2800);
+    setTimeout(() => setRevealStep(5), 3600);
+    setTimeout(() => setRevealStep(6), 4800);
   };
 
-  const analyseWebsite = () => {
-    setWebsiteLoading(true);
-    setRevealStep(0);
-    setDataProcessingAnswer(null);
-    setTimeout(() => {
-      setWebsiteLoading(false);
-      setWebsiteAnalysed(true);
-      triggerReveal();
-    }, 1800);
-  };
+  const analysisSteps = [
+    "Identifying industry and geography…",
+    "Detecting regulatory frameworks…",
+    "Assessing certification status…",
+    "Building enterprise context…",
+  ];
 
-  const loadAlpinaDemo = () => {
-    setWebsiteLoading(true);
-    setRevealStep(0);
-    setDataProcessingAnswer(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    // Populate documents as available (not yet uploaded)
+  const [isTyping, setIsTyping] = useState(false);
+
+  const startSequenceAfterTypewriter = () => {
+    // Step 2 — Documents populate (staggered fade-in, 200ms apart)
     setDocs(initialDocs.map(d => ({ ...d, status: "available" as const })));
+    for (let i = 0; i < initialDocs.length; i++) {
+      setTimeout(() => setDocsVisible(i + 1), i * 200);
+    }
+    const docsFinish = (initialDocs.length - 1) * 200 + 250; // last doc fade + buffer
 
+    // Step 3 — Analysis progress (after docs + 400ms pause)
+    const progressStart = docsFinish + 400;
+    setAnalysisStep(0);
+    setTimeout(() => setAnalysisPhase("analysing"), progressStart);
+    for (let i = 0; i < 4; i++) {
+      setTimeout(() => setAnalysisStep(i + 1), progressStart + (i + 1) * 800);
+    }
+    const progressFinish = progressStart + 4 * 800;
+
+    // Step 4 — Results appear (after progress + 300ms pause)
     setTimeout(() => {
-      setWebsiteLoading(false);
+      setAnalysisPhase("complete");
       setWebsiteAnalysed(true);
-      // Stagger document uploads one by one
-      setTimeout(() => setDocs(prev => prev.map((d, i) => i === 0 ? { ...d, status: "scanning" as const } : d)), 0);
-      setTimeout(() => setDocs(prev => prev.map((d, i) => i === 0 ? { ...d, status: "analysed" as const } : i === 1 ? { ...d, status: "scanning" as const } : d)), 900);
-      setTimeout(() => setDocs(prev => prev.map((d, i) => i <= 1 ? { ...d, status: "analysed" as const } : i === 2 ? { ...d, status: "scanning" as const } : d)), 1800);
-      setTimeout(() => setDocs(prev => prev.map((d, i) => i <= 2 ? { ...d, status: "analysed" as const } : i === 3 ? { ...d, status: "scanning" as const } : d)), 2700);
-      setTimeout(() => setDocs(prev => prev.map(d => ({ ...d, status: "analysed" as const }))), 3600);
+      setTimeout(() => setResultVisible(true), 50);
       triggerReveal();
-    }, 1200);
+    }, progressFinish + 300);
+  };
+
+  const runAnalysis = () => {
+    setRevealStep(0);
+    setDataProcessingAnswer(null);
+    setAiGovernanceAnswer(null);
+    setResultVisible(false);
+    setDocsVisible(0);
+    setDocs([]);
+
+    if (!inputValue.trim()) {
+      // Step 1 — Typewriter
+      setIsTyping(true);
+      const text = "alpinabank.ch";
+      let i = 0;
+      inputRef.current?.focus();
+      const interval = setInterval(() => {
+        setInputValue(text.slice(0, i + 1));
+        i++;
+        if (i >= text.length) {
+          clearInterval(interval);
+          // 300ms pause then start sequence
+          setTimeout(() => {
+            setIsTyping(false);
+            startSequenceAfterTypewriter();
+          }, 300);
+        }
+      }, 60);
+    } else {
+      // User already typed — skip typewriter, 300ms pause
+      setTimeout(() => startSequenceAfterTypewriter(), 300);
+    }
   };
 
   const addDocument = (index: number) => {
@@ -173,29 +225,38 @@ export default function EnterpriseContext() {
           {/* Section 1 — Deployment environment */}
           <div className="space-y-3">
             <h2 className="text-[14px] font-semibold text-foreground">Deployment environment</h2>
-            {!websiteAnalysed && !websiteLoading ? (
+            {(analysisPhase === "idle" || isTyping) && (
               <>
                 <div className="flex gap-2">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input type="text" placeholder="e.g. alpinabank.ch or Alpina Bank" className="w-full h-10 pl-10 pr-4 rounded-md border bg-background text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" style={{ borderColor: "rgba(212,207,198,0.4)" }} readOnly />
+                    <input ref={inputRef} type="text" value={inputValue} onChange={e => setInputValue(e.target.value)} placeholder="e.g. alpinabank.ch or Alpina Bank" className="w-full h-10 pl-10 pr-4 rounded-md border bg-background text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" style={{ borderColor: "rgba(212,207,198,0.4)" }} readOnly={isTyping} />
                   </div>
-                  <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0" onClick={analyseWebsite}>Analyse <ChevronRight className="h-3.5 w-3.5" /></Button>
+                  {isTyping ? (
+                    <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0 opacity-70" disabled>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Analysing…
+                    </Button>
+                  ) : (
+                    <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0" onClick={runAnalysis}>Analyse <ChevronRight className="h-3.5 w-3.5" /></Button>
+                  )}
                 </div>
-                <p className="text-[11px] text-muted-foreground">Launch Studio will infer industry, geography, regulatory context and certification status</p>
-                <button onClick={loadAlpinaDemo} className="text-[11px] text-primary hover:underline">→ Load Alpina Bank demo</button>
+                {!isTyping && <p className="text-[11px] text-muted-foreground">Launch Studio will infer industry, geography, regulatory context and certification status</p>}
               </>
-            ) : websiteLoading ? (
-              <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
-                <CardContent className="p-4 flex items-center gap-3">
-                  <Loader2 className="h-4 w-4 text-primary animate-spin shrink-0" />
-                  <div>
-                    <p className="text-[13px] font-medium text-foreground">Analysing alpinabank.ch...</p>
-                    <p className="text-[11px] text-muted-foreground">Detecting industry, geography, certifications</p>
+            )}
+            {analysisPhase === "analysing" && (
+              <>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <input type="text" value={inputValue} className="w-full h-10 pl-10 pr-4 rounded-md border bg-muted/30 text-[13px] text-foreground font-medium cursor-default" style={{ borderColor: "rgba(212,207,198,0.4)" }} readOnly />
                   </div>
-                </CardContent>
-              </Card>
-            ) : (
+                  <Button className="h-10 text-[13px] gap-1.5 px-4 shrink-0 opacity-70" disabled>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Analysing…
+                  </Button>
+                </div>
+              </>
+            )}
+            {analysisPhase === "complete" && (
               <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
@@ -234,7 +295,7 @@ export default function EnterpriseContext() {
             ) : (
             <div className="space-y-2">
               {docs.map((doc, i) => (
-                <div
+                <div style={{ opacity: i < docsVisible ? 1 : 0, transition: "opacity 200ms ease-out" }}
                   key={i}
                   className={`relative rounded-lg overflow-hidden transition-all duration-300 ${
                     doc.status === "available"
@@ -314,7 +375,7 @@ export default function EnterpriseContext() {
         {/* ── RIGHT COLUMN (55%) ── */}
         <div className="flex-1 space-y-4">
           {/* Empty state */}
-          {!websiteAnalysed && !websiteLoading && (
+          {analysisPhase === "idle" && (
             <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
               <CardContent className="py-16 text-center">
                 <Globe className="h-8 w-8 text-muted-foreground/30 mx-auto mb-3" />
@@ -324,17 +385,95 @@ export default function EnterpriseContext() {
             </Card>
           )}
 
-          {/* Loading state */}
-          {websiteLoading && (
+          {/* Analysing state — 4-step progress */}
+          {analysisPhase === "analysing" && (
             <Card className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
-              <CardContent className="py-16 text-center">
-                <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto mb-3" />
-                <p className="text-[13px] text-muted-foreground">Analysing deployment environment...</p>
+              <CardContent className="p-6 space-y-3">
+                {analysisSteps.map((step, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3"
+                    style={{ opacity: i < analysisStep ? 1 : 0, transition: "opacity 200ms ease-out" }}
+                  >
+                    {i < analysisStep - 1 ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    ) : i === analysisStep - 1 ? (
+                      <Loader2 className="h-4 w-4 text-primary animate-spin shrink-0" />
+                    ) : (
+                      <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/20 shrink-0" />
+                    )}
+                    <span className={`text-[12px] ${i < analysisStep ? "text-foreground" : "text-muted-foreground"}`}>{step}</span>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           )}
 
-          {/* Live baseline — progressive reveal */}
+          {/* Complete — Alpina Bank result + progressive baseline reveal */}
+          {analysisPhase === "complete" && (
+            <div
+              style={{
+                opacity: resultVisible ? 1 : 0,
+                transform: resultVisible ? "translateY(0)" : "translateY(12px)",
+                transition: "opacity 400ms ease-out, transform 400ms ease-out",
+              }}
+            >
+            <Card className="border mb-4" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-[14px] font-semibold text-foreground">Alpina Bank</h3>
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Analysed</Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <Globe className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-[10px] text-muted-foreground">Industry</span>
+                      <p className="text-[12px] text-foreground">Swiss Private Bank · Financial Services</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Globe className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-[10px] text-muted-foreground">Geography</span>
+                      <p className="text-[12px] text-foreground">Switzerland · Zürich HQ · EU data residency</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Shield className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-[10px] text-muted-foreground">Regulatory frameworks detected</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {["FINMA", "GDPR", "EU AI Act (High Risk)", "ISO 27001", "Microsoft WAF"].map(fw => (
+                          <Badge key={fw} className="bg-primary/10 text-primary border-primary/20 text-[9px] px-1.5 py-0">{fw}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <span className="text-[10px] text-muted-foreground">Certification status</span>
+                      <p className="text-[12px] text-foreground">FINMA supervised · ISO 27001 certified · GDPR compliant</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-2 border-t" style={{ borderColor: "rgba(212,207,198,0.15)" }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-muted-foreground">Context coverage</span>
+                    <span className="text-[11px] font-medium text-foreground" style={{ fontFamily: "'DM Mono', monospace" }}>84%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-muted/30 overflow-hidden">
+                    <div className="h-full rounded-full bg-primary" style={{ width: "84%" }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1.5">4 documents uploaded · ready to proceed to Solution Intelligence</p>
+                </div>
+              </CardContent>
+            </Card>
+            </div>
+          )}
+
+          {/* Live baseline — progressive reveal (after complete) */}
           {websiteAnalysed && (
             <div className="space-y-4">
               {/* Coverage ring — always shown */}
@@ -438,12 +577,20 @@ export default function EnterpriseContext() {
 
               {/* STEP 6 — Data processing question */}
               {revealStep >= 6 && dataProcessingAnswer === null && (
-                <DataProcessingQuestion onAnswer={setDataProcessingAnswer} />
+                <DataProcessingQuestion onAnswer={handleDataProcessingAnswer} />
               )}
 
               {/* STEP 6 — Result after answer */}
               {revealStep >= 6 && dataProcessingAnswer !== null && (
                 <DataProcessingResult answer={dataProcessingAnswer} />
+              )}
+
+              {/* STEP 7 — AI Governance question */}
+              {revealStep >= 7 && aiGovernanceAnswer === null && (
+                <AIGovernanceQuestion onAnswer={(a) => setAiGovernanceAnswer(a)} />
+              )}
+              {revealStep >= 7 && aiGovernanceAnswer !== null && (
+                <AIGovernanceResult answer={aiGovernanceAnswer} />
               )}
 
               {/* AI Governance warning — only when question unanswered */}
@@ -568,6 +715,87 @@ function DataProcessingResult({ answer }: { answer: "yes" | "no" | "unsure" }) {
       borderClass: "border-amber-200", bgClass: "bg-amber-50/50",
       body: "Data processing policy is undocumented. Evaluation will proceed using the stricter Switzerland-only assumption as a default.",
       sub: "This will appear as a P1 gap in the Readiness Report.",
+    },
+  };
+  const c = configs[answer];
+  return (
+    <div className={`animate-fade-in border ${c.borderClass} rounded-lg p-4 ${c.bgClass}`}>
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`w-5 h-5 rounded-full ${c.iconClass} border flex items-center justify-center flex-shrink-0`}>
+          <span className={`${c.textClass} text-[10px] font-bold`}>{c.icon}</span>
+        </div>
+        <p className={`text-[11px] font-semibold ${c.textClass} uppercase tracking-wider`} style={{ fontFamily: "'DM Mono', monospace" }}>
+          {c.label}
+        </p>
+      </div>
+      <p className="text-[12px] text-foreground leading-relaxed mb-2">{c.body}</p>
+      <p className="text-[11px] text-muted-foreground">{c.sub}</p>
+    </div>
+  );
+}
+
+// ─── AI Governance Question ──────────────────────────────────
+
+function AIGovernanceQuestion({ onAnswer }: { onAnswer: (a: "documented" | "informal" | "none") => void }) {
+  return (
+    <div className="animate-fade-in border border-amber-200 rounded-lg p-4 bg-amber-50/50">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-5 h-5 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center flex-shrink-0">
+          <span className="text-amber-700 text-[10px] font-bold">?</span>
+        </div>
+        <p className="text-[10px] font-semibold text-amber-800 uppercase tracking-wider" style={{ fontFamily: "'DM Mono', monospace" }}>
+          One more thing
+        </p>
+      </div>
+      <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+        EU AI Act Article 9 and FINMA Circular 2024/1 both require human oversight for High Risk AI systems making financial decisions. Industry best practice — adopted by leading Swiss and European financial institutions following 2024 AI incident disclosures — now expects this to be documented before deployment, not added later.
+      </p>
+      <p className="text-[12px] font-medium text-foreground mb-4">
+        Does Alpina Bank have a human-in-the-loop requirement for AI-generated financial recommendations — even informally?
+      </p>
+      <div className="flex flex-col gap-2">
+        {([
+          { value: "documented" as const, label: "Yes, documented", sub: "— formal policy or approval workflow exists" },
+          { value: "informal" as const, label: "Yes, informally", sub: "— expectation exists but not written down" },
+          { value: "none" as const, label: "Not currently", sub: "— no human review requirement in place" },
+        ]).map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => onAnswer(opt.value)}
+            className="text-left px-3 py-2.5 rounded-md border border-border bg-background text-[12px] text-foreground hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
+          >
+            <span className="font-medium">{opt.label}</span> {opt.sub}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── AI Governance Result ────────────────────────────────────
+
+function AIGovernanceResult({ answer }: { answer: "documented" | "informal" | "none" }) {
+  const configs = {
+    documented: {
+      icon: "✓", label: "Human oversight confirmed",
+      iconClass: "bg-green-100 border-green-300", textClass: "text-green-700",
+      borderClass: "border-green-200", bgClass: "bg-green-50/50",
+      body: "Alpina Bank has a documented human oversight requirement. EU AI Act Article 9 and FINMA Circular 2024/1 compliance confirmed on this point.",
+      sub: "AI Governance gap closed. Baseline coverage → 97%.",
+    },
+    informal: {
+      icon: "△", label: "Human oversight noted — documentation recommended",
+      iconClass: "bg-amber-100 border-amber-300", textClass: "text-amber-700",
+      borderClass: "border-amber-200", bgClass: "bg-amber-50/50",
+      body: "The expectation exists but is not documented. Best practice — and increasingly a procurement requirement — is to formalise this before go-live.",
+      sub: "Flagged as P1 in Readiness Report. Baseline coverage → 94%.",
+    },
+    none: {
+      icon: "△", label: "Human oversight gap identified",
+      iconClass: "bg-amber-100 border-amber-300", textClass: "text-amber-700",
+      borderClass: "border-amber-200", bgClass: "bg-amber-50/50",
+      body: "No human-in-the-loop requirement is in place. For a High Risk AI system under EU AI Act and FINMA supervision, this will be a P1 finding in the Readiness Report.",
+      sub: "Remediation: define and document an approval workflow before deployment.",
     },
   };
   const c = configs[answer];

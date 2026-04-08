@@ -26,8 +26,12 @@ const ssOverview = [
   { to: "/", icon: LayoutDashboard, label: "Overview" },
 ];
 
-const ssSetUp = [
-  { to: "/studio", icon: Zap, label: "Blueprint" },
+const ssAssess = [
+  { to: "/support", icon: Shield, label: "Support" },
+];
+
+const ssDesign = [
+  { to: "/studio", icon: Zap, label: "Design Support" },
 ];
 
 const ssOperate = [
@@ -118,7 +122,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="space-y-3">
             <div className="flex items-center justify-between px-2.5 pb-1">
               <p className="text-[10px] font-semibold text-sidebar-muted uppercase tracking-widest">Support Studio</p>
-              <NavLink to="/studio" title="Set up new support blueprint" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
+              <NavLink to="/support" title="New support assessment" className="h-4 w-4 rounded flex items-center justify-center text-primary hover:bg-sidebar-hover transition-colors">
                 <Plus className="h-3 w-3" />
               </NavLink>
             </div>
@@ -128,9 +132,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div>
-              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Set up</p>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Assess</p>
               <div className="space-y-0.5">
-                {ssSetUp.map(item => renderNavItem(item))}
+                {ssAssess.map(item => renderNavItem(item))}
+              </div>
+            </div>
+
+            <div>
+              <p className="px-2.5 pb-1 text-[9px] font-semibold text-sidebar-muted uppercase tracking-widest">Design</p>
+              <div className="space-y-0.5">
+                {ssDesign.map(item => renderNavItem(item))}
               </div>
             </div>
 
