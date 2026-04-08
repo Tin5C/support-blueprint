@@ -4,11 +4,11 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, TrendingDown, FileText, Activity, BookOpen, AlertTriangle, ArrowUpRight, Shield, CheckCircle2, Users } from "lucide-react";
 
 const patternData = [
-  { category: "Config Drift", count: 22, automated: 16, manual: 6 },
-  { category: "AI Accuracy", count: 16, automated: 11, manual: 5 },
-  { category: "Replication Lag", count: 13, automated: 8, manual: 5 },
-  { category: "Connector Issues", count: 11, automated: 7, manual: 4 },
-  { category: "Approval Routing", count: 8, automated: 6, manual: 2 },
+  { category: "Forecast Drift", count: 22, automated: 16, manual: 6 },
+  { category: "Data Feed Failure", count: 16, automated: 11, manual: 5 },
+  { category: "FX Rate Issues", count: 13, automated: 8, manual: 5 },
+  { category: "Reconciliation Errors", count: 11, automated: 7, manual: 4 },
+  { category: "Regulatory Reporting", count: 8, automated: 6, manual: 2 },
 ];
 
 const weeklyTrend = [
@@ -19,31 +19,31 @@ const weeklyTrend = [
 ];
 
 const topEscalationCauses = [
-  { cause: "Data integrity risk — confidence too low for auto-resolution", count: 5, trend: "down" },
-  { cause: "GDPR/compliance actions requiring human judgment", count: 4, trend: "stable" },
-  { cause: "Cross-region failover beyond automated scope", count: 3, trend: "down" },
+  { cause: "Forecast confidence below threshold — regulatory risk", count: 5, trend: "down" },
+  { cause: "FINMA/GDPR compliance actions requiring human judgment", count: 4, trend: "stable" },
+  { cause: "Data feed corruption affecting model integrity", count: 3, trend: "down" },
   { cause: "Customer explicitly requested human support", count: 3, trend: "stable" },
   { cause: "Novel failure mode not covered by existing runbooks", count: 2, trend: "up" },
 ];
 
 const topApprovalActions = [
-  { action: "Bulk data operations (merge, delete, migrate)", count: 6, avgWait: "18 min" },
-  { action: "Infrastructure scaling beyond baseline", count: 4, avgWait: "12 min" },
-  { action: "Configuration rollback affecting production", count: 3, avgWait: "25 min" },
-  { action: "Permission/access changes", count: 2, avgWait: "8 min" },
+  { action: "FX rate feed override during market hours", count: 6, avgWait: "18 min" },
+  { action: "Model retraining after data migration", count: 4, avgWait: "12 min" },
+  { action: "Reconciliation batch rerun for closing period", count: 3, avgWait: "25 min" },
+  { action: "FINMA report resubmission", count: 2, avgWait: "8 min" },
 ];
 
 const blueprintGaps = [
-  { gap: "Cross-region failover recovery — no runbook for multi-region WAL replay", priority: "high", discovered: "From CS-2049 escalation" },
-  { gap: "Multi-currency batch processing — missing split-by-currency guidance", priority: "high", discovered: "From CS-2046 approval delay" },
-  { gap: "GDPR archived record deletion — no automated coverage", priority: "medium", discovered: "From CS-2050 escalation" },
-  { gap: "Constraint solver policy sync — undocumented upgrade path", priority: "medium", discovered: "From CS-2045 telemetry" },
+  { gap: "No runbook for FX rate feed outage during market hours", priority: "high", discovered: "From CS-2044 escalation" },
+  { gap: "Multi-currency reconciliation missing CHF/EUR edge case", priority: "high", discovered: "From CS-2045 approval delay" },
+  { gap: "FINMA reporting deadline escalation path not defined", priority: "medium", discovered: "From CS-2048 escalation" },
+  { gap: "Forecast confidence threshold not calibrated per customer risk tier", priority: "medium", discovered: "From CS-2046 telemetry" },
 ];
 
 const playbookImprovements = [
-  { playbook: "RB-118: Config Drift Remediation", issue: "Missing guardrail step for future prevention", impact: "2 cases needed manual follow-up" },
-  { playbook: "RB-045: Batch Processing Recovery", issue: "No multi-currency split guidance", impact: "Pipeline stall at Contoso" },
-  { playbook: "RB-092: Replication Recovery", issue: "WAL replay verification missing", impact: "Data integrity risk at HelioWorks" },
+  { playbook: "RB-118: Post-Migration Model Retraining", issue: "Missing guardrail step for data migration validation", impact: "2 cases needed manual follow-up at Alpina Bank" },
+  { playbook: "RB-045: FX Rate Feed Recovery", issue: "No manual override guidance for CHF/EUR outage", impact: "Reconciliation stall at Helvetia Capital" },
+  { playbook: "RB-092: FINMA Reporting Recovery", issue: "No deadline escalation procedure defined", impact: "Regulatory risk at Zurich Asset Mgmt" },
 ];
 
 export default function Insights() {

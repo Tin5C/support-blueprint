@@ -219,7 +219,7 @@ export default function Blueprint() {
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
               <p className="text-[12px] text-foreground">
-                <span className="font-semibold">Template saved</span> — {accountContext?.context.productsInScope[0] || "Finance Flow Agent"} — Cloud template is now available in your template library
+                <span className="font-semibold">Template saved</span> — {accountContext?.context.productsInScope[0] || "Cash Flow Forecasting Agent"} — Cloud template is now available in your template library
               </p>
             </div>
             <button onClick={() => setShowTemplateBanner(false)} className="text-muted-foreground hover:text-foreground">
@@ -233,11 +233,11 @@ export default function Blueprint() {
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
             <span>Blueprints</span>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-foreground font-medium">Helio CRM</span>
+            <span className="text-foreground font-medium">Cash Flow Forecasting Agent</span>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-semibold text-foreground tracking-tight">Helio CRM — Governed Support Blueprint</h1>
+              <h1 className="text-lg font-semibold text-foreground tracking-tight">Cash Flow Forecasting Agent — Governed Support Blueprint</h1>
               <p className="text-[12px] text-muted-foreground mt-0.5">Source of truth for support behavior, approval boundaries, and escalation policy</p>
             </div>
             <div className="flex items-center gap-1.5">
@@ -593,7 +593,7 @@ export default function Blueprint() {
             )}
             <div>
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Product</p>
-              <p className="text-sm font-semibold text-foreground">Helio CRM</p>
+              <p className="text-sm font-semibold text-foreground">Cash Flow Forecasting Agent</p>
               <p className="text-[11px] text-muted-foreground">v3.4.2 · B2B CRM Platform</p>
             </div>
             <div>
@@ -656,7 +656,7 @@ export default function Blueprint() {
             <div className="flex items-center gap-2 p-2 rounded-md border bg-background">
               <div className="h-1.5 w-1.5 rounded-full bg-success" />
               <span className="text-[11px] font-medium text-foreground">
-                {accountContext?.customer.name || "Acme Manufacturing"}
+                {accountContext?.customer.name || "Alpina Bank"}
               </span>
             </div>
             <button onClick={() => navigate('/intelligence')} className="text-[10px] text-primary hover:underline flex items-center gap-1 mt-1">

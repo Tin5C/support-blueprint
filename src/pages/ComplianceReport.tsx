@@ -13,17 +13,17 @@ const complianceDimensions = [
   { dimension: "Governance boundaries", status: "compliant" as const, framework: "Blueprint v2.4", detail: "98.4% adherence" },
   { dimension: "SLA commitments", status: "compliant" as const, framework: "Contract SLA", detail: "92% within SLA" },
   { dimension: "Human oversight frequency", status: "compliant" as const, framework: "FINMA", detail: "312 events" },
-  { dimension: "GDPR data deletion", status: "warning" as const, framework: "GDPR Art. 17", detail: "1 open gap — automated coverage gap for archived records CS-2050" },
+  { dimension: "GDPR data deletion", status: "warning" as const, framework: "GDPR Art. 17", detail: "1 open gap — automated coverage gap for archived financial records CS-2047" },
   { dimension: "FINMA AI governance", status: "compliant" as const, framework: "FINMA Circular", detail: "Fully compliant" },
   { dimension: "MiFID II transaction oversight", status: "compliant" as const, framework: "MiFID II", detail: "Fully compliant" },
 ];
 
 const oversightLog = [
-  { caseId: "CS-2041", customer: "Acme Manufacturing", type: "Approval", actor: "Sarah Chen", action: "Approved config remediation merge", time: "Mar 30, 09:32" },
-  { caseId: "CS-2046", customer: "Contoso Digital", type: "Approval", actor: "Marcus Webb", action: "Approved worker pool scale + batch split", time: "Mar 30, 05:10" },
-  { caseId: "CS-2049", customer: "HelioWorks AG", type: "Escalation", actor: "Platform Engineering", action: "Escalated — replication lag data integrity risk", time: "Mar 30, 02:25" },
-  { caseId: "CS-2050", customer: "HelioWorks AG", type: "Escalation", actor: "Data Engineering + Legal", action: "Escalated — GDPR deletion gap on archived records", time: "Mar 30, 08:10" },
-  { caseId: "CS-2052", customer: "Alpine Grid", type: "Auto-approved", actor: "System (96%)", action: "Auto-approved — planned maintenance pattern whitelisted", time: "Mar 29, 09:00" },
+  { caseId: "CS-2041", customer: "Alpina Bank", type: "Approval", actor: "Sarah Chen", action: "Approved forecast model retraining after Q1 data migration", time: "Mar 30, 09:32" },
+  { caseId: "CS-2044", customer: "Helvetia Capital", type: "Approval", actor: "Sarah Chen", action: "Approved FX rate feed override + March reconciliation rerun", time: "Mar 30, 05:10" },
+  { caseId: "CS-2048", customer: "Zurich Asset Mgmt", type: "Escalation", actor: "Platform Engineering", action: "Escalated — FINMA reporting deadline, automated submission blocked", time: "Mar 30, 02:25" },
+  { caseId: "CS-2049", customer: "Zurich Asset Mgmt", type: "Escalation", actor: "Data Engineering + Risk", action: "Escalated — forecast model confidence collapsed, CHF 2.4B affected", time: "Mar 30, 08:10" },
+  { caseId: "CS-2051", customer: "Canton Bern Treasury", type: "Auto-approved", actor: "System (96%)", action: "Auto-approved — Q1 tax revenue delay pattern whitelisted", time: "Mar 29, 09:00" },
 ];
 
 export default function ComplianceReport() {

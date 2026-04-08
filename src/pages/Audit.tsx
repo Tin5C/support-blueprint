@@ -20,7 +20,7 @@ const evidenceItems = [
 ];
 
 const auditHistory = [
-  { date: "March 2025", auditor: "KPMG Switzerland", result: "Certified — with recommendations", condition: "Improve GDPR deletion coverage for archived records" },
+  { date: "March 2025", auditor: "KPMG Switzerland", result: "Certified — with recommendations", condition: "Improve automated GDPR data deletion coverage for archived financial records in cold storage" },
   { date: "March 2024", auditor: "KPMG Switzerland", result: "Certified", condition: null },
 ];
 
@@ -50,7 +50,7 @@ export default function Audit() {
           <Clock className="h-5 w-5 text-amber-600 shrink-0" />
           <div className="flex-1">
             <p className="text-[13px] font-semibold text-foreground">Next audit in 68 days — June 14, 2026</p>
-            <p className="text-[11px] text-muted-foreground">KPMG Switzerland · FINMA + GDPR scope · Contoso Digital</p>
+            <p className="text-[11px] text-muted-foreground">KPMG Switzerland · FINMA + GDPR + EU AI Act scope · Alpina Bank</p>
           </div>
           <Badge className="bg-amber-500/10 text-amber-700 border-amber-500/20 text-[10px] px-2 py-0.5 shrink-0">68 days</Badge>
         </CardContent>
@@ -142,7 +142,7 @@ export default function Audit() {
             <div className="flex-1">
               <p className="text-[13px] font-semibold text-foreground">Open recommendation from March 2025</p>
               <p className="text-[12px] text-muted-foreground mt-0.5">
-                Improve GDPR deletion coverage for archived records
+                Improve automated GDPR data deletion coverage for archived financial records in cold storage
               </p>
               <div className="flex items-center gap-3 mt-2">
                 <Badge variant="outline" className="text-[10px] px-2 py-0.5 bg-amber-500/10 text-amber-700 border-amber-500/20">In progress</Badge>

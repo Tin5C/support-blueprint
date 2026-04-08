@@ -100,7 +100,7 @@ export default function EnterpriseContext() {
   const navigate = useNavigate();
   const [websiteAnalysed, setWebsiteAnalysed] = useState(false);
   const [websiteLoading, setWebsiteLoading] = useState(false);
-  const [docs, setDocs] = useState<DocEntry[]>(initialDocs.map(d => ({ ...d })));
+  const [docs, setDocs] = useState<DocEntry[]>([]);
   const [revealStep, setRevealStep] = useState(0);
   const [dataProcessingAnswer, setDataProcessingAnswer] = useState<"yes" | "no" | "unsure" | null>(null);
 
@@ -134,10 +134,19 @@ export default function EnterpriseContext() {
     setWebsiteLoading(true);
     setRevealStep(0);
     setDataProcessingAnswer(null);
+
+    // Populate documents as available (not yet uploaded)
+    setDocs(initialDocs.map(d => ({ ...d, status: "available" as const })));
+
     setTimeout(() => {
       setWebsiteLoading(false);
       setWebsiteAnalysed(true);
-      setDocs(prev => prev.map(d => ({ ...d, status: "analysed" as const })));
+      // Stagger document uploads one by one
+      setTimeout(() => setDocs(prev => prev.map((d, i) => i === 0 ? { ...d, status: "scanning" as const } : d)), 0);
+      setTimeout(() => setDocs(prev => prev.map((d, i) => i === 0 ? { ...d, status: "analysed" as const } : i === 1 ? { ...d, status: "scanning" as const } : d)), 900);
+      setTimeout(() => setDocs(prev => prev.map((d, i) => i <= 1 ? { ...d, status: "analysed" as const } : i === 2 ? { ...d, status: "scanning" as const } : d)), 1800);
+      setTimeout(() => setDocs(prev => prev.map((d, i) => i <= 2 ? { ...d, status: "analysed" as const } : i === 3 ? { ...d, status: "scanning" as const } : d)), 2700);
+      setTimeout(() => setDocs(prev => prev.map(d => ({ ...d, status: "analysed" as const }))), 3600);
       triggerReveal();
     }, 1200);
   };
@@ -146,7 +155,7 @@ export default function EnterpriseContext() {
     setDocs(prev => { const next = [...prev]; next[index] = { ...next[index], status: "scanning" }; return next; });
     setTimeout(() => {
       setDocs(prev => { const next = [...prev]; next[index] = { ...next[index], status: "analysed" }; return next; });
-    }, 1500);
+    }, 800);
   };
 
   return (
@@ -156,13 +165,6 @@ export default function EnterpriseContext() {
         <h1 className="text-[22px] font-light text-foreground tracking-tight" style={{ fontFamily: "'Fraunces', serif" }}>Enterprise Context</h1>
         <p className="text-[13px] text-muted-foreground mt-1">Step 0 — Establish what enterprise-ready means for this deployment environment</p>
       </div>
-
-      {/* ISV banner */}
-      <Card className="border-l-4 border-l-primary bg-primary/[0.03] border" style={{ borderTopColor: "rgba(212,207,198,0.25)", borderRightColor: "rgba(212,207,198,0.25)", borderBottomColor: "rgba(212,207,198,0.25)" }}>
-        <CardContent className="p-3">
-          <p className="text-[13px] font-medium text-foreground">FinTrack AG · ISV workspace · Evaluating deployment environment for Alpina Bank</p>
-        </CardContent>
-      </Card>
 
       {/* ═══ TWO COLUMNS ═══ */}
       <div className="flex gap-6">
@@ -223,31 +225,71 @@ export default function EnterpriseContext() {
           <div className="space-y-3">
             <h2 className="text-[14px] font-semibold text-foreground">Documents</h2>
             <p className="text-[11px] text-muted-foreground">Upload documents from the receiving organisation</p>
+            {docs.length === 0 ? (
+              <div className="border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:border-primary/40 transition-colors" style={{ borderColor: "rgba(212,207,198,0.3)" }}>
+                <Upload className="h-6 w-6 text-muted-foreground" />
+                <p className="text-[13px] font-medium text-foreground">Drop documents here or click to upload</p>
+                <p className="text-[11px] text-muted-foreground">Security policies · IT runbooks · SLA agreements · Vendor questionnaires</p>
+              </div>
+            ) : (
             <div className="space-y-2">
               {docs.map((doc, i) => (
-                <Card key={i} className="border" style={{ borderColor: "rgba(212,207,198,0.25)" }}>
-                  <CardContent className="p-3 flex items-center gap-3">
-                    <div className="h-7 w-7 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                      <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                <div
+                  key={i}
+                  className={`relative rounded-lg overflow-hidden transition-all duration-300 ${
+                    doc.status === "available"
+                      ? "border-2 border-dashed opacity-80"
+                      : doc.status === "scanning"
+                        ? "border border-primary/30"
+                        : "border"
+                  }`}
+                  style={{ borderColor: doc.status === "available" ? "rgba(212,207,198,0.35)" : doc.status === "scanning" ? undefined : "rgba(212,207,198,0.25)" }}
+                >
+                  <div className="p-3 flex items-center gap-3">
+                    <div className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 ${doc.status === "available" ? "bg-muted/30" : "bg-muted/50"}`}>
+                      <FileText className={`h-3.5 w-3.5 ${doc.status === "available" ? "text-muted-foreground/40" : "text-muted-foreground"}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-medium text-foreground truncate">{doc.name}</p>
+                      <p className={`text-[12px] font-medium truncate ${doc.status === "available" ? "text-muted-foreground" : "text-foreground"}`}>{doc.name}</p>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] text-muted-foreground">{doc.pages} pages</span>
                         <Badge variant="outline" className={`text-[9px] px-1 py-0 border ${doc.tagColor}`} style={{ fontFamily: "'DM Mono', monospace" }}>{doc.tag}</Badge>
                       </div>
                     </div>
-                    {doc.status === "available" && <Button variant="outline" size="sm" className="text-[10px] h-7 px-2.5 shrink-0" onClick={() => addDocument(i)}>+ Add</Button>}
-                    {doc.status === "scanning" && <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-primary/10 text-primary border-primary/20 shrink-0"><Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />Scanning…</Badge>}
-                    {doc.status === "analysed" && <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0"><CheckCircle2 className="h-2.5 w-2.5 mr-1" />Analysed</Badge>}
-                  </CardContent>
-                </Card>
+                    {doc.status === "available" && (
+                      <button onClick={() => addDocument(i)} className="h-7 w-7 rounded-md border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/30 hover:bg-primary/5 transition-colors shrink-0" style={{ borderColor: "rgba(212,207,198,0.35)" }}>
+                        <Upload className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    {doc.status === "scanning" && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-primary/10 text-primary border-primary/20 shrink-0">
+                        <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />
+                        Uploading…
+                      </Badge>
+                    )}
+                    {doc.status === "analysed" && (
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border bg-emerald-500/10 text-emerald-700 border-emerald-500/20 shrink-0">
+                        <CheckCircle2 className="h-2.5 w-2.5 mr-1" />
+                        Analysed
+                      </Badge>
+                    )}
+                  </div>
+                  {/* Scanning progress bar */}
+                  {doc.status === "scanning" && (
+                    <div className="h-0.5 bg-primary/10 w-full">
+                      <div className="h-full bg-primary rounded-full" style={{ animation: "scanProgress 800ms ease-out forwards" }} />
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
-            <div className="border-2 border-dashed rounded-md p-5 text-center cursor-pointer hover:bg-muted/20 transition-colors" style={{ borderColor: "rgba(212,207,198,0.3)" }}>
-              <Upload className="h-4 w-4 text-muted-foreground/50 mx-auto mb-1" />
-              <p className="text-[11px] text-muted-foreground">Or drop your own documents here</p>
-            </div>
+            )}
+            {docs.length > 0 && (
+              <div className="border-2 border-dashed rounded-md p-5 text-center cursor-pointer hover:bg-muted/20 transition-colors" style={{ borderColor: "rgba(212,207,198,0.3)" }}>
+                <Upload className="h-4 w-4 text-muted-foreground/50 mx-auto mb-1" />
+                <p className="text-[11px] text-muted-foreground">Or drop your own documents here</p>
+              </div>
+            )}
           </div>
 
           {/* Section 3 — Connected systems */}

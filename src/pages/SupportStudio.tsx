@@ -132,9 +132,9 @@ export default function SupportStudio() {
                     </div>
                     <div className="space-y-2">
                       {[
-                        { label: "Readiness score", value: "74%" },
-                        { label: "Risk classification", value: "Tier 2 — Moderate" },
-                        { label: "Regulatory context", value: "ISO 27001, WAF" },
+                        { label: "Readiness score", value: "67 — Conditionally Ready" },
+                        { label: "Risk classification", value: "HIGH RISK — EU AI Act Article 6" },
+                        { label: "Regulatory context", value: "GDPR · FINMA · EU AI Act · ISO 27001 · WAF" },
                         { label: "Failure modes identified", value: "10" },
                         { label: "Automation boundaries", value: "6 automated, 5 approval-required" },
                         { label: "Support tier", value: "Tier 2 Standard" },
@@ -364,7 +364,7 @@ export default function SupportStudio() {
                   <Database className="h-4 w-4 text-primary shrink-0" />
                   <div>
                     <h3 className="text-[13px] font-semibold text-foreground">From Solution Intelligence</h3>
-                    <p className="text-[11px] text-muted-foreground">Helio CRM Agent v3.4.2 · Sarah Chen · Acme Manufacturing · ISO 27001 context loaded</p>
+                    <p className="text-[11px] text-muted-foreground">Cash Flow Forecasting Agent v1.0.0 · Sarah Chen · Alpina Bank · FINMA + GDPR + EU AI Act context loaded</p>
                   </div>
                 </div>
                 <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Connected</Badge>
@@ -435,7 +435,7 @@ export default function SupportStudio() {
                 </div>
                 <div className="flex-1">
                   <p className="text-[14px] font-semibold text-foreground">
-                    Blueprint generated — Helio CRM Agent v3.4.2 · v2.4 · 22 rules across 9 sections
+                    Blueprint generated — Cash Flow Forecasting Agent v1.0.0 · v2.4 · 22 rules across 9 sections
                   </p>
                   <div className="flex items-center gap-3 mt-1.5">
                     <Link to="/blueprints" className="text-[12px] text-primary hover:underline flex items-center gap-1">

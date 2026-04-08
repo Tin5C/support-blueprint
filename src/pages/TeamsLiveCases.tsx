@@ -25,11 +25,11 @@ const threadMessages = [
     id: 1, type: "telemetry" as const, sender: "Telemetry Agent", avatar: "telemetry", timestamp: "Today 09:14 AM",
     card: {
       title: "Telemetry-Triggered Case Created",
-      subtitle: "CS-2041 · Acme Manufacturing · Helio CRM",
-      body: "Product telemetry detected a **34% drop in CRM agent usage** across Acme Manufacturing's deployment over the past 72 hours. Feature utilization for `smart-routing` and `auto-escalation` declined from baseline. Automated investigation initiated.",
+      subtitle: "CS-2041 · Alpina Bank · Cash Flow Forecasting Agent",
+      body: "Product telemetry detected **stale cash flow predictions** across Alpina Bank's deployment since Q1 data migration on Mar 27. Model using pre-migration feature vectors. 340 corporate accounts showing outdated 7-day forecasts.",
       metrics: [
-        { label: "Usage Drop", value: "−34%", color: "text-destructive" },
-        { label: "Affected Features", value: "3 of 12", color: "text-warning" },
+        { label: "Confidence Drop", value: "89→61%", color: "text-destructive" },
+        { label: "Accounts Affected", value: "340", color: "text-warning" },
         { label: "Detection", value: "Anomaly Model", color: "text-foreground" },
       ],
     },
@@ -39,11 +39,11 @@ const threadMessages = [
     card: {
       title: "Root Cause Analysis Complete",
       subtitle: "Confidence: 78% · Evidence from 4 sources",
-      body: "**Summary:** Acme Manufacturing's IT team applied a configuration change on March 27 that modified routing rules for their APAC region. This change drifted from the validated baseline, causing `smart-routing` to fall back to manual mode.\n\n**Impact:** 340 end-users affected. Average handle time increased 2.1x. Customer health score dropped from 82 → 64.\n\n**Root Cause:** Configuration drift in `routing_config.apac.v3` — 4 of 6 rule modifications conflict with blueprint defaults.",
+      body: "**Summary:** Alpina Bank's Q1 data migration on March 27 changed 6 data source mappings. 4 mappings conflict with the model's training baseline, causing forecasts to use pre-migration feature vectors.\n\n**Impact:** 340 corporate accounts affected. Forecast confidence dropped from 89% → 61%. 7-day cash flow projections are stale.\n\n**Root Cause:** Data source mapping drift in `data_config.q1_migration` — 4 of 6 mappings conflict with model baseline.",
       metrics: [
-        { label: "Users Affected", value: "340", color: "text-destructive" },
-        { label: "AHT Increase", value: "2.1×", color: "text-warning" },
-        { label: "Health Score", value: "82 → 64", color: "text-destructive" },
+        { label: "Accounts Affected", value: "340", color: "text-destructive" },
+        { label: "Confidence", value: "89→61%", color: "text-warning" },
+        { label: "Forecasts", value: "Stale", color: "text-destructive" },
       ],
     },
   },
@@ -51,17 +51,17 @@ const threadMessages = [
     id: 3, type: "customer-draft" as const, sender: "Draft — Customer Update", avatar: "draft", timestamp: "Today 09:18 AM",
     card: {
       title: "Customer-Facing Update (Ready for Review)",
-      subtitle: "Will be posted to #acme-manufacturing after approval",
-      body: "Hi Acme team,\n\nWe detected a configuration change in your APAC routing rules that's affecting smart-routing and auto-escalation for approximately 340 users.\n\nWe recommend merging your changes with baseline defaults (preserving your APAC customizations where safe). Would you like us to proceed?",
+      subtitle: "Will be posted to #alpina-bank after approval",
+      body: "Hi Alpina Bank team,\n\nWe detected that your Q1 data migration changed several data source mappings, which is causing stale cash flow forecasts for approximately 340 corporate accounts.\n\nWe recommend retraining the forecast model with your updated data mappings (preserving your custom configurations where safe). Would you like us to proceed?",
       metrics: [],
     },
   },
   {
     id: 4, type: "approval" as const, sender: "Governance Check — Approval Required", avatar: "approval", timestamp: "Today 09:19 AM",
     card: {
-      title: "Approval Required — Configuration Remediation",
+      title: "Approval Required — Model Retraining",
       subtitle: "Action cannot proceed without human review",
-      body: "**Proposed Action:** Merge Acme's APAC routing customizations with blueprint baseline defaults. Restores `smart-routing` and `auto-escalation` while preserving 2 valid custom rules.\n\n**Why approval is needed:**\n• Risk Level: Medium — affects production routing for 340 users\n• Confidence: 78% — below 80% auto-approval threshold\n• Policy: Configuration changes affecting >100 users require human approval\n\n**Runbook:** RB-118 (Configuration Drift Remediation)\n**Estimated Recovery:** ~25 minutes after approval",
+      body: "**Proposed Action:** Retrain forecast model with post-migration data mappings. Preserves 2 valid custom mappings, updates 4 conflicting ones. Applies guardrail for future migration validation.\n\n**Why approval is needed:**\n• Risk Level: Medium — affects forecasts for 340 corporate accounts\n• Confidence: 78% — below 80% auto-approval threshold\n• Policy: Model retraining affecting >100 accounts requires human approval\n\n**Runbook:** RB-118 (Post-Migration Model Retraining)\n**Estimated Recovery:** ~25 minutes after approval",
       metrics: [
         { label: "Risk", value: "Medium", color: "text-warning" },
         { label: "Confidence", value: "78%", color: "text-warning" },
@@ -75,11 +75,11 @@ const threadMessages = [
     card: {
       title: "Resolution Complete",
       subtitle: "Approved by Sarah Chen · Applied at 09:32 AM",
-      body: "Configuration remediation successfully applied.\n\n**Changes Made:**\n• Restored `smart-routing` baseline rules (4 conflicts resolved)\n• Preserved 2 valid APAC customizations\n• Applied guardrail: future config changes will trigger validation check\n\n**Results (15 min post-fix):**\n• Agent usage recovering — up 18% from trough\n• Smart-routing active for 100% of segments\n• Health score trending: 64 → 71 (recovering)",
+      body: "Model retraining successfully completed.\n\n**Changes Made:**\n• Retrained forecast model with post-migration data mappings (4 conflicts resolved)\n• Preserved 2 valid custom data mappings\n• Applied guardrail: future data migrations will trigger model validation check\n\n**Results (15 min post-fix):**\n• Forecast confidence recovering — 61% → 74%\n• Corporate account predictions updating\n• 7-day forecasts refreshing across 340 accounts",
       metrics: [
-        { label: "Usage Recovery", value: "+18%", color: "text-success" },
-        { label: "Routing", value: "100%", color: "text-success" },
-        { label: "Health Score", value: "64 → 71", color: "text-success" },
+        { label: "Confidence", value: "61→74%", color: "text-success" },
+        { label: "Forecasts", value: "Updating", color: "text-success" },
+        { label: "Accounts", value: "340 ✓", color: "text-success" },
       ],
     },
   },
@@ -87,10 +87,10 @@ const threadMessages = [
 
 const agentDetails = [
   { name: "Orchestrator", icon: Brain, status: "complete", confidence: 92, checked: "Triaged alert, classified case type, assigned investigation sequence", evidence: "Usage anomaly classified as Configuration Drift. Dispatched specialist agents." },
-  { name: "Telemetry Agent", icon: Activity, status: "complete", confidence: 88, checked: "72-hour usage metrics, feature baselines, anomaly detection", evidence: "smart-routing ↓42%, auto-escalation ↓38%, manual-mode fallback ↑310%." },
-  { name: "Customer Context", icon: User, status: "complete", confidence: 95, checked: "Deployment config, change log, SLA terms, customer history", evidence: "Config change Mar 27 by admin@acme.com — 6 routing rule modifications." },
-  { name: "Knowledge Agent", icon: BookOpen, status: "complete", confidence: 85, checked: "Runbooks, past incidents, documentation", evidence: "Matched RB-118. Similar incident at 2 other customers — 89% success rate." },
-  { name: "Resolution Agent", icon: Zap, status: "approved", confidence: 78, checked: "Remediation plan, blueprint validation, rollback option", evidence: "Merge approach preserves 2/6 custom rules. Estimated recovery: 25 min." },
+  { name: "Telemetry Agent", icon: Activity, status: "complete", confidence: 88, checked: "72-hour forecast metrics, confidence baselines, anomaly detection", evidence: "Forecast confidence ↓89→61%, stale predictions on 340 accounts since Mar 27 migration." },
+  { name: "Customer Context", icon: User, status: "complete", confidence: 95, checked: "Deployment config, migration log, SLA terms, customer history", evidence: "Data migration Mar 27 by admin@alpina.ch — 6 data source mapping changes." },
+  { name: "Knowledge Agent", icon: BookOpen, status: "complete", confidence: 85, checked: "Runbooks, past incidents, documentation", evidence: "Matched RB-118 (Post-Migration Retraining). Similar incident at 2 other bank customers — 89% success rate." },
+  { name: "Resolution Agent", icon: Zap, status: "approved", confidence: 78, checked: "Retraining plan, model validation, rollback option", evidence: "Retrain approach preserves 2/6 custom mappings. Estimated recovery: 25 min." },
 ];
 
 const statusStyle: Record<string, { label: string; className: string }> = {
@@ -123,11 +123,11 @@ export default function TeamsLiveCases() {
 
   const featuredCase = {
     id: "CS-2041", customerId: "cust-1",
-    title: "CRM Agent usage dropped after customer-specific configuration drift",
+    title: "Forecasting model returning stale predictions after Q1 data migration",
     status: "in-progress" as const, priority: "high" as const, trigger: "telemetry" as const,
     category: "Configuration", createdAt: "2025-03-30T09:14:00Z", updatedAt: "2025-03-30T09:47:00Z",
     confidence: 78, assignedAgent: "Resolution Agent",
-    summary: "Usage drop detected across smart-routing and auto-escalation features.",
+    summary: "Corporate cash flow predictions not updating since Q1 data migration. 340 accounts showing stale 7-day forecasts.",
   };
 
   const allCases = [featuredCase, ...customerCases.filter(c => c.id !== "CS-2041")];
@@ -175,7 +175,7 @@ export default function TeamsLiveCases() {
           <div className="h-12 px-4 border-b bg-card flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2 min-w-0">
               <span className="text-muted-foreground font-medium text-sm">#</span>
-              <h2 className="text-sm font-semibold text-foreground truncate">CS-2041: CRM Agent usage dropped after configuration drift</h2>
+              <h2 className="text-sm font-semibold text-foreground truncate">CS-2041: Forecast model stale after Q1 data migration</h2>
               <Badge variant="outline" className={`text-[10px] shrink-0 ${riskColor.high}`}>high</Badge>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
@@ -188,7 +188,7 @@ export default function TeamsLiveCases() {
               <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-muted/50 border border-border mb-3">
                 <Settings className="h-3.5 w-3.5 text-muted-foreground" />
                 <span className="text-[11px] text-muted-foreground">
-                  <span className="font-medium text-foreground">Acme Manufacturing</span> · Helio CRM · APAC Region · 340 users affected
+                  <span className="font-medium text-foreground">Alpina Bank</span> · Cash Flow Forecasting Agent v1.0.0 · 340 corporate accounts affected
                 </span>
               </div>
 
