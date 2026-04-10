@@ -42,17 +42,48 @@ export default function SupportStudio() {
         </p>
       </div>
 
-      {/* Section 1 — Two source cards */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Left — From Launch Studio */}
+      {/* Section 1 — Three source panels */}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Panel 1 — Enterprise environment */}
+        <Card className="border border-l-4 border-l-emerald-500" style={{ borderTopColor: "rgba(212,207,198,0.25)", borderRightColor: "rgba(212,207,198,0.25)", borderBottomColor: "rgba(212,207,198,0.25)" }}>
+          <CardContent className="p-4 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-semibold text-foreground">Enterprise environment</span>
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Assessed</Badge>
+            </div>
+            <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>Enterprise context</p>
+            <div className="space-y-1.5">
+              {[
+                { label: "Compliance", value: "FINMA outsourcing · GDPR Art. 28 · ISO 27001" },
+                { label: "IT tooling", value: "Jira SM · Azure Monitor · Microsoft Teams" },
+                { label: "Data policy", value: "Tier 1 financial data · Swiss residency required" },
+                { label: "Change mgmt", value: "CAB process · AI updates not in scope" },
+              ].map((row, i) => (
+                <div key={i} className="flex items-start gap-2 py-0.5">
+                  <span className="text-[10px] text-muted-foreground w-20 shrink-0">{row.label}</span>
+                  <span className="text-[11px] text-foreground">{row.value}</span>
+                </div>
+              ))}
+              <div className="flex items-start gap-2 py-0.5">
+                <span className="text-[10px] text-muted-foreground w-20 shrink-0">Gaps detected</span>
+                <span className="text-[11px] text-amber-600">4 requirements not met</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Panel 2 — App analysis */}
         <Card className="border border-l-4 border-l-emerald-500" style={{ borderTopColor: "rgba(212,207,198,0.25)", borderRightColor: "rgba(212,207,198,0.25)", borderBottomColor: "rgba(212,207,198,0.25)" }}>
           <CardContent className="p-4 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-[12px] font-semibold text-foreground">From Launch Studio</span>
+                <span className="text-[12px] font-semibold text-foreground">App analysis</span>
               </div>
-              <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Imported</Badge>
+              <div className="text-right">
+                <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Analysed</Badge>
+                <p className="text-[10px] text-muted-foreground italic mt-0.5">Launch Studio evaluation applied</p>
+              </div>
             </div>
             <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>Agent intelligence</p>
             <div className="space-y-1.5">
@@ -62,31 +93,38 @@ export default function SupportStudio() {
                 { label: "Risk", value: "HIGH RISK · EU AI Act Article 6" },
                 { label: "Regulatory", value: "FINMA · GDPR · EU AI Act · ISO 27001 · WAF" },
                 { label: "Failure modes", value: "10 identified" },
-                { label: "Agent docs", value: "cashflow-agent-v1.0.0-guide.pdf · architecture-overview.md · API reference" },
               ].map((row, i) => (
                 <div key={i} className="flex items-start gap-2 py-0.5">
                   <span className="text-[10px] text-muted-foreground w-20 shrink-0">{row.label}</span>
                   <span className="text-[11px] text-foreground">{row.value}</span>
                 </div>
               ))}
+              <div className="flex items-start gap-2 py-0.5">
+                <span className="text-[10px] text-muted-foreground w-20 shrink-0">vs. environment</span>
+                <span className="text-[11px] text-amber-600">4 gaps detected</span>
+              </div>
+              <div className="flex items-start gap-2 py-0.5">
+                <span className="text-[10px] text-muted-foreground w-20 shrink-0">Agent docs</span>
+                <span className="text-[11px] text-foreground">cashflow-agent-v1.0.0-guide.pdf · architecture-overview.md · API reference</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Right — From Support Assessment */}
+        {/* Panel 3 — Support baseline */}
         <Card className="border border-l-4 border-l-emerald-500" style={{ borderTopColor: "rgba(212,207,198,0.25)", borderRightColor: "rgba(212,207,198,0.25)", borderBottomColor: "rgba(212,207,198,0.25)" }}>
           <CardContent className="p-4 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-[12px] font-semibold text-foreground">From Support Assessment</span>
+                <span className="text-[12px] font-semibold text-foreground">Support baseline</span>
               </div>
               <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-700 border-emerald-500/20">Imported</Badge>
             </div>
             <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold" style={{ fontFamily: "'DM Mono', monospace" }}>Support baseline</p>
             <div className="space-y-1.5">
               {[
-                { label: "Ticketing", value: "Jira SM · 1,247 tickets · 90-day window" },
+                { label: "Connected systems", value: "Jira SM · 1,247 tickets · 90-day window" },
                 { label: "Top issues", value: "Forecast drift 34% · Data feed 28% · Reconciliation 18% · Reporting 20%" },
                 { label: "Avg resolution", value: "4.2 hrs" },
                 { label: "Runbooks", value: "incident-response-playbook.yaml · escalation-matrix.md · RB-045" },
@@ -102,7 +140,7 @@ export default function SupportStudio() {
         </Card>
       </div>
 
-      <p className="text-[11px] text-muted-foreground">Both sources have been merged — governance boundaries below are pre-populated from this analysis</p>
+      <p className="text-[11px] text-muted-foreground">Enterprise environment, app analysis, and support baseline merged — governance boundaries pre-populated from all three.</p>
 
       {/* Section 2 — Governance boundaries */}
       {generatePhase !== "done" && (
