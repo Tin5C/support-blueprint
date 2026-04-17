@@ -1,14 +1,11 @@
 # Welcome to the Guardians of AI - Savano AI
 
-AI governance platform for enterprise AI deployments. Built in Zürich.
-
 ## What this is
 
 This repo is the core product codebase for SavanoAI — two studios that together govern AI apps from build to production.
 
 **Launch Studio** handles everything before go-live: agentic assessment against enterprise IT standards, EU AI Act, ISO 42001, GDPR, ISO 27001, and the receiving organisation's own requirements. Output is a procurement package — readiness report, architecture diagram, data flow map, gap register, expert sign-off — that procurement teams can act on without explanation.
-
-**Support Studio** handles everything after go-live: governed support operations running continuously. Governance blueprint per deployment, hybrid agent/human case handling, annual audit evidence assembled automatically.
+**Launch Studio** is the structured bridge between "we built it" and "enterprises will deploy it." It evaluates AI apps and agentic systems against enterprise readiness — security posture, AI governance, data privacy, infrastructure, compliance, and operational standards — mapped to the specific regulations and internal requirements of the receiving organisation. Output is a contextualised readiness score, gap report, and remediation roadmap.**Support Studio** handles everything after go-live: governed support operations running continuously. Governance blueprint per deployment, hybrid agent/human case handling, annual audit evidence assembled automatically.
 
 ## The problem
 
