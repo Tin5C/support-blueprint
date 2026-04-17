@@ -1,6 +1,6 @@
 # Welcome to the Guardians of AI
 
-# SavanoAI — support-blueprint
+# SavanoAI 
 
 AI governance platform for enterprise AI deployments. Built in Zürich.
 
