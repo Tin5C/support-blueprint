@@ -70,4 +70,4 @@ Pre-seed. Product in active development. First design partners being signed.
 
 ## Contact
 
-hello@savanoai.com — savanoai.com — Built in Zürich
+info@savanoai.com — savanoai.com — Built in Zürich
