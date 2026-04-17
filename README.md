@@ -1,6 +1,4 @@
-# Welcome to the Guardians of AI
-
-# SavanoAI 
+# Welcome to the Guardians of AI - Savano AI
 
 AI governance platform for enterprise AI deployments. Built in Zürich.
 
